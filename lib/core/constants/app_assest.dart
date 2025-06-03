@@ -9,7 +9,8 @@ class AppAssets {
   // login screen assets
   String loginImage = "$staticAssets/loginImage.jpg";
   // option screen assets
-  String optionImage = "$staticAssets/pic.png";
+  String optionImage = "$staticAssets/optionImage.png";
+
   //***/
   String abc = "$iconsAssets/activityIcon.png";
 }

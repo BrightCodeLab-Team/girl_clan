@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/constants/app_assest.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
-import 'package:girl_clan/ui/auth/forget/forget_screen.dart';
+import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/ui/auth/login/login_screen.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_view_model.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
@@ -101,29 +100,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       20.verticalSpace,
 
                       Center(
-                        child: Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Get.to(HomeScreen());
-                            },
-                            child: Container(
-                              height: 45.h,
-                              width: 71.w,
-                              decoration: BoxDecoration(
-                                color: primaryColor,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "SignUp",
-                                  style: style20.copyWith(
-                                    fontSize: 20,
-                                    color: whiteColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                        child: CustomButton(
+                          onTap: () {
+                            Get.to(HomeScreen());
+                          },
+                          text: "Sign Up",
+                          backgroundColor: primaryColor,
                         ),
                       ),
                       20.verticalSpace,

@@ -4,14 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:girl_clan/ui/auth/login/login_screen.dart';
-import 'package:girl_clan/ui/auth/sign_up/sign_up_screen.dart';
-import 'package:girl_clan/ui/auth/splash_screen.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/location/location.dart';
+import 'package:girl_clan/ui/interests/interest_screen.dart';
 
 void main() => runApp(
   DevicePreview(enabled: !kReleaseMode, builder: (context) => const MyApp()),
-  // const MyApp(),
 );
 
 class MyApp extends StatelessWidget {
@@ -40,7 +38,7 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
             useMaterial3: true,
           ),
-          home: SignUpScreen(),
+          home: LocationPickerScreen(),
         );
       },
     );

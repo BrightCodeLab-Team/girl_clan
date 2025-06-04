@@ -8,6 +8,7 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/ui/add_event/add_event_screen.dart';
 import 'package:girl_clan/ui/add_event/add_event_view_model.dart';
 import 'package:girl_clan/ui/add_event/user_events_list/user_event_list_screen.dart';
+import 'package:girl_clan/ui/auth/splash_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(
@@ -42,52 +43,10 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               useMaterial3: true,
             ),
-            home: UserEventListScreen(),
+            home: SplashScreen(),
           ),
         );
       },
     );
   }
 }
-// user list 
-/*
-Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.green,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              event.joiningPeople.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Center(
-                            child: Text(
-                              event.availablePeople.toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    */

@@ -6,6 +6,7 @@ import 'package:girl_clan/core/constants/app_assest.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
+import 'package:girl_clan/ui/add_event/user_events_list/user_event_list_screen.dart';
 import 'package:girl_clan/ui/auth/forget/forget_screen.dart';
 import 'package:girl_clan/ui/auth/login/login_view_model.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_screen.dart';
@@ -101,7 +102,7 @@ class LoginScreen extends StatelessWidget {
                       child: Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            Get.to(HomeScreen());
+                            Get.to(UserEventListScreen());
                           },
                           child: Container(
                             height: 45.h,

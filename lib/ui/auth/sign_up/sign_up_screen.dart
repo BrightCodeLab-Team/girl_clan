@@ -5,7 +5,9 @@ import 'package:girl_clan/core/constants/app_assest.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
+import 'package:girl_clan/core/model/user_events_list.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
+import 'package:girl_clan/ui/add_event/user_events_list/user_event_list_screen.dart';
 import 'package:girl_clan/ui/auth/login/login_screen.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_view_model.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
@@ -102,7 +104,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Center(
                         child: CustomButton(
                           onTap: () {
-                            Get.to(HomeScreen());
+                            Get.to(UserEventListScreen());
                           },
                           text: "Sign Up",
                           backgroundColor: primaryColor,

@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 const Color primaryColor = Color(0xff119DA4);
 const Color secondaryColor = Color(0xffED4583);
 const Color ternaryColor = Color(0xff011627);
-const Color backgroundColor = Color(0xffF7F7F7);
+const Color backgroundColor = Color(0xffFFFBFC);
 const Color lightGreyColor = Color(0xffB0B0B0);
 const Color darkBlueColor = Color(0xff194CC3);
 const Color orangeColor = Color(0xffF9A452);
+const Color greenColor = Color(0xff0CEB35);
+const Color redColor = Color(0xffFF4D00);
 
 //*************************************************************** */
 const Color backGroundColor = Color(0xfffffdf7);
@@ -47,5 +49,5 @@ const Color custardColor = Color(0xfff9EB94533 % 20);
 const Color custardColor2 = Color(0xfff5b7083);
 const Color custardColor3 = Color(0xfffdd854);
 const Color peachColor = Color(0xfffeaeaea);
-const Color redColor = Color(0xfff000000 % 40);
+
 const Color offWhiteColor = Color(0xffF8F9FA);

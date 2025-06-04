@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
-import 'package:girl_clan/core/interest_card.dart';
+import 'package:girl_clan/custom_widget/interest_card.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/ui/interests/interest_view_model.dart';
 import 'package:provider/provider.dart';

@@ -5,8 +5,10 @@ import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
-import 'package:girl_clan/location/location.dart';
-import 'package:girl_clan/ui/interests/interest_screen.dart';
+import 'package:girl_clan/ui/add_event/add_event_screen.dart';
+import 'package:girl_clan/ui/add_event/add_event_view_model.dart';
+import 'package:girl_clan/ui/add_event/user_events_list/user_event_list_screen.dart';
+import 'package:provider/provider.dart';
 
 void main() => runApp(
   DevicePreview(enabled: !kReleaseMode, builder: (context) => const MyApp()),
@@ -21,26 +23,71 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (_, child) {
-        return GetMaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Sportat',
-          useInheritedMediaQuery: true,
-          defaultTransition: Transition.leftToRight,
-          locale: DevicePreview.locale(context),
-          builder: DevicePreview.appBuilder,
-          theme: ThemeData(
-            appBarTheme: AppBarTheme(
-              backgroundColor: transparentColor,
-              shadowColor: transparentColor,
-              surfaceTintColor: transparentColor,
+        return ChangeNotifierProvider(
+          create: (context) => EventViewModel(),
+          child: GetMaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Sportat',
+            useInheritedMediaQuery: true,
+            defaultTransition: Transition.leftToRight,
+            locale: DevicePreview.locale(context),
+            builder: DevicePreview.appBuilder,
+            theme: ThemeData(
+              appBarTheme: AppBarTheme(
+                backgroundColor: transparentColor,
+                shadowColor: transparentColor,
+                surfaceTintColor: transparentColor,
+              ),
+              scaffoldBackgroundColor: backGroundColor,
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+              useMaterial3: true,
             ),
-            scaffoldBackgroundColor: backGroundColor,
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-            useMaterial3: true,
+            home: UserEventListScreen(),
           ),
-          home: LocationPickerScreen(),
         );
       },
     );
   }
 }
+// user list 
+/*
+Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Center(
+                            child: Text(
+                              event.joiningPeople.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Center(
+                            child: Text(
+                              event.availablePeople.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    */

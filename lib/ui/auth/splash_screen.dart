@@ -8,14 +8,14 @@ import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/ui/auth/login/login_screen.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_screen.dart';
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class WelcomeScreen extends StatefulWidget {
+  const WelcomeScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
   @override
   void initState() {

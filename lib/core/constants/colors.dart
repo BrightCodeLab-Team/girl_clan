@@ -22,7 +22,7 @@ const Color DarkRedColor = Color.from(
 );
 const Color hintTextColor = Color(0xff6D6D6D);
 //const Color borderColor = Color(0xffD8D8D8);
-const Color borderColor = Color(0xffededed);
+Color borderColor = Colors.grey.shade600;
 const Color lightRedColor = Color.fromRGBO(229, 204, 204, 1);
 const Color darkPurpleColor = Color(0xff1E293B);
 const Color textColor = Color(0xff363636);

@@ -13,4 +13,5 @@ class AppAssets {
 
   //***/
   String abc = "$iconsAssets/activityIcon.png";
+  String detailImage = "$dynamicAssets/detail.png";
 }

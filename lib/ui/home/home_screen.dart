@@ -7,7 +7,10 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/custom_widget/home_top_pick_events.dart';
 import 'package:girl_clan/custom_widget/home_up_coming_events.dart';
+import 'package:girl_clan/ui/home/events_details_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
+import 'package:girl_clan/ui/home/top_pick_events_screen.dart';
+import 'package:girl_clan/ui/home/up_coming_events.dart';
 import 'package:girl_clan/ui/profile/profile_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -80,7 +83,9 @@ class HomeScreen extends StatelessWidget {
                         Text('Upcoming Events', style: style14B),
                         Spacer(),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Get.to(UpComingEventsScreen());
+                          },
                           child: Text(
                             'View All',
                             style: style14.copyWith(
@@ -109,8 +114,13 @@ class HomeScreen extends StatelessWidget {
                         itemBuilder: (BuildContext context, int index) {
                           return Padding(
                             padding: EdgeInsets.only(right: 5.w),
-                            child: CustomUpComingEventsCard(
-                              eventMOdel: model.UpComingEventsList[index],
+                            child: GestureDetector(
+                              onTap: () {
+                                Get.to(EventsDetailsScreen());
+                              },
+                              child: CustomUpComingEventsCard(
+                                eventMOdel: model.UpComingEventsList[index],
+                              ),
                             ),
                           );
                         },
@@ -123,7 +133,9 @@ class HomeScreen extends StatelessWidget {
                         Text('Top Picks', style: style14B),
                         Spacer(),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Get.to(TopPickEventsScreen());
+                          },
                           child: Text(
                             'View All',
                             style: style14.copyWith(
@@ -194,8 +206,14 @@ class HomeScreen extends StatelessWidget {
                             itemBuilder: (BuildContext context, int index) {
                               return Padding(
                                 padding: const EdgeInsets.only(top: 10.0),
-                                child: CustomHomeTopPickEventsCard(
-                                  topPickModel: model.TopPickEventsList[index],
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Get.to(EventsDetailsScreen());
+                                  },
+                                  child: CustomHomeTopPickEventsCard(
+                                    topPickModel:
+                                        model.TopPickEventsList[index],
+                                  ),
                                 ),
                               );
                             },
@@ -248,7 +266,7 @@ class CustomTabWidget extends StatelessWidget {
               isSelected ? Border.all(color: primaryColor, width: 2.w) : null,
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          //  mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,

@@ -3,7 +3,7 @@ import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
-import 'package:girl_clan/ui/home/home_view_model.dart';
+import 'package:girl_clan/ui/home/home_screen.dart';
 
 class TellUsMoreScreen extends StatefulWidget {
   @override

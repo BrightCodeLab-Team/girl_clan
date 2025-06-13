@@ -9,6 +9,7 @@ import 'package:girl_clan/ui/add_event/add_event_screen.dart';
 import 'package:girl_clan/ui/add_event/add_event_view_model.dart';
 import 'package:girl_clan/ui/add_event/user_events_list/user_event_list_screen.dart';
 import 'package:girl_clan/ui/auth/splash_screen.dart';
+import 'package:girl_clan/ui/home/home_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(
@@ -43,7 +44,7 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               useMaterial3: true,
             ),
-            home: WelcomeScreen(),
+            home: HomeScreen(),
           ),
         );
       },

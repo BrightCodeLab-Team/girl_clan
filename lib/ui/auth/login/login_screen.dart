@@ -10,7 +10,7 @@ import 'package:girl_clan/ui/add_event/user_events_list/user_event_list_screen.d
 import 'package:girl_clan/ui/auth/forget/forget_screen.dart';
 import 'package:girl_clan/ui/auth/login/login_view_model.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_screen.dart';
-import 'package:girl_clan/ui/home/home_view_model.dart';
+import 'package:girl_clan/ui/home/home_screen.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {

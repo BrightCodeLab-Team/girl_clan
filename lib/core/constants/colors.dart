@@ -5,12 +5,13 @@ const Color secondaryColor = Color(0xffFD5593);
 const Color ternaryColor = Color(0xff011627);
 const Color backgroundColor = Color(0xffFFFBFC);
 const Color lightGreyColor = Color(0xffB0B0B0);
+Color thinGreyColor = Colors.grey.shade200;
 const Color darkBlueColor = Color(0xff194CC3);
 const Color orangeColor = Color(0xffF9A452);
 const Color greenColor = Color(0xff0CEB35);
 const Color redColor = Color(0xffFF2022);
 
-//*************************************************************** */
+//***********************   not in use    **************************************** */
 const Color backGroundColor = Color(0xfffffdf7);
 const Color purpleColor = Color(0xff9370DB);
 const Color DarkRedColor = Color.from(

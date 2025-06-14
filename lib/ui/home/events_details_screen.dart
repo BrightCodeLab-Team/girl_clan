@@ -3,28 +3,26 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/app_assest.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
+
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class EventsDetailsScreen extends StatelessWidget {
   EventsDetailsScreen({super.key});
 
-  @override
   final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(37.42796133580664, -122.085749655962), // Example coordinates
+    target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
   );
 
-  // Define a marker for the location
   final Set<Marker> _markers = {
     Marker(
       markerId: MarkerId('eventLocation'),
-      position: LatLng(
-        37.42796133580664,
-        -122.085749655962,
-      ), // Same coordinates as target
+      position: LatLng(37.42796133580664, -122.085749655962),
       infoWindow: InfoWindow(title: 'Event Location'),
     ),
   };
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
@@ -49,7 +47,6 @@ class EventsDetailsScreen extends StatelessWidget {
                 children: [
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
-
                     children: [
                       Text('Vibe Elevation', style: style18B.copyWith()),
                       Spacer(),
@@ -107,10 +104,6 @@ class EventsDetailsScreen extends StatelessWidget {
                     ],
                   ),
                   10.verticalSpace,
-
-                  ///
-                  ///  location
-                  ///
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -132,34 +125,23 @@ class EventsDetailsScreen extends StatelessWidget {
                   20.verticalSpace,
                   Text('Location', style: style16B.copyWith()),
                   10.verticalSpace,
-
-                  ///
-                  ///      location --> google map
-                  ///
                   Container(
                     height: 180.h,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      // Removed color: primaryColor as the map will fill it
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: GoogleMap(
                         mapType: MapType.normal,
                         initialCameraPosition: _kGooglePlex,
-                        onMapCreated: (GoogleMapController controller) {
-                          // You can use the controller here if needed
-                        },
-                        markers: _markers, // Add the markers to the map
+                        onMapCreated: (GoogleMapController controller) {},
+                        markers: _markers,
                       ),
                     ),
                   ),
-                  40.verticalSpace,
-
-                  ///
-                  ///  last button
-                  ///
+                  50.verticalSpace,
                   GestureDetector(
                     onTap: () {},
                     child: Container(

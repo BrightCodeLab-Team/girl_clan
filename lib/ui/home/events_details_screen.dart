@@ -155,7 +155,7 @@ class EventsDetailsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  50.verticalSpace,
+                  40.verticalSpace,
 
                   ///
                   ///  last button

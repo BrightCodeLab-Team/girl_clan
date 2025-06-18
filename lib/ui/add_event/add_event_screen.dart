@@ -21,10 +21,6 @@ class AddEventScreen extends StatefulWidget {
 }
 
 class _AddEventScreenState extends State<AddEventScreen> {
-  ///
-  /// image picking
-  ///
-  File? _pickedImage;
   File? _pickedImageFile;
   Uint8List? _webImage; // for web
 

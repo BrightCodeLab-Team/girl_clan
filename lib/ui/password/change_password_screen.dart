@@ -42,8 +42,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const borderRadius = BorderRadius.all(Radius.circular(30));
-
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,

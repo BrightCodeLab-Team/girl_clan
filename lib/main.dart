@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/ui/auth/splash_screen.dart';
+import 'package:girl_clan/ui/home/search_result_screen.dart';
 import 'package:girl_clan/ui/root_screen/root_view_model.dart';
 
 import 'package:provider/provider.dart';
@@ -42,7 +43,7 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               useMaterial3: true,
             ),
-            home: SplashScreen(),
+            home: SearchResultScreen(),
           ),
         );
       },

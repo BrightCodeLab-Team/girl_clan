@@ -147,18 +147,35 @@ class _CustomFilterBottomSheetState extends State<CustomFilterBottomSheet> {
     'Sports',
     'Art Exhibition',
   ];
-
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            dialogBackgroundColor: Colors.white,
+            colorScheme: ColorScheme.light(
+              primary: primaryColor, // header background
+              onPrimary: Colors.white, // header text color
+              onSurface: Colors.black, // body text color
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: primaryColor, // button text color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
+
     if (picked != null) {
       setState(() {
-        _dateController.text =
-            "${picked.toLocal()}".split(' ')[0]; // Format date
+        _dateController.text = "${picked.toLocal()}".split(' ')[0];
       });
     }
   }
@@ -168,6 +185,41 @@ class _CustomFilterBottomSheetState extends State<CustomFilterBottomSheet> {
     _dateController.dispose();
     _locationController.dispose();
     super.dispose();
+  }
+
+  ///
+  ///. snack bar
+  ///
+  void showTopSnackBar(
+    BuildContext context,
+    String message, {
+    Color backgroundColor = Colors.redAccent,
+  }) {
+    final overlay = Overlay.of(context);
+    final overlayEntry = OverlayEntry(
+      builder:
+          (context) => Positioned(
+            top: MediaQuery.of(context).padding.top + 10,
+            left: 20,
+            right: 20,
+            child: Material(
+              elevation: 10,
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(message, style: TextStyle(color: Colors.white)),
+              ),
+            ),
+          ),
+    );
+
+    overlay.insert(overlayEntry);
+
+    Future.delayed(Duration(seconds: 2)).then((value) => overlayEntry.remove());
   }
 
   @override
@@ -208,34 +260,41 @@ class _CustomFilterBottomSheetState extends State<CustomFilterBottomSheet> {
               borderRadius: BorderRadius.circular(99.r),
               border: Border.all(color: borderColor),
             ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                isExpanded: true,
-                hint: Text(
-                  'Select Category',
-                  style: style14.copyWith(fontSize: 12),
+            child: Container(
+              decoration: BoxDecoration(
+                color: whiteColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  dropdownColor: whiteColor, // White dropdown background
+                  borderRadius: BorderRadius.circular(20), // Rounded corners
+                  hint: Text(
+                    'Select Category',
+                    style: style14.copyWith(fontSize: 12),
+                  ),
+                  value: _selectedCategory,
+                  icon: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: Colors.grey.shade900,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedCategory = newValue;
+                    });
+                  },
+                  items:
+                      _categories.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value,
+                            style: style14.copyWith(fontSize: 14),
+                          ),
+                        );
+                      }).toList(),
                 ),
-                value: _selectedCategory,
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Colors.grey.shade900,
-                ),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedCategory = newValue;
-                  });
-                },
-                items:
-                    _categories.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: style14.copyWith(fontSize: 14),
-                        ),
-                      );
-                    }).toList(),
-                padding: EdgeInsets.symmetric(), // Match vertical padding
               ),
             ),
           ),
@@ -316,7 +375,11 @@ class _CustomFilterBottomSheetState extends State<CustomFilterBottomSheet> {
               Expanded(
                 child: CustomButton(
                   onTap: () {
-                    //  reset button logic
+                    setState(() {
+                      _selectedCategory = null;
+                      _dateController.clear();
+                      _locationController.clear();
+                    });
                   },
                   text: 'Reset',
                   backgroundColor: secondaryColor,
@@ -327,8 +390,20 @@ class _CustomFilterBottomSheetState extends State<CustomFilterBottomSheet> {
               Expanded(
                 child: CustomButton(
                   onTap: () {
-                    // apply button logic
+                    if (_selectedCategory == null ||
+                        _dateController.text.isEmpty ||
+                        _locationController.text.isEmpty) {
+                      showTopSnackBar(context, 'Please fill all fields');
+                    } else {
+                      Navigator.pop(context); // Close bottom sheet
+                      showTopSnackBar(
+                        context,
+                        'Filter applied',
+                        backgroundColor: primaryColor,
+                      );
+                    }
                   },
+
                   text: 'Apply',
                   backgroundColor: primaryColor,
                   textColor: whiteColor,

@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/custom_widget/app_bar.dart';
 import 'package:girl_clan/ui/auth/login/login_screen.dart';
-import 'package:girl_clan/ui/password/privacy_policy_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ConfirmPasswordScreen extends StatefulWidget {
@@ -19,7 +18,7 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
 
-  void _goToPrivacy() {
+  void _goToLogin() {
     Get.offAll(LoginScreen());
   }
 
@@ -105,7 +104,7 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                     borderRadius: BorderRadius.circular(25),
                   ),
                 ),
-                onPressed: _goToPrivacy,
+                onPressed: _goToLogin,
                 child: Text(
                   "Update Password",
                   style: GoogleFonts.quicksand(

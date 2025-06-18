@@ -100,7 +100,7 @@ class LoginScreen extends StatelessWidget {
                       child: Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            Get.to(RootScreen());
+                            Get.offAll(RootScreen());
                           },
                           child: Container(
                             height: 46.h,

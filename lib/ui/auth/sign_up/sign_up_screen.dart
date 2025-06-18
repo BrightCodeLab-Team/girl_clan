@@ -102,7 +102,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Center(
                         child: CustomButton(
                           onTap: () {
-                            Get.to(RootScreen());
+                            Get.offAll(RootScreen());
                           },
                           text: "Sign Up",
                           backgroundColor: primaryColor,

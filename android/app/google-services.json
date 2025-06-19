@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "941382120322",
+    "project_id": "girlclan-e22c0",
+    "storage_bucket": "girlclan-e22c0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:941382120322:android:3a6306273bb70bff9f959b",
+        "android_client_info": {
+          "package_name": "com.example.girl_clan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSmZok0kBeQbq_aMMiJWmk5EsUWjAU_eE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

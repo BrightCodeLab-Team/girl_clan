@@ -20,6 +20,7 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _isChecked = false;
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -28,106 +29,151 @@ class _SignUpScreenState extends State<SignUpScreen> {
         builder:
             (context, model, child) => Scaffold(
               body: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5.w),
+                padding: EdgeInsets.symmetric(horizontal: 15.w),
                 child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      15.verticalSpacingDiagonal,
-                      Center(
-                        child: Image.asset(
-                          AppAssets().appLogo,
-                          height: 112,
-                          width: 112,
-                        ),
-                      ),
-
-                      15.verticalSpace,
-                      Center(child: Text("Login", style: style25B.copyWith())),
-                      const SizedBox(height: 10),
-
-                      Text("First Name", style: style16.copyWith()),
-                      3.verticalSpace,
-                      TextFormField(
-                        decoration: customAuthField3.copyWith(
-                          hintText: "First Name",
-                        ),
-                      ),
-                      10.verticalSpace,
-                      Text("Surname", style: style16.copyWith()),
-                      3.verticalSpace,
-                      TextFormField(
-                        obscureText: true,
-                        decoration: customAuthField3.copyWith(
-                          hintText: "Surname",
-                        ),
-                      ),
-
-                      Text("Email Address", style: style16.copyWith()),
-                      3.verticalSpace,
-                      TextFormField(
-                        decoration: customAuthField3.copyWith(
-                          hintText: "emial Address",
-                        ),
-                      ),
-                      10.verticalSpace,
-                      Text("Phone Number", style: style16.copyWith()),
-                      3.verticalSpace,
-                      TextFormField(
-                        obscureText: true,
-                        decoration: customAuthField3.copyWith(
-                          hintText: "Phone Number",
-                        ),
-                      ),
-                      3.verticalSpace,
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: _isChecked,
-                            onChanged: (bool? newValue) {
-                              setState(() {
-                                _isChecked = newValue ?? false;
-                              });
-                            },
-                            activeColor: Colors.blue,
-                            checkColor: Colors.white,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        20.verticalSpacingDiagonal,
+                        Center(
+                          child: Image.asset(
+                            AppAssets().appLogo,
+                            height: 112,
+                            width: 112,
                           ),
-                          const Text('Check if you are female.'),
-                        ],
-                      ),
-
-                      20.verticalSpace,
-
-                      Center(
-                        child: CustomButton(
-                          onTap: () {
-                            Get.offAll(RootScreen());
-                          },
-                          text: "Sign Up",
-                          backgroundColor: primaryColor,
                         ),
-                      ),
-                      20.verticalSpace,
-                      Row(
-                        children: [
-                          Text(
-                            "Don’t have an account? ",
-                            style: style16.copyWith(),
+
+                        15.verticalSpace,
+                        Center(
+                          child: Text("Login", style: style25B.copyWith()),
+                        ),
+                        const SizedBox(height: 10),
+
+                        Text("First Name", style: style16.copyWith()),
+                        3.verticalSpace,
+                        TextFormField(
+                          decoration: customAuthField3.copyWith(
+                            hintText: "First Name",
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              Get.to(LoginScreen());
-                            },
-                            child: Text(
-                              "Login ",
-                              style: style16.copyWith(color: Colors.red),
+                          controller: model.firstNameController,
+                          validator: model.validateFirstName,
+                        ),
+                        10.verticalSpace,
+                        Text("Surname", style: style16.copyWith()),
+                        3.verticalSpace,
+                        TextFormField(
+                          decoration: customAuthField3.copyWith(
+                            hintText: "Surname",
+                          ),
+                          controller: model.surNameController,
+                          validator: model.validateSurName,
+                        ),
+
+                        Text("Email Address", style: style16.copyWith()),
+                        3.verticalSpace,
+                        TextFormField(
+                          decoration: customAuthField3.copyWith(
+                            hintText: "emial Address",
+                          ),
+                          controller: model.emailController,
+                          validator: model.validateEmail,
+                        ),
+                        10.verticalSpace,
+                        Text("Password", style: style16.copyWith()),
+                        3.verticalSpace,
+                        TextFormField(
+                          obscureText: true,
+                          decoration: customAuthField3.copyWith(
+                            hintText: "Enter your password",
+                          ),
+                          controller: model.passwordController,
+                          validator: model.validatePassword,
+                        ),
+                        3.verticalSpace,
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _isChecked,
+                              onChanged: (bool? newValue) {
+                                setState(() {
+                                  _isChecked = newValue ?? false;
+                                });
+                              },
+                              activeColor: Colors.blue,
+                              checkColor: Colors.white,
                             ),
+                            const Text('Check if you are female.'),
+                          ],
+                        ),
+
+                        20.verticalSpace,
+
+                        Center(
+                          child: CustomButton(
+                            // ***********. user detail.  *************
+                            onTap: () async {
+                              try {
+                                print("Tapped");
+                                print(
+                                  "user name: ${model.firstNameController.text}${model.surNameController.text}",
+                                );
+                                print(
+                                  "user email: ${model.emailController.text}",
+                                );
+                                print(
+                                  "user phone: ${model.passwordController.text}",
+                                );
+
+                                if (_formKey.currentState!.validate()) {
+                                  await model.signInUser();
+                                  bool isUploaded =
+                                      await model
+                                          .uploadUserDetailToFireStoreDatabase();
+
+                                  if (isUploaded) {
+                                    Get.offAll(RootScreen());
+                                  } else {
+                                    Get.snackbar(
+                                      "Error",
+                                      "Failed to upload user details",
+                                    );
+                                  }
+                                } else {
+                                  print("Form is not valid");
+                                }
+                              } catch (e) {
+                                print("Error in onTap: $e");
+                              }
+                            },
+                            // ***************************************
+                            text: "Sign Up",
+                            backgroundColor: primaryColor,
                           ),
-                        ],
-                      ),
-                      51.verticalSpace,
-                    ],
+                        ),
+                        20.verticalSpace,
+                        Row(
+                          children: [
+                            Text(
+                              "Don’t have an account? ",
+                              style: style16.copyWith(),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Get.to(LoginScreen());
+                              },
+                              child: Text(
+                                "Login ",
+                                style: style16.copyWith(color: Colors.red),
+                              ),
+                            ),
+                          ],
+                        ),
+                        51.verticalSpace,
+                      ],
+                    ),
                   ),
                 ),
               ),

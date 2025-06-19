@@ -53,7 +53,10 @@ dependencies:
   geocoding: ^2.1.0
   uuid: ^4.4.0 # For generating unique IDs for events
   google_maps_flutter: ^2.12.2
-  flutter_svg:
+  flutter_svg: ^2.2.0
+  firebase_auth: ^5.6.0
+  cloud_firestore: ^5.6.9
+  
   
   
 

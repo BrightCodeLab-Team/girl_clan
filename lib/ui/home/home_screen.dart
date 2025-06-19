@@ -309,7 +309,7 @@ class CustomTabWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: isSelected ? primaryColor : thinGreyColor,
           borderRadius: BorderRadius.circular(50.r),

@@ -137,7 +137,12 @@ class ProfileScreen extends StatelessWidget {
                           ),
 
                           buildMenuItem('Change Password', () {
-                            Get.to(ChangePasswordScreen());
+                            try {
+                              Get.to(() => ChangePasswordScreen());
+                            } catch (e, stackTrace) {
+                              print('Navigation failed: $e');
+                              print(stackTrace);
+                            }
                           }),
                           buildMenuItem('Privacy Policy', () {
                             Get.to(PrivacyPolicyScreen());

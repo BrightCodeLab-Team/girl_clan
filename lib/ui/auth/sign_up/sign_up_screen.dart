@@ -112,46 +112,58 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         20.verticalSpace,
 
                         Center(
-                          child: CustomButton(
-                            // ***********. user detail.  *************
-                            onTap: () async {
-                              try {
-                                print("Tapped");
-                                print(
-                                  "user name: ${model.firstNameController.text}${model.surNameController.text}",
-                                );
-                                print(
-                                  "user email: ${model.emailController.text}",
-                                );
-                                print(
-                                  "user phone: ${model.passwordController.text}",
-                                );
+                          child:
+                              model.isLoading
+                                  ? Center(
+                                    child: CircularProgressIndicator(
+                                      color: secondaryColor,
+                                    ),
+                                  )
+                                  : CustomButton(
+                                    text: "Sign Up",
+                                    backgroundColor: primaryColor,
+                                    onTap: () async {
+                                      try {
+                                        print("Tapped");
+                                        print(
+                                          "user name: ${model.firstNameController.text}${model.surNameController.text}",
+                                        );
+                                        print(
+                                          "user email: ${model.emailController.text}",
+                                        );
+                                        print(
+                                          "user phone: ${model.passwordController.text}",
+                                        );
 
-                                if (_formKey.currentState!.validate()) {
-                                  await model.signInUser();
-                                  bool isUploaded =
-                                      await model
-                                          .uploadUserDetailToFireStoreDatabase();
+                                        if (_formKey.currentState!.validate()) {
+                                          model.setLoading(true); // Show loader
 
-                                  if (isUploaded) {
-                                    Get.offAll(RootScreen());
-                                  } else {
-                                    Get.snackbar(
-                                      "Error",
-                                      "Failed to upload user details",
-                                    );
-                                  }
-                                } else {
-                                  print("Form is not valid");
-                                }
-                              } catch (e) {
-                                print("Error in onTap: $e");
-                              }
-                            },
-                            // ***************************************
-                            text: "Sign Up",
-                            backgroundColor: primaryColor,
-                          ),
+                                          await model.signInUser();
+                                          bool isUploaded =
+                                              await model
+                                                  .uploadUserDetailToFireStoreDatabase();
+
+                                          model.setLoading(
+                                            false,
+                                          ); // Hide loader
+
+                                          if (isUploaded) {
+                                            Get.offAll(RootScreen());
+                                          } else {
+                                            Get.snackbar(
+                                              "Error",
+                                              "Failed to upload user details",
+                                            );
+                                          }
+                                        } else {
+                                          print("Form is not valid");
+                                        }
+                                      } catch (e) {
+                                        model.setLoading(false);
+                                        print("Error in onTap: $e");
+                                      }
+                                    },
+                                  ),
                         ),
                         20.verticalSpace,
                         Row(

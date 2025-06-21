@@ -43,7 +43,7 @@ class ProfileScreen extends StatelessWidget {
                   15.verticalSpace,
                   //
                   Text(
-                    'Mateo Cruz',
+                    'Mate Cruz',
                     style: style18B.copyWith(color: whiteColor),
                   ),
                   Text(
@@ -111,6 +111,7 @@ class ProfileScreen extends StatelessWidget {
                               'Account',
                               style: style12.copyWith(
                                 fontSize: 10,
+                                // ignore: deprecated_member_use
                                 color: blackColor.withOpacity(0.4),
                               ),
                             ),
@@ -131,6 +132,7 @@ class ProfileScreen extends StatelessWidget {
                               'Setting',
                               style: style12.copyWith(
                                 fontSize: 10,
+                                // ignore: deprecated_member_use
                                 color: blackColor.withOpacity(0.4),
                               ),
                             ),
@@ -140,7 +142,9 @@ class ProfileScreen extends StatelessWidget {
                             try {
                               Get.to(() => ChangePasswordScreen());
                             } catch (e, stackTrace) {
+                              // ignore: avoid_print
                               print('Navigation failed: $e');
+                              // ignore: avoid_print
                               print(stackTrace);
                             }
                           }),
@@ -239,7 +243,6 @@ void _showLogoutDialog(BuildContext context) {
                   ),
                   onPressed: () {
                     Navigator.of(context).pop(); // Close dialog
-                    // TODO: Add logout logic here
                   },
                 ),
               ),

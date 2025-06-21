@@ -9,7 +9,6 @@ import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/ui/auth/login/login_view_model.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_screen.dart';
 import 'package:girl_clan/ui/password/forget_password_screen.dart';
-import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {

@@ -8,6 +8,13 @@ import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/ui/root_screen/root_screen.dart';
 
 class SignUpViewModel extends BaseViewModel {
+  bool isLoading = false;
+
+  void setLoading(bool value) {
+    isLoading = value;
+    notifyListeners(); // or update() if using GetX
+  }
+
   ///
   ///  controllers
   ///

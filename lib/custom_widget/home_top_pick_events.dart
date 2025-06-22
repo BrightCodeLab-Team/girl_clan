@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
+import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/core/model/home_top_picks.dart';
+import 'package:girl_clan/core/model/event_model.dart';
+import '../core/model/event_model.dart' show EventModel;
 
 class CustomHomeTopPickEventsCard extends StatelessWidget {
-  final TopPicksCardModel topPickModel;
-  const CustomHomeTopPickEventsCard({super.key, required this.topPickModel});
+  //final TopPicksCardModel topPickModel;
+  final EventModel eventModel;
+  const CustomHomeTopPickEventsCard({super.key, required this.eventModel});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +19,7 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
       width: double.infinity, // Take full width
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage(topPickModel.imageUrl),
+          image: AssetImage(eventModel.imageUrl ?? ""),
           fit: BoxFit.cover,
         ),
         color: thinGreyColor, // Background color
@@ -55,7 +59,7 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: Text(
-                      topPickModel.category,
+                      eventModel.category ?? "",
                       style: style14B.copyWith(fontSize: 12, color: whiteColor),
                     ),
                   ),
@@ -72,7 +76,7 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          topPickModel.title,
+                          eventModel.eventName ?? " ",
                           style: style16B.copyWith(
                             fontSize: 18,
                             color: whiteColor,
@@ -90,7 +94,7 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
                             ),
                             2.horizontalSpace,
                             Text(
-                              topPickModel.location,
+                              eventModel.location,
                               style: style14.copyWith(
                                 fontSize: 13,
                                 color: whiteColor,
@@ -107,7 +111,7 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          topPickModel.joined,
+                          "${eventModel.availablePeople}/${eventModel.joiningPeople}",
                           style: style14.copyWith(
                             fontSize: 13,
                             color: whiteColor,
@@ -115,7 +119,7 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
                         ),
                         10.verticalSpace,
                         Text(
-                          topPickModel.date,
+                          eventModel.date,
                           style: style14B.copyWith(
                             fontSize: 13,
                             color: whiteColor,

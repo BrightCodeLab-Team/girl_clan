@@ -99,7 +99,7 @@ class HomeScreen extends StatelessWidget {
                                 isScrollControlled: true,
                                 backgroundColor: Colors.transparent,
                                 builder: (BuildContext context) {
-                                  return const CustomFilterBottomSheet();
+                                  return const search_result.CustomFilterBottomSheet();
                                 },
                               );
                             },
@@ -170,7 +170,7 @@ class HomeScreen extends StatelessWidget {
                                 Get.to(EventsDetailsScreen());
                               },
                               child: CustomUpComingEventsCard(
-                                eventMOdel: model.UpComingEventsList[index],
+                                eventModel: model.UpComingEventsList[index],
                               ),
                             ),
                           );
@@ -262,8 +262,7 @@ class HomeScreen extends StatelessWidget {
                                     Get.to(EventsDetailsScreen());
                                   },
                                   child: CustomHomeTopPickEventsCard(
-                                    topPickModel:
-                                        model.TopPickEventsList[index],
+                                    eventModel: model.TopPickEventsList[index],
                                   ),
                                 ),
                               );

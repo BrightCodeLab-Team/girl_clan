@@ -57,22 +57,20 @@ class LoginViewModel extends BaseViewModel {
 
   Future<void> LoginUser() async {
     try {
-      final UserCredential = await auth
+      await auth
           .signInWithEmailAndPassword(
             email: emailController.text.trim(),
             password: passwordController.text.trim(),
           )
           .then((onValue) {
             Get.offAll(Get.to(RootScreen()));
+
+            Get.snackbar("Success", "Login Success");
           })
           // ignore: avoid_types_as_parameter_names
           .onError((error, StackTrace) {
             loading = false;
             notifyListeners();
-
-            // normal print statement slow app use debug print
-            debugPrint('login failed');
-            Get.snackbar("error", "Login failed");
           });
     } catch (e) {
       print("Login Failed $e");

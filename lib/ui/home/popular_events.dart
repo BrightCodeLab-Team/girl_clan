@@ -85,8 +85,7 @@ class PopularEventsScreen extends StatelessWidget {
                                     Get.to(EventsDetailsScreen());
                                   },
                                   child: CustomHomeTopPickEventsCard(
-                                    topPickModel:
-                                        model.TopPickEventsList[index],
+                                    eventModel: model.TopPickEventsList[index],
                                   ),
                                 ),
                               );

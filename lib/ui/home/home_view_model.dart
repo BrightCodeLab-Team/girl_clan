@@ -1,4 +1,5 @@
 import 'package:girl_clan/core/constants/app_assets.dart';
+import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/core/model/home_top_picks.dart';
 import 'package:girl_clan/core/model/up_coming_evnts.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
@@ -7,63 +8,92 @@ class HomeViewModel extends BaseViewModel {
   ///
   ///      up coming events
   ///
-  List<UpComingEventsCardModel> UpComingEventsList = [
-    UpComingEventsCardModel(
-      title: "urban beast",
-      date: "12/01/2025",
-      location: "Tofino, British Co ...",
+  List<EventModel> UpComingEventsList = [
+    EventModel(
+      id: '1',
+      eventName: 'Discover the World',
+      location: 'location',
+      date: '12/03/2024',
+      startTime: '45/05',
+      category: 'Hiking',
       imageUrl: AppAssets().loginImage,
-      ratio: "06/10",
+      joiningPeople: 12,
+      availablePeople: 5,
     ),
-    UpComingEventsCardModel(
-      title: "urban beast",
-      date: "12/01/2025",
-      location: "Tofino, British Co ...",
+    EventModel(
+      id: '1',
+      eventName: 'Discover the World',
+      location: 'location',
+      date: '12/03/2024',
+      startTime: '45/05',
+      category: 'Hiking',
       imageUrl: AppAssets().loginImage,
-      ratio: "06/10",
+      joiningPeople: 12,
+      availablePeople: 5,
     ),
-    UpComingEventsCardModel(
-      title: "urban beast",
-      date: "12/01/2025",
-      location: "Tofino, British Co ...",
+    EventModel(
+      id: '1',
+      eventName: 'Discover the World',
+      location: 'location',
+      date: '12/03/2024',
+      startTime: '45/05',
+      category: 'Hiking',
       imageUrl: AppAssets().loginImage,
-      ratio: "06/10",
+      joiningPeople: 12,
+      availablePeople: 5,
     ),
-    UpComingEventsCardModel(
-      title: "urban beast",
-      date: "12/01/2025",
-      location: "Tofino, British Co ...",
+    EventModel(
+      id: '1',
+      eventName: 'Discover the World',
+      location: 'location',
+      date: '12/03/2024',
+      startTime: '45/05',
+      category: 'Hiking',
       imageUrl: AppAssets().loginImage,
-      ratio: "06/10",
+      joiningPeople: 12,
+      availablePeople: 5,
     ),
-    UpComingEventsCardModel(
-      title: "urban beast",
-      date: "12/01/2025",
-      location: "Tofino, British Co ...",
+    EventModel(
+      id: '1',
+      eventName: 'Discover the World',
+      location: 'location',
+      date: '12/03/2024',
+      startTime: '45/05',
+      category: 'Hiking',
       imageUrl: AppAssets().loginImage,
-      ratio: "06/10",
+      joiningPeople: 12,
+      availablePeople: 5,
     ),
-    UpComingEventsCardModel(
-      title: "urban beast",
-      date: "12/01/2025",
-      location: "Tofino, British Co ...",
+    EventModel(
+      id: '1',
+      eventName: 'Discover the World',
+      location: 'location',
+      date: '12/03/2024',
+      startTime: '45/05',
+      category: 'Hiking',
       imageUrl: AppAssets().loginImage,
-      ratio: "06/10",
+      joiningPeople: 12,
+      availablePeople: 5,
     ),
-    UpComingEventsCardModel(
-      title: "urban beast",
-      date: "12/01/2025",
-      location: "Tofino, British Co ...",
+    EventModel(
+      id: '1',
+      eventName: 'Discover the World',
+      location: 'location',
+      date: '12/03/2024',
+      startTime: '45/05',
+      category: 'Hiking',
       imageUrl: AppAssets().loginImage,
-      ratio: "06/10",
+      joiningPeople: 12,
+      availablePeople: 5,
     ),
-    UpComingEventsCardModel(
-      title: "urban beast",
-      date: "12/01/2025",
-      location: "Tofino, British Co ...",
-      imageUrl: AppAssets().loginImage,
-      ratio: "06/10",
-    ),
+
+    // UpComingEventsCardModel(
+    //   title: "urban beast",
+    //   date: "12/01/2025",
+    //   location: "Tofino, British Co ...",
+    //   imageUrl: AppAssets().loginImage,
+    //   ratio: "06/10",
+    // ),
   ];
 
   ///
@@ -77,46 +107,58 @@ class HomeViewModel extends BaseViewModel {
 
   ///
   ///
-  List<TopPicksCardModel> TopPickEventsList = [
-    TopPicksCardModel(
-      title: "Wanderlight Festival",
-      imageUrl: AppAssets().loginImage,
+  List<EventModel> TopPickEventsList = [
+    EventModel(
+      id: '1',
+      eventName: 'Discover the World',
+      location: 'location',
+      date: '12/03/2024',
+      startTime: '45/05',
       category: 'Hiking',
-      location: 'Northern Mountains',
-      joined: '12/25 Joined',
-      date: '12/12/2025',
-    ),
-    TopPicksCardModel(
-      title: "Wanderlight Festival",
       imageUrl: AppAssets().loginImage,
-      category: 'Hiking',
-      location: 'Northern Mountains',
-      joined: '12/25 Joined',
-      date: '12/12/2025',
+      joiningPeople: 12,
+      availablePeople: 5,
     ),
-    TopPicksCardModel(
-      title: "Wanderlight Festival",
+    EventModel(
+      id: '1',
+      eventName: 'Discover the World',
+      location: 'location',
+      date: '12/03/2024',
+      startTime: '45/05',
+      category: 'Hiking',
       imageUrl: AppAssets().loginImage,
-      category: 'Hiking',
-      location: 'Northern Mountains',
-      joined: '12/25 Joined',
-      date: '12/12/2025',
+      joiningPeople: 12,
+      availablePeople: 5,
     ),
-    TopPicksCardModel(
-      title: "Wanderlight Festival",
+    EventModel(
+      id: '1',
+      eventName: 'Discover the World',
+      location: 'location',
+      date: '12/03/2024',
+      startTime: '45/05',
+      category: 'Hiking',
       imageUrl: AppAssets().loginImage,
-      category: 'Hiking',
-      location: 'Northern Mountains',
-      joined: '12/25 Joined',
-      date: '12/12/2025',
+      joiningPeople: 12,
+      availablePeople: 5,
     ),
-    TopPicksCardModel(
-      title: "Wanderlight Festival",
+    EventModel(
+      id: '1',
+      eventName: 'Discover the World',
+      location: 'location',
+      date: '12/03/2024',
+      startTime: '45/05',
+      category: 'Hiking',
       imageUrl: AppAssets().loginImage,
-      category: 'Hiking',
-      location: 'Northern Mountains',
-      joined: '12/25 Joined',
-      date: '12/12/2025',
+      joiningPeople: 12,
+      availablePeople: 5,
     ),
+    // TopPicksCardModel(
+    //   title: "Wanderlight Festival",
+    //   imageUrl: AppAssets().loginImage,
+    //   category: 'Hiking',
+    //   location: 'Northern Mountains',
+    //   joined: '12/25 Joined',
+    //   date: '12/12/2025',
+    // ),
   ];
 }

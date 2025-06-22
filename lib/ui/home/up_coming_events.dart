@@ -4,6 +4,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
+import 'package:girl_clan/custom_widget/search_result_card.dart';
 import 'package:girl_clan/ui/home/events_details_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:girl_clan/ui/home/search_screen.dart';
@@ -63,8 +64,7 @@ class UpComingEventsScreen extends StatelessWidget {
                               Get.to(EventsDetailsScreen());
                             },
                             child: CustomSearchResultCard(
-                              upComingEventsCardModel:
-                                  model.UpComingEventsList[index],
+                              eventModel: model.UpComingEventsList[index],
                             ),
                           );
                         },

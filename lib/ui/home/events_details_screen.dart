@@ -10,7 +10,7 @@ import 'package:girl_clan/ui/chat/main_chat_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class EventsDetailsScreen extends StatefulWidget {
-  EventsDetailsScreen({super.key});
+  const EventsDetailsScreen({super.key});
 
   @override
   State<EventsDetailsScreen> createState() => _EventsDetailsScreenState();
@@ -40,7 +40,7 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            SizedBox(
               height: 275.h,
               width: double.infinity,
               child: ClipRRect(

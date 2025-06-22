@@ -1,4 +1,4 @@
-class Event {
+class EventModel {
   String? id; // Unique ID for each event
   String eventName;
   String location;
@@ -10,7 +10,7 @@ class Event {
   int
   availablePeople; // Number of people available (not quite sure what this means in your context, but including it as requested)
 
-  Event({
+  EventModel({
     this.id,
     required this.eventName,
     required this.location,
@@ -23,8 +23,8 @@ class Event {
   });
 
   // Factory constructor to create an Event from a Map (useful for persistence)
-  factory Event.fromJson(Map<String, dynamic> json) {
-    return Event(
+  factory EventModel.fromJson(Map<String, dynamic> json) {
+    return EventModel(
       id: json['id'],
       eventName: json['eventName'],
       location: json['location'],

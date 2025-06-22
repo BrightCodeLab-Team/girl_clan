@@ -5,6 +5,7 @@ import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
+import 'package:girl_clan/custom_widget/search_result_card.dart';
 import 'package:girl_clan/ui/home/search_screen.dart';
 
 import 'package:girl_clan/ui/home/events_details_screen.dart';
@@ -92,7 +93,7 @@ class SearchResultScreen extends StatelessWidget {
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              childAspectRatio: 0.68,
+                              childAspectRatio: 0.8,
                               crossAxisSpacing: 10,
                               mainAxisSpacing: 10,
                             ),
@@ -106,8 +107,7 @@ class SearchResultScreen extends StatelessWidget {
                               Get.to(EventsDetailsScreen());
                             },
                             child: CustomSearchResultCard(
-                              upComingEventsCardModel:
-                                  model.UpComingEventsList[index],
+                              eventModel: model.UpComingEventsList[index],
                             ),
                           );
                         },

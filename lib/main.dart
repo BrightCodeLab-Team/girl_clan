@@ -6,8 +6,10 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/firebase_options.dart';
-import 'package:girl_clan/ui/auth/sign_up/sign_up_screen.dart';
 import 'package:girl_clan/ui/auth/splash_screen.dart';
+import 'package:girl_clan/ui/home/home_screen.dart';
+import 'package:girl_clan/ui/home/search_result_screen.dart';
+import 'package:girl_clan/ui/home/search_screen.dart';
 import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:girl_clan/ui/root_screen/root_view_model.dart';
 
@@ -50,20 +52,19 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               useMaterial3: true,
             ),
-            home:
-            //SignUpScreen(),
-            StreamBuilder(
-              stream: FirebaseAuth.instance.authStateChanges(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.data != null) {
-                  return RootScreen();
-                }
-                return SplashScreen();
-              },
-            ),
+            home: SearchResultScreen(),
+            // StreamBuilder(
+            //   stream: FirebaseAuth.instance.authStateChanges(),
+            //   builder: (context, snapshot) {
+            //     if (snapshot.connectionState == ConnectionState.waiting) {
+            //       return const Center(child: CircularProgressIndicator());
+            //     }
+            //     if (snapshot.data != null) {
+            //       return RootScreen();
+            //     }
+            //     return SplashScreen();
+            //   },
+            // ),
           ),
         );
       },

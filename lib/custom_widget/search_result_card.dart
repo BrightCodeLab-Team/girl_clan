@@ -55,7 +55,7 @@ class CustomSearchResultCard extends StatelessWidget {
                   children: [
                     // title
                     Text(
-                      eventModel.eventName,
+                      eventModel.eventName ?? '',
                       style: style14B.copyWith(fontSize: 12),
                     ),
                     // joining people
@@ -72,7 +72,7 @@ class CustomSearchResultCard extends StatelessWidget {
                 5.verticalSpace,
                 Text(
                   //date
-                  eventModel.date,
+                  eventModel.date ?? '',
                   style: style14.copyWith(fontSize: 10),
                 ),
                 5.verticalSpace,
@@ -84,7 +84,7 @@ class CustomSearchResultCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         //location
-                        eventModel.location,
+                        eventModel.location ?? '',
                         style: style14.copyWith(fontSize: 10),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

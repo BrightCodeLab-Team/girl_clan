@@ -94,7 +94,7 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
                             ),
                             2.horizontalSpace,
                             Text(
-                              eventModel.location,
+                              eventModel.location ?? '',
                               style: style14.copyWith(
                                 fontSize: 13,
                                 color: whiteColor,
@@ -119,7 +119,7 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
                         ),
                         10.verticalSpace,
                         Text(
-                          eventModel.date,
+                          eventModel.date ?? '',
                           style: style14B.copyWith(
                             fontSize: 13,
                             color: whiteColor,

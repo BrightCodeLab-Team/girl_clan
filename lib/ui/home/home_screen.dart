@@ -7,11 +7,11 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/custom_widget/home_top_pick_events.dart';
 import 'package:girl_clan/custom_widget/home_up_coming_events.dart';
+import 'package:girl_clan/ui/add_event/add_event_screen.dart';
 import 'package:girl_clan/ui/home/events_details_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:girl_clan/ui/home/popular_events.dart';
 import 'package:girl_clan/ui/home/search_result_screen.dart' as search_result;
-import 'package:girl_clan/ui/home/search_screen.dart';
 import 'package:girl_clan/ui/home/up_coming_events.dart';
 import 'package:girl_clan/ui/notification_screen/notification_screen.dart';
 import 'package:girl_clan/ui/profile/profile_screen.dart';
@@ -27,6 +27,13 @@ class HomeScreen extends StatelessWidget {
       child: Consumer<HomeViewModel>(
         builder:
             (context, model, child) => Scaffold(
+              floatingActionButton: FloatingActionButton(
+                backgroundColor: primaryColor,
+                onPressed: () {
+                  Get.to(() => AddEventScreen());
+                },
+                child: Icon(Icons.add, color: whiteColor),
+              ),
               appBar: AppBar(
                 leading: GestureDetector(
                   onTap: () {
@@ -89,9 +96,11 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     10.verticalSpace,
                     TextFormField(
+                      autofocus: true,
                       decoration: customHomeAuthField.copyWith(
                         suffixIcon: Padding(
                           padding: const EdgeInsets.only(right: 8.0),
+
                           child: GestureDetector(
                             onTap: () {
                               showModalBottomSheet(
@@ -121,10 +130,9 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      onFieldSubmitted: (value) {
-                        if (value.trim().isNotEmpty) {
-                          Get.to(() => search_result.SearchResultScreen());
-                        }
+
+                      onTap: () {
+                        Get.to(() => search_result.SearchResultScreen());
                       },
                     ),
 

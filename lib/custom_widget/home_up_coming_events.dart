@@ -42,7 +42,7 @@ class CustomUpComingEventsCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      eventModel.date,
+                      eventModel.date ?? '',
                       style: style14B.copyWith(fontSize: 10),
                     ),
                     Text(
@@ -56,7 +56,7 @@ class CustomUpComingEventsCard extends StatelessWidget {
                 ),
                 4.verticalSpace,
                 Text(
-                  eventModel.eventName,
+                  eventModel.eventName ?? '',
                   style: style14B.copyWith(fontSize: 12),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -72,7 +72,7 @@ class CustomUpComingEventsCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        eventModel.location,
+                        eventModel.location ?? '',
                         style: style14B.copyWith(fontSize: 10),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

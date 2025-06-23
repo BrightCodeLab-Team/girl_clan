@@ -75,9 +75,12 @@ class SearchResultScreen extends StatelessWidget {
                         ),
                         2.horizontalSpace,
                         Text(
-                          model.UpComingEventsList.length <= 9
-                              ? '0${model.UpComingEventsList.length}'
-                              : model.UpComingEventsList.length.toString(),
+                          ///
+                          ///. changes here in first 3 lines
+                          ///
+                          model.upcomingEventsList.length <= 9
+                              ? '0${model.upcomingEventsList.length}'
+                              : model.upcomingEventsList.length.toString(),
                           style: style14B.copyWith(
                             fontSize: 13,
                             color: primaryColor,
@@ -97,7 +100,13 @@ class SearchResultScreen extends StatelessWidget {
                               crossAxisSpacing: 10,
                               mainAxisSpacing: 10,
                             ),
-                        itemCount: model.UpComingEventsList.length,
+
+                        ///
+                        ///
+                        ///
+                        itemCount: model.upcomingEventsList.length,
+
+                        /// in this line
                         shrinkWrap: true,
                         scrollDirection: Axis.vertical,
 
@@ -107,7 +116,9 @@ class SearchResultScreen extends StatelessWidget {
                               Get.to(EventsDetailsScreen());
                             },
                             child: CustomSearchResultCard(
-                              eventModel: model.UpComingEventsList[index],
+                              eventModel:
+                                  model
+                                      .upcomingEventsList[index], // in this line
                             ),
                           );
                         },

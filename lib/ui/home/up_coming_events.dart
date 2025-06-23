@@ -54,7 +54,12 @@ class UpComingEventsScreen extends StatelessWidget {
                               crossAxisSpacing: 10,
                               mainAxisSpacing: 10,
                             ),
-                        itemCount: model.UpComingEventsList.length,
+
+                        ///
+                        ///  changes here
+                        ///
+                        itemCount:
+                            model.upcomingEventsList.length, //in this line
                         shrinkWrap: true,
                         scrollDirection: Axis.vertical,
 
@@ -64,7 +69,9 @@ class UpComingEventsScreen extends StatelessWidget {
                               Get.to(EventsDetailsScreen());
                             },
                             child: CustomSearchResultCard(
-                              eventModel: model.UpComingEventsList[index],
+                              eventModel:
+                                  model
+                                      .upcomingEventsList[index], //in this line
                             ),
                           );
                         },

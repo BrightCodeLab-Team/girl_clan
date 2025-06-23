@@ -11,6 +11,9 @@ class AddEventViewModel extends BaseViewModel {
   //List
   final db = locator<DatabaseServices>();
 
+  ///
+  ///. add event to database
+  ///
   addEvent() async {
     setState(ViewState.busy);
     await db.addEventsToDataBase(eventModel);

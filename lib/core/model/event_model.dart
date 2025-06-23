@@ -31,15 +31,15 @@ class EventModel {
   // Method to convert an Event to a Map (useful for persistence)
   Map<String, dynamic> toJson() {
     return {
-      'id': currentUser,
-      'eventName': eventName,
-      'location': location,
-      'date': date,
-      'startTime': startTime,
-      'category': category,
-      'imageUrl': imageUrl,
-      'joiningPeople': joiningPeople,
-      'availablePeople': availablePeople,
+      'id': currentUser?.uid ?? '',
+      'eventName': eventName ?? '',
+      'location': location ?? '',
+      'date': date ?? '',
+      'startTime': startTime ?? '',
+      'category': category ?? '',
+      'imageUrl': imageUrl ?? '',
+      'joiningPeople': joiningPeople ?? 0,
+      'availablePeople': availablePeople ?? 0,
     };
   }
 

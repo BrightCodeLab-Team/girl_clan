@@ -23,7 +23,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => HomeViewModel(),
+      // create: (context) => HomeViewModel(),
+      create: (context) => HomeViewModel()..init(),
       child: Consumer<HomeViewModel>(
         builder:
             (context, model, child) => Scaffold(
@@ -167,26 +168,34 @@ class HomeScreen extends StatelessWidget {
                     ///
                     SizedBox(
                       height: 88.h,
-                      child: ListView.builder(
-                        itemCount: model.UpComingEventsList.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
-                            padding: EdgeInsets.only(right: 5.w),
-                            child: GestureDetector(
-                              onTap: () {
-                                Get.to(EventsDetailsScreen());
-                              },
-                              child: CustomUpComingEventsCard(
-                                eventModel: model.UpComingEventsList[index],
+                      child:
+                          model.upcomingEventsList.isEmpty
+                              ? Center(child: Text('No Upcoming Events '))
+                              : ListView.builder(
+                                // itemCount: model.UpComingEventsList.length,
+                                itemCount: model.upcomingEventsList.length,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Padding(
+                                    padding: EdgeInsets.only(right: 5.w),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Get.to(EventsDetailsScreen());
+                                      },
+                                      child: CustomUpComingEventsCard(
+                                        eventModel:
+                                            model.upcomingEventsList[index],
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
-                            ),
-                          );
-                        },
-                      ),
                     ),
                     10.verticalSpace,
 
+                    ///
+                    ///. top picks
+                    ///
                     Row(
                       children: [
                         Text('Top Picks', style: style14B),

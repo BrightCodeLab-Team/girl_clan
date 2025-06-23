@@ -25,7 +25,7 @@ class HomeViewModel extends BaseViewModel {
   Future<void> init() async {
     setState(ViewState.busy);
     try {
-      upcomingEventsList = await db.getUpcomingEvents(eventModel);
+      upcomingEventsList = await db.getUpcomingEvents();
       debugPrint('Fetched ${upcomingEventsList.length} events in ViewModel');
       notifyListeners();
 

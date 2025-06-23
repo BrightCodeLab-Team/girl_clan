@@ -58,20 +58,39 @@ class DatabaseServices {
   //     return [];
   //   }
   // }
-  Future<List<EventModel>> getUpcomingEvents(EventModel eventModel) async {
+  Future<List<EventModel>> getUpcomingEvents() async {
     try {
-      final snapshot = await _db.collection('events').orderBy('date').get();
+      // Get current date and calculate next week's date
+      final currentDate = DateTime.now();
+      final nextWeekDate = currentDate.add(const Duration(days: 7));
+
+      // Format dates to match your Firestore format (YYYY/MM/DD)
+      final formattedCurrentDate =
+          "${currentDate.year}/${currentDate.month}/${currentDate.day}";
+      final formattedNextWeekDate =
+          "${nextWeekDate.year}/${nextWeekDate.month}/${nextWeekDate.day}";
+
+      // Query events between today and next week
+      final snapshot =
+          await _db
+              .collection('events')
+              .where('date', isGreaterThanOrEqualTo: formattedCurrentDate)
+              .where('date', isLessThanOrEqualTo: formattedNextWeekDate)
+              .orderBy('date')
+              .get();
 
       if (snapshot.docs.isEmpty) {
-        debugPrint('No events found in Firestore');
+        debugPrint('No upcoming events found in Firestore');
         return [];
       }
 
-      debugPrint('Fetched ${snapshot.docs.length} events from Firestore');
+      debugPrint(
+        'Fetched ${snapshot.docs.length} upcoming events from Firestore',
+      );
 
       final events =
           snapshot.docs.map((doc) {
-            debugPrint('Document data: ${doc.data()}');
+            debugPrint('Upcoming event data: ${doc.data()}');
             return EventModel.fromJson(doc.data());
           }).toList();
 

@@ -45,38 +45,45 @@ class UpComingEventsScreen extends StatelessWidget {
                     10.verticalSpace,
 
                     //  search result
-                    Expanded(
-                      child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: 0.71,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
-                            ),
+                    model.upcomingEventsList.isEmpty
+                        ? Center(
+                          child: Text(
+                            'No Upcoming Events',
+                            style: style18B.copyWith(),
+                          ),
+                        )
+                        : Expanded(
+                          child: GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 0.71,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10,
+                                ),
 
-                        ///
-                        ///  changes here
-                        ///
-                        itemCount:
-                            model.upcomingEventsList.length, //in this line
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
+                            ///
+                            ///  changes here
+                            ///
+                            itemCount:
+                                model.upcomingEventsList.length, //in this line
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
 
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            onTap: () {
-                              Get.to(EventsDetailsScreen());
+                            itemBuilder: (BuildContext context, int index) {
+                              return GestureDetector(
+                                onTap: () {
+                                  Get.to(EventsDetailsScreen());
+                                },
+                                child: CustomSearchResultCard(
+                                  eventModel:
+                                      model
+                                          .upcomingEventsList[index], //in this line
+                                ),
+                              );
                             },
-                            child: CustomSearchResultCard(
-                              eventModel:
-                                  model
-                                      .upcomingEventsList[index], //in this line
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                          ),
+                        ),
                   ],
                 ),
               ),

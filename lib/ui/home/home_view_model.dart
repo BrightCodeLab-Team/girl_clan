@@ -16,6 +16,7 @@ class HomeViewModel extends BaseViewModel {
   ///      up coming events
   ///
   List<EventModel> upcomingEventsList = [];
+  List<EventModel> allEventsList = [];
 
   ///
   /// let debug first fetch all events from the database then classify them
@@ -39,7 +40,23 @@ class HomeViewModel extends BaseViewModel {
       }
     } catch (e) {
       debugPrint('Error in init: $e');
-      Get.snackbar('Error', 'Failed to load events');
+      //Get.snackbar('Error', 'Failed to load events');
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  ///
+  ///.  get all events from database
+  ///
+  Future<void> getAllEvents() async {
+    setState(ViewState.busy);
+    try {
+      allEventsList = await db.getAllEvents(eventModel);
+      debugPrint('Successfully fetched ${allEventsList.length} events');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching all events: $e');
     } finally {
       setState(ViewState.idle);
     }
@@ -48,63 +65,6 @@ class HomeViewModel extends BaseViewModel {
   ///
   ///
   ///
-  // List<EventModel> UpComingEventsList = [
-  //   EventModel(
-  //     id: '1',
-  //     eventName: 'Discover the World',
-  //     location: 'location',
-  //     date: '12/03/2024',
-  //     startTime: '45/05',
-  //     category: 'Hiking',
-  //     imageUrl: AppAssets().loginImage,
-  //     joiningPeople: '10',
-  //     availablePeople: '3',
-  //     capacity: '5000',
-  //   ),
-  //   EventModel(
-  //     id: '1',
-  //     eventName: 'Discover the World',
-  //     location: 'location',
-  //     date: '12/03/2024',
-  //     startTime: '45/05',
-  //     category: 'Hiking',
-  //     imageUrl: AppAssets().loginImage,
-  //     joiningPeople: '10',
-  //     availablePeople: '3',
-  //     capacity: '5000',
-  //   ),
-  //   EventModel(
-  //     id: '1',
-  //     eventName: 'Discover the World',
-  //     location: 'location',
-  //     date: '12/03/2024',
-  //     startTime: '45/05',
-  //     category: 'Hiking',
-  //     imageUrl: AppAssets().loginImage,
-  //     joiningPeople: '10',
-  //     availablePeople: '3',
-  //     capacity: '5000',
-  //   ),
-  //   EventModel(
-  //     id: '1',
-  //     eventName: 'Discover the World',
-  //     location: 'location',
-  //     date: '12/03/2024',
-  //     startTime: '45/05',
-  //     category: 'Hiking',
-  //     imageUrl: AppAssets().loginImage,
-  //     joiningPeople: '10',
-  //     availablePeople: '3',
-  //     capacity: '5000',
-  //   ),
-  //   // UpComingEventsCardModel(
-  //   //   title: "urban beast",
-  //   //   date: "12/01/2025",
-  //   //   location: "Tofino, British Co ...",
-  //   //   imageUrl: AppAssets().loginImage,
-  //   //   ratio: "06/10",
-  //   // ),
-  // ];
 
   ///
   ///     top picks
@@ -178,54 +138,7 @@ class HomeViewModel extends BaseViewModel {
       availablePeople: '3',
       capacity: '5000',
     ),
-    EventModel(
-      id: '1',
-      eventName: 'Discover the World',
-      location: 'location',
-      date: '12/03/2024',
-      startTime: '45/05',
-      category: 'Hiking',
-      imageUrl: AppAssets().loginImage,
-      joiningPeople: '10',
-      availablePeople: '3',
-      capacity: '5000',
-    ),
-    EventModel(
-      id: '1',
-      eventName: 'Discover the World',
-      location: 'location',
-      date: '12/03/2024',
-      startTime: '45/05',
-      category: 'Hiking',
-      imageUrl: AppAssets().loginImage,
-      joiningPeople: '10',
-      availablePeople: '3',
-      capacity: '5000',
-    ),
-    EventModel(
-      id: '1',
-      eventName: 'Discover the World',
-      location: 'location',
-      date: '12/03/2024',
-      startTime: '45/05',
-      category: 'Hiking',
-      imageUrl: AppAssets().loginImage,
-      joiningPeople: '10',
-      availablePeople: '3',
-      capacity: '5000',
-    ),
-    EventModel(
-      id: '1',
-      eventName: 'Discover the World',
-      location: 'location',
-      date: '12/03/2024',
-      startTime: '45/05',
-      category: 'Hiking',
-      imageUrl: AppAssets().loginImage,
-      joiningPeople: '10',
-      availablePeople: '3',
-      capacity: '5000',
-    ),
+
     // TopPicksCardModel(
     //   title: "Wanderlight Festival",
     //   imageUrl: AppAssets().loginImage,

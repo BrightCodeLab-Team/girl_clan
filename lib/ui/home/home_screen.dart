@@ -265,6 +265,8 @@ class HomeScreen extends StatelessWidget {
                     ///
                     ///    top picks card
                     ///
+                    ///.   first tab
+                    ///
                     model.selectedTabIndex == 0
                         ? Expanded(
                           child: ListView.builder(
@@ -286,10 +288,18 @@ class HomeScreen extends StatelessWidget {
                             },
                           ),
                         )
+                        ///
+                        ///. second tab
                         : model.selectedTabIndex == 1
                         ? Text('Content for Hiking Tab')
+                        ///
+                        ///. third tab
+                        ///
                         : model.selectedTabIndex == 2
                         ? Text('Content for concert Tab')
+                        ///
+                        ///4th tab
+                        ///
                         : model.selectedTabIndex == 3
                         ? Text('Content for cinema Tab')
                         : Text('no data found'),

@@ -58,6 +58,10 @@ class DatabaseServices {
   //     return [];
   //   }
   // }
+  ///
+  ///
+  ///
+  ///
   Future<List<EventModel>> getUpcomingEvents() async {
     try {
       final currentDate = DateTime.now();
@@ -76,8 +80,8 @@ class DatabaseServices {
       final snapshot =
           await _db
               .collection('events')
-              .where('date', isGreaterThanOrEqualTo: formattedCurrentDate)
-              .where('date', isLessThanOrEqualTo: formattedNextWeekDate)
+              // .where('date', isGreaterThanOrEqualTo: formattedCurrentDate)
+              // .where('date', isLessThanOrEqualTo: formattedNextWeekDate)
               .orderBy('date')
               .get();
 
@@ -109,6 +113,10 @@ class DatabaseServices {
       return [];
     }
   }
+
+  ///
+  ///
+  ///
 
   ///
   ///  get all events from database

@@ -32,7 +32,7 @@ class CustomUpComingEventsCard extends StatelessWidget {
               child: Image.asset(AppAssets().loginImage, fit: BoxFit.cover),
             ),
           ),
-          3.horizontalSpace,
+          7.horizontalSpace,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

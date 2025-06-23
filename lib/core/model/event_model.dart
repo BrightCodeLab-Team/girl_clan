@@ -48,17 +48,17 @@ class EventModel {
   // Factory constructor to create an Event from a Map (useful for persistence)
   factory EventModel.fromJson(Map<String, dynamic> json) {
     return EventModel(
-      id: json['id'],
-      eventName: json['eventName'],
-      location: json['location'],
-      date: json['date'],
-      startTime: json['startTime'],
-      category: json['category'],
-      imageUrl: json['imageUrl'],
-      joiningPeople: json['joiningPeople'] ?? 0,
-      availablePeople: json['availablePeople'] ?? 0,
-      capacity: json['capacity'],
-      description: json['description'],
+      id: json['id'].toString(),
+      eventName: json['eventName'].toString(),
+      location: json['location'].toString(),
+      date: json['date'].toString(),
+      startTime: json['startTime'].toString(),
+      category: json['category'].toString(),
+      imageUrl: json['imageUrl'].toString(),
+      joiningPeople: json['joiningPeople']?.toString() ?? '0',
+      availablePeople: json['availablePeople']?.toString() ?? '0',
+      capacity: json['capacity'].toString(),
+      description: json['description'].toString(),
     );
   }
 }

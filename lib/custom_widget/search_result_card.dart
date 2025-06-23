@@ -61,7 +61,7 @@ class CustomSearchResultCard extends StatelessWidget {
                     // joining people
                     Text(
                       // upComingEventsCardModel.ratio,
-                      "${eventModel.availablePeople}/${eventModel.joiningPeople}",
+                      "${eventModel.availablePeople ?? ''}/${eventModel.joiningPeople ?? ''}",
                       style: style14B.copyWith(
                         color: primaryColor,
                         fontSize: 10,

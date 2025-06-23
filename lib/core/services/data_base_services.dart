@@ -60,17 +60,19 @@ class DatabaseServices {
   // }
   Future<List<EventModel>> getUpcomingEvents() async {
     try {
-      // Get current date and calculate next week's date
       final currentDate = DateTime.now();
       final nextWeekDate = currentDate.add(const Duration(days: 7));
 
-      // Format dates to match your Firestore format (YYYY/MM/DD)
+      // Format dates as strings for comparison (YYYY/MM/DD)
       final formattedCurrentDate =
-          "${currentDate.year}/${currentDate.month}/${currentDate.day}";
+          "${currentDate.year}/${currentDate.month.toString().padLeft(2, '0')}/${currentDate.day.toString().padLeft(2, '0')}";
       final formattedNextWeekDate =
-          "${nextWeekDate.year}/${nextWeekDate.month}/${nextWeekDate.day}";
+          "${nextWeekDate.year}/${nextWeekDate.month.toString().padLeft(2, '0')}/${nextWeekDate.day.toString().padLeft(2, '0')}";
 
-      // Query events between today and next week
+      debugPrint(
+        'Querying events between $formattedCurrentDate and $formattedNextWeekDate',
+      );
+
       final snapshot =
           await _db
               .collection('events')
@@ -79,25 +81,57 @@ class DatabaseServices {
               .orderBy('date')
               .get();
 
-      if (snapshot.docs.isEmpty) {
-        debugPrint('No upcoming events found in Firestore');
-        return [];
+      debugPrint('Found ${snapshot.docs.length} documents');
+
+      final events = <EventModel>[];
+
+      for (var doc in snapshot.docs) {
+        try {
+          final data = doc.data() as Map<String, dynamic>;
+          // Add document ID to the data
+          data['id'] = doc.id;
+
+          debugPrint(
+            'Processing event: ${data['eventName']} on ${data['date']}',
+          );
+
+          final event = EventModel.fromJson(data);
+          events.add(event);
+        } catch (e) {
+          debugPrint('Error processing document ${doc.id}: $e');
+        }
       }
 
-      debugPrint(
-        'Fetched ${snapshot.docs.length} upcoming events from Firestore',
-      );
+      return events;
+    } catch (e, s) {
+      debugPrint('Error in getUpcomingEvents: $e');
+      debugPrint('Stack trace: $s');
+      return [];
+    }
+  }
+
+  ///
+  ///  get all events from database
+  ///
+  Future<List<EventModel>> getAllEvents(EventModel eventModel) async {
+    try {
+      debugPrint('Fetching all events from Firestore...');
+      final snapshot = await _db.collection('events').get();
+
+      debugPrint('Found ${snapshot.docs.length} events');
 
       final events =
           snapshot.docs.map((doc) {
-            debugPrint('Upcoming event data: ${doc.data()}');
-            return EventModel.fromJson(doc.data());
+            final data = doc.data() as Map<String, dynamic>;
+            data['id'] = doc.id; // Include document ID
+            debugPrint('Event data: ${data.toString()}');
+            return EventModel.fromJson(data);
           }).toList();
 
       return events;
     } catch (e, s) {
-      debugPrint('Exception @DatabaseService/getUpcomingEvents: $e');
-      debugPrint(s.toString());
+      debugPrint('Error in getAllEvents: $e');
+      debugPrint('Stack trace: $s');
       return [];
     }
   }

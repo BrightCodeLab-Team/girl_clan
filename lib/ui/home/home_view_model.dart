@@ -7,7 +7,6 @@ import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
 import 'package:girl_clan/locator.dart';
-import 'package:girl_clan/ui/root_screen/root_screen.dart';
 
 class HomeViewModel extends BaseViewModel {
   EventModel eventModel = EventModel();
@@ -19,22 +18,28 @@ class HomeViewModel extends BaseViewModel {
   List<EventModel> upcomingEventsList = [];
 
   ///
-  ///
+  /// let debug first fetch all events from the database then classify them
   ///
 
   Future<void> init() async {
     setState(ViewState.busy);
     try {
       upcomingEventsList = await db.getUpcomingEvents();
-      debugPrint('Fetched ${upcomingEventsList.length} events in ViewModel');
+      debugPrint('Successfully fetched ${upcomingEventsList.length} events');
+
+      // Debug print all event names and dates
+      for (var event in upcomingEventsList) {
+        debugPrint('Event: ${event.eventName}, Date: ${event.date}');
+      }
+
       notifyListeners();
 
       if (upcomingEventsList.isEmpty) {
-        Get.snackbar('No Events', "No upcoming events found");
+        Get.snackbar('Info', 'No upcoming events found');
       }
     } catch (e) {
-      debugPrint('Error initializing HomeViewModel: $e');
-      Get.snackbar('Error', "Failed to load events");
+      debugPrint('Error in init: $e');
+      Get.snackbar('Error', 'Failed to load events');
     } finally {
       setState(ViewState.idle);
     }

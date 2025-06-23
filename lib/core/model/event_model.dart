@@ -40,6 +40,8 @@ class EventModel {
       'imageUrl': imageUrl ?? '',
       'joiningPeople': joiningPeople ?? 0,
       'availablePeople': availablePeople ?? 0,
+      'description': description ?? '',
+      'capacity': capacity ?? '', // Default to 0
     };
   }
 
@@ -55,6 +57,8 @@ class EventModel {
       imageUrl: json['imageUrl'],
       joiningPeople: json['joiningPeople'] ?? 0,
       availablePeople: json['availablePeople'] ?? 0,
+      capacity: json['capacity'],
+      description: json['description'],
     );
   }
 }

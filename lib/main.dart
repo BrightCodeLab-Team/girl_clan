@@ -6,10 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/firebase_options.dart';
 import 'package:girl_clan/locator.dart';
-import 'package:girl_clan/ui/home/home_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
-import 'package:girl_clan/ui/home/search_result_screen.dart';
-import 'package:girl_clan/ui/home/up_coming_events.dart';
 import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:girl_clan/ui/root_screen/root_view_model.dart';
 
@@ -56,7 +53,7 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               useMaterial3: true,
             ),
-            home: HomeScreen(),
+            home: RootScreen(),
             // StreamBuilder(
             //   stream: FirebaseAuth.instance.authStateChanges(),
             //   builder: (context, snapshot) {
@@ -75,51 +72,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-/*
-  Future<void> LoginUser() async {
-    final User = auth.currentUser;
-    try {
-      // setState(ViewState.busy);
-      loading = true;
-      notifyListeners();
-
-      await auth
-          .signInWithEmailAndPassword(
-              email: emailController.text, password: passwordController.text)
-          .then(
-        (value) {
-          // setState(ViewState.idle);
-          loading = false;
-          notifyListeners();
-
-        Get.snackbar("Login Done","user verified" );
-          Get.to(
-          RootScreen()
-          );
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => HomeScreen(),
-          //   ),
-          // );
-        },
-      ).onError(
-        (error, stackTrace) {
-          //  setState(ViewState.idle);
-          loading = false;
-          notifyListeners();
-
-          // normal print statement slow app use debug print
-          debugPrint('login failed');
-         Get.snackbar("Error","Login Failed");
-        },
-      );
-    } catch (e) {
-      // for de bugging this will be display in console
-      print("User can not found $e");
-      // setState(ViewState.idle);
-      loading = false;
-      notifyListeners();
-    }
-  }
-  */

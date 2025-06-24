@@ -3,8 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/model/event_model.dart';
-import 'package:girl_clan/core/model/home_top_picks.dart';
-import 'package:girl_clan/core/model/event_model.dart';
 import '../core/model/event_model.dart' show EventModel;
 
 class CustomHomeTopPickEventsCard extends StatelessWidget {

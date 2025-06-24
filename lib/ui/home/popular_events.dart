@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/custom_widget/app_bar.dart';
 import 'package:girl_clan/custom_widget/home_top_pick_events.dart';
 import 'package:girl_clan/ui/home/events_details_screen.dart';
@@ -57,9 +58,28 @@ class PopularEventsScreen extends StatelessWidget {
                         5.horizontalSpace,
                         CustomTabWidget(
                           icon: Icons.music_note, // Concert icon
-                          text: 'Cinema',
+                          text: 'Party',
                           isSelected: model.selectedTabIndex == 3,
                           onTap: () => model.selectedTabFunction(3),
+                        ),
+
+                        CustomTabWidget(
+                          icon: Icons.music_note, // Concert icon
+                          text: 'Workshop',
+                          isSelected: model.selectedTabIndex == 4,
+                          onTap: () => model.selectedTabFunction(4),
+                        ),
+                        CustomTabWidget(
+                          icon: Icons.music_note, // Concert icon
+                          text: 'Sports',
+                          isSelected: model.selectedTabIndex == 5,
+                          onTap: () => model.selectedTabFunction(5),
+                        ),
+                        CustomTabWidget(
+                          icon: Icons.music_note, // Concert icon
+                          text: 'Art Exhibitions',
+                          isSelected: model.selectedTabIndex == 6,
+                          onTap: () => model.selectedTabFunction(6),
                         ),
                       ],
                     ),
@@ -76,10 +96,7 @@ class PopularEventsScreen extends StatelessWidget {
                                 ? Center(
                                   child: Text(
                                     'No Events found',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: style18B.copyWith(),
                                   ),
                                 )
                                 : ListView.builder(
@@ -105,13 +122,225 @@ class PopularEventsScreen extends StatelessWidget {
                                   },
                                 ),
                       )
+                      ///
+                      /// . hiking tab
+                      ///
                       : model.selectedTabIndex == 1
-                      ? Text('Content for Hiking Tab')
-                      : model.selectedTabIndex == 2
-                      ? Text('Content for concert Tab')
+                      ? Expanded(
+                        child:
+                            model.hikingList.isEmpty
+                                ? Center(
+                                  child: Text(
+                                    'No Hiking Events found',
+                                    style: style18B.copyWith(),
+                                  ),
+                                )
+                                : ListView.builder(
+                                  itemCount: model.hikingList.length,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  itemBuilder: (
+                                    BuildContext context,
+                                    int index,
+                                  ) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 10.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Get.to(EventsDetailsScreen());
+                                        },
+                                        child: CustomHomeTopPickEventsCard(
+                                          eventModel: model.hikingList[index],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                      )
+                      ///
+                      ///. party tab
+                      ///
                       : model.selectedTabIndex == 3
-                      ? Text('Content for cinema Tab')
-                      : Text('no data found'),
+                      ? Expanded(
+                        child:
+                            model.partyList.isEmpty
+                                ? Center(
+                                  child: Text(
+                                    'No Party Events found',
+                                    style: style18B.copyWith(),
+                                  ),
+                                )
+                                : ListView.builder(
+                                  itemCount: model.partyList.length,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  itemBuilder: (
+                                    BuildContext context,
+                                    int index,
+                                  ) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 10.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Get.to(EventsDetailsScreen());
+                                        },
+                                        child: CustomHomeTopPickEventsCard(
+                                          eventModel: model.partyList[index],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                      )
+                      ///
+                      ///.  concert tab
+                      ///
+                      : model.selectedTabIndex == 2
+                      ? Expanded(
+                        child:
+                            model.concertList.isEmpty
+                                ? Center(
+                                  child: Text(
+                                    'No Concert Events found',
+                                    style: style18B.copyWith(),
+                                  ),
+                                )
+                                : ListView.builder(
+                                  itemCount: model.concertList.length,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  itemBuilder: (
+                                    BuildContext context,
+                                    int index,
+                                  ) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 10.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Get.to(EventsDetailsScreen());
+                                        },
+                                        child: CustomHomeTopPickEventsCard(
+                                          eventModel: model.concertList[index],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                      )
+                      ///
+                      ///. workshop tab
+                      ///
+                      : model.selectedTabIndex == 4
+                      ? Expanded(
+                        child:
+                            model.workshopList.isEmpty
+                                ? Center(
+                                  child: Text(
+                                    'No Workshop Events found',
+                                    style: style18B.copyWith(),
+                                  ),
+                                )
+                                : ListView.builder(
+                                  itemCount: model.workshopList.length,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  itemBuilder: (
+                                    BuildContext context,
+                                    int index,
+                                  ) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 10.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Get.to(EventsDetailsScreen());
+                                        },
+                                        child: CustomHomeTopPickEventsCard(
+                                          eventModel: model.workshopList[index],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                      )
+                      ///
+                      ///. sports tab
+                      ///
+                      : model.selectedTabIndex == 5
+                      ? Expanded(
+                        child:
+                            model.sportsList.isEmpty
+                                ? Center(
+                                  child: Text(
+                                    'No Sports Events found',
+                                    style: style18B.copyWith(),
+                                  ),
+                                )
+                                : ListView.builder(
+                                  itemCount: model.sportsList.length,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  itemBuilder: (
+                                    BuildContext context,
+                                    int index,
+                                  ) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 10.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Get.to(EventsDetailsScreen());
+                                        },
+                                        child: CustomHomeTopPickEventsCard(
+                                          eventModel: model.sportsList[index],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                      )
+                      ///
+                      ///. art exhibitions tab
+                      ///
+                      : model.selectedTabIndex == 6
+                      ? Expanded(
+                        child:
+                            model.artExhibitionsList.isEmpty
+                                ? Center(
+                                  child: Text(
+                                    'No Art Exhibitions Events found',
+                                    style: style18B.copyWith(),
+                                  ),
+                                )
+                                : ListView.builder(
+                                  itemCount: model.artExhibitionsList.length,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  itemBuilder: (
+                                    BuildContext context,
+                                    int index,
+                                  ) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 10.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Get.to(EventsDetailsScreen());
+                                        },
+                                        child: CustomHomeTopPickEventsCard(
+                                          eventModel:
+                                              model.artExhibitionsList[index],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                      )
+                      : Expanded(
+                        child: Center(
+                          child: Text(
+                            'No data found',
+                            style: style18B.copyWith(),
+                          ),
+                        ),
+                      ),
                 ],
               ),
             ),

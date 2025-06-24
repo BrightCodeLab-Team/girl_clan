@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:get/route_manager.dart';
-import 'package:girl_clan/core/constants/app_assets.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
@@ -24,6 +22,9 @@ class HomeViewModel extends BaseViewModel {
   List<EventModel> sportsList = [];
   List<EventModel> artExhibitionsList = [];
 
+  ///
+  ///. constructor if not use then no data fetching
+  ///
   HomeViewModel() {
     upComingEvents();
     getAllEvents();
@@ -33,6 +34,21 @@ class HomeViewModel extends BaseViewModel {
     getWorkShopEvents();
     getSportsEvents();
     getArtExhibitionsEvents();
+  }
+
+  ///
+  ///. refresh all events to get latest data
+  ///
+  Future<void> refreshAllEvents() async {
+    await upComingEvents();
+    await getAllEvents();
+    await getHikingEvents();
+    await getConcertEvents();
+    await getPartyEvents();
+    await getWorkShopEvents();
+    await getSportsEvents();
+    await getArtExhibitionsEvents();
+    notifyListeners();
   }
 
   ///
@@ -85,11 +101,11 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getHikingEvents() async {
     setState(ViewState.busy);
     try {
-      allEventsList = await db.getHikingEvents(eventModel);
-      debugPrint('Successfully fetched ${allEventsList.length} events');
+      hikingList = await db.getHikingEvents(eventModel);
+      debugPrint('Successfully fetched ${hikingList.length} events');
       notifyListeners();
     } catch (e) {
-      debugPrint('Error fetching all events: $e');
+      debugPrint('Error fetching hiking events: $e');
     } finally {
       setState(ViewState.idle);
     }
@@ -101,11 +117,11 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getConcertEvents() async {
     setState(ViewState.busy);
     try {
-      allEventsList = await db.getConcertEvents(eventModel);
-      debugPrint('Successfully fetched ${allEventsList.length} events');
+      concertList = await db.getConcertEvents(eventModel);
+      debugPrint('Successfully fetched ${concertList.length} events');
       notifyListeners();
     } catch (e) {
-      debugPrint('Error fetching all events: $e');
+      debugPrint('Error fetching concert events: $e');
     } finally {
       setState(ViewState.idle);
     }
@@ -117,11 +133,11 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getPartyEvents() async {
     setState(ViewState.busy);
     try {
-      allEventsList = await db.getPartyEvents(eventModel);
-      debugPrint('Successfully fetched ${allEventsList.length} events');
+      partyList = await db.getPartyEvents(eventModel);
+      debugPrint('Successfully fetched ${partyList.length} events');
       notifyListeners();
     } catch (e) {
-      debugPrint('Error fetching all events: $e');
+      debugPrint('Error fetching party events: $e');
     } finally {
       setState(ViewState.idle);
     }
@@ -133,11 +149,11 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getWorkShopEvents() async {
     setState(ViewState.busy);
     try {
-      allEventsList = await db.getWorkShopEvents(eventModel);
-      debugPrint('Successfully fetched ${allEventsList.length} events');
+      workshopList = await db.getWorkShopEvents(eventModel);
+      debugPrint('Successfully fetched ${workshopList.length} events');
       notifyListeners();
     } catch (e) {
-      debugPrint('Error fetching all events: $e');
+      debugPrint('Error fetching work shop events: $e');
     } finally {
       setState(ViewState.idle);
     }
@@ -149,11 +165,11 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getSportsEvents() async {
     setState(ViewState.busy);
     try {
-      allEventsList = await db.getSportsEvents(eventModel);
-      debugPrint('Successfully fetched ${allEventsList.length} events');
+      sportsList = await db.getSportsEvents(eventModel);
+      debugPrint('Successfully fetched ${sportsList.length} events');
       notifyListeners();
     } catch (e) {
-      debugPrint('Error fetching all events: $e');
+      debugPrint('Error fetching sports events: $e');
     } finally {
       setState(ViewState.idle);
     }
@@ -165,11 +181,11 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getArtExhibitionsEvents() async {
     setState(ViewState.busy);
     try {
-      allEventsList = await db.getArtExhibitionsEvents(eventModel);
-      debugPrint('Successfully fetched ${allEventsList.length} events');
+      artExhibitionsList = await db.getArtExhibitionsEvents(eventModel);
+      debugPrint('Successfully fetched ${artExhibitionsList.length} events');
       notifyListeners();
     } catch (e) {
-      debugPrint('Error fetching all events: $e');
+      debugPrint('Error fetching art exhibitions events: $e');
     } finally {
       setState(ViewState.idle);
     }

@@ -27,9 +27,17 @@ class HomeScreen extends StatelessWidget {
           (context, model, child) => Scaffold(
             floatingActionButton: FloatingActionButton(
               backgroundColor: primaryColor,
-              onPressed: () {
-                Get.to(() => AddEventScreen());
+              onPressed: () async {
+                final result = await Get.to(() => const AddEventScreen());
+                if (result == true) {
+                  // Refresh all event data
+                  Provider.of<HomeViewModel>(
+                    context,
+                    listen: false,
+                  ).refreshAllEvents();
+                }
               },
+
               child: Icon(Icons.add, color: whiteColor),
             ),
             appBar: AppBar(
@@ -266,7 +274,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
 
-                  20.verticalSpace, // Adjus
+                  20.verticalSpace, //
                   ///
                   ///    top picks card
                   ///
@@ -311,7 +319,7 @@ class HomeScreen extends StatelessWidget {
                       : model.selectedTabIndex == 1
                       ? Expanded(
                         child:
-                            model.allEventsList.isEmpty
+                            model.hikingList.isEmpty
                                 ? Center(
                                   child: Text(
                                     'No Hiking Events found',
@@ -319,7 +327,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 )
                                 : ListView.builder(
-                                  itemCount: model.allEventsList.length,
+                                  itemCount: model.hikingList.length,
                                   shrinkWrap: true,
                                   scrollDirection: Axis.vertical,
                                   itemBuilder: (
@@ -343,10 +351,10 @@ class HomeScreen extends StatelessWidget {
                       ///
                       ///. party tab
                       ///
-                      : model.selectedTabIndex == 2
+                      : model.selectedTabIndex == 3
                       ? Expanded(
                         child:
-                            model.allEventsList.isEmpty
+                            model.partyList.isEmpty
                                 ? Center(
                                   child: Text(
                                     'No Party Events found',
@@ -354,7 +362,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 )
                                 : ListView.builder(
-                                  itemCount: model.allEventsList.length,
+                                  itemCount: model.partyList.length,
                                   shrinkWrap: true,
                                   scrollDirection: Axis.vertical,
                                   itemBuilder: (
@@ -376,12 +384,12 @@ class HomeScreen extends StatelessWidget {
                                 ),
                       )
                       ///
-                      ///.  Party tab
+                      ///.  concert tab
                       ///
-                      : model.selectedTabIndex == 3
+                      : model.selectedTabIndex == 2
                       ? Expanded(
                         child:
-                            model.allEventsList.isEmpty
+                            model.concertList.isEmpty
                                 ? Center(
                                   child: Text(
                                     'No Concert Events found',
@@ -389,7 +397,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 )
                                 : ListView.builder(
-                                  itemCount: model.allEventsList.length,
+                                  itemCount: model.concertList.length,
                                   shrinkWrap: true,
                                   scrollDirection: Axis.vertical,
                                   itemBuilder: (
@@ -416,7 +424,7 @@ class HomeScreen extends StatelessWidget {
                       : model.selectedTabIndex == 4
                       ? Expanded(
                         child:
-                            model.allEventsList.isEmpty
+                            model.workshopList.isEmpty
                                 ? Center(
                                   child: Text(
                                     'No Workshop Events found',
@@ -424,7 +432,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 )
                                 : ListView.builder(
-                                  itemCount: model.allEventsList.length,
+                                  itemCount: model.workshopList.length,
                                   shrinkWrap: true,
                                   scrollDirection: Axis.vertical,
                                   itemBuilder: (
@@ -451,7 +459,7 @@ class HomeScreen extends StatelessWidget {
                       : model.selectedTabIndex == 5
                       ? Expanded(
                         child:
-                            model.allEventsList.isEmpty
+                            model.sportsList.isEmpty
                                 ? Center(
                                   child: Text(
                                     'No Sports Events found',
@@ -459,7 +467,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 )
                                 : ListView.builder(
-                                  itemCount: model.allEventsList.length,
+                                  itemCount: model.sportsList.length,
                                   shrinkWrap: true,
                                   scrollDirection: Axis.vertical,
                                   itemBuilder: (
@@ -486,7 +494,7 @@ class HomeScreen extends StatelessWidget {
                       : model.selectedTabIndex == 6
                       ? Expanded(
                         child:
-                            model.allEventsList.isEmpty
+                            model.artExhibitionsList.isEmpty
                                 ? Center(
                                   child: Text(
                                     'No Art Exhibitions Events found',
@@ -494,7 +502,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 )
                                 : ListView.builder(
-                                  itemCount: model.allEventsList.length,
+                                  itemCount: model.artExhibitionsList.length,
                                   shrinkWrap: true,
                                   scrollDirection: Axis.vertical,
                                   itemBuilder: (

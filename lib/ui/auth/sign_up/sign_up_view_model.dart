@@ -1,11 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
-import 'package:girl_clan/ui/root_screen/root_screen.dart';
 
 class SignUpViewModel extends BaseViewModel {
   bool isLoading = false;
@@ -118,9 +115,9 @@ class SignUpViewModel extends BaseViewModel {
     try {
       final userdata = await FirebaseFirestore.instance
           .collection('app-user')
-          .doc(user!.uid)
+          .doc(user.uid)
           .set({
-            'id': user!.uid,
+            'id': user.uid,
             'firstName': firstNameController.text.trim(),
             'surName': surNameController.text.trim(),
             'email': emailController.text.trim(),

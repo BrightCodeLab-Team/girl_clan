@@ -6,8 +6,6 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/custom_widget/search_result_card.dart';
-import 'package:girl_clan/ui/home/search_screen.dart';
-
 import 'package:girl_clan/ui/home/events_details_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:provider/provider.dart';
@@ -17,100 +15,114 @@ class SearchResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the existing HomeViewModel from the parent widget tree
-    final homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
-
-    return Scaffold(
-      appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 15.0),
-          child: CircleAvatar(
-            backgroundColor: thinGreyColor,
-            child: GestureDetector(
-              onTap: () => navigator!.pop(context),
-              child: Icon(Icons.arrow_back_ios_new_outlined),
-            ),
-          ),
-        ),
-        title: TextFormField(
-          decoration: customHomeAuthField.copyWith(
-            suffixIcon: Padding(
-              padding: EdgeInsets.all(10),
-              child: CircleAvatar(
-                backgroundColor: whiteColor,
-                child: IconButton(
-                  icon: Icon(Icons.tune),
-                  onPressed: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (BuildContext context) {
-                        return CustomFilterBottomSheet();
-                      },
-                    );
-                  },
+    return Consumer<HomeViewModel>(
+      builder:
+          (context, model, child) => Scaffold(
+            appBar: AppBar(
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 15.0),
+                child: CircleAvatar(
+                  backgroundColor: thinGreyColor,
+                  child: GestureDetector(
+                    onTap: () {
+                      try {
+                        Navigator.maybePop(context);
+                      } catch (e) {
+                        debugPrint('Navigation error: $e');
+                        Navigator.pop(context); // Fallback
+                      }
+                    },
+                    child: Icon(Icons.arrow_back_ios_new_outlined),
+                  ),
+                ),
+              ),
+              title: TextFormField(
+                decoration: customHomeAuthField.copyWith(
+                  suffixIcon: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: CircleAvatar(
+                      backgroundColor: whiteColor,
+                      child: IconButton(
+                        icon: Icon(Icons.tune),
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (BuildContext context) {
+                              return CustomFilterBottomSheet();
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            10.verticalSpace,
-            // Search found count
-            Row(
-              children: [
-                Text('search found:', style: style14.copyWith(fontSize: 12)),
-                2.horizontalSpace,
-                Text(
-                  homeViewModel.upcomingEventsList.length <= 9
-                      ? '0${homeViewModel.upcomingEventsList.length}'
-                      : homeViewModel.upcomingEventsList.length.toString(),
-                  style: style14B.copyWith(fontSize: 13, color: primaryColor),
-                ),
-              ],
-            ),
-            10.verticalSpace,
+            body: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  10.verticalSpace,
+                  // Search found count
+                  Row(
+                    children: [
+                      Text(
+                        'search found:',
+                        style: style14.copyWith(fontSize: 12),
+                      ),
+                      2.horizontalSpace,
+                      Text(
+                        model.upcomingEventsList.length <= 9
+                            ? '0${model.upcomingEventsList.length}'
+                            : model.upcomingEventsList.length.toString(),
+                        style: style14B.copyWith(
+                          fontSize: 13,
+                          color: primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  10.verticalSpace,
 
-            // Search results grid
-            homeViewModel.upcomingEventsList.isEmpty
-                ? Center(
-                  child: Text(
-                    'No events found',
-                    style: style14.copyWith(fontSize: 16),
+                  // Search results grid
+                  Expanded(
+                    child:
+                        model.upcomingEventsList.isEmpty
+                            ? Center(
+                              child: Text(
+                                'No events found',
+                                style: style14.copyWith(fontSize: 16),
+                              ),
+                            )
+                            : GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    childAspectRatio: 0.8,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
+                                  ),
+                              itemCount: model.upcomingEventsList.length,
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () => Get.to(EventsDetailsScreen()),
+                                  child: CustomSearchResultCard(
+                                    eventModel: model.upcomingEventsList[index],
+                                  ),
+                                );
+                              },
+                            ),
                   ),
-                )
-                : Expanded(
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.8,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                        ),
-                    itemCount: homeViewModel.upcomingEventsList.length,
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () => Get.to(EventsDetailsScreen()),
-                        child: CustomSearchResultCard(
-                          eventModel: homeViewModel.upcomingEventsList[index],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-          ],
-        ),
-      ),
+                ],
+              ),
+            ),
+          ),
     );
   }
 }

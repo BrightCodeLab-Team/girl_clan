@@ -91,7 +91,7 @@ class DatabaseServices {
 
       for (var doc in snapshot.docs) {
         try {
-          final data = doc.data() as Map<String, dynamic>;
+          final data = doc.data();
           // Add document ID to the data
           data['id'] = doc.id;
 
@@ -130,7 +130,7 @@ class DatabaseServices {
 
       final events =
           snapshot.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
+            final data = doc.data();
             data['id'] = doc.id; // Include document ID
             debugPrint('Event data: ${data.toString()}');
             return EventModel.fromJson(data);
@@ -139,6 +139,248 @@ class DatabaseServices {
       return events;
     } catch (e, s) {
       debugPrint('Error in getAllEvents: $e');
+      debugPrint('Stack trace: $s');
+      return [];
+    }
+  }
+
+  ///
+  ///  get hiking events from database
+  ///
+  Future<List<EventModel>> getHikingEvents(EventModel eventModel) async {
+    try {
+      final snapshot =
+          await _db
+              .collection('events')
+              .where('category', isEqualTo: 'Hiking')
+              .get();
+
+      debugPrint('Found ${snapshot.docs.length} documents');
+
+      final events = <EventModel>[];
+
+      for (var doc in snapshot.docs) {
+        try {
+          final data = doc.data();
+          // Add document ID to the data
+          data['id'] = doc.id;
+
+          debugPrint(
+            'Processing event: ${data['eventName']} on ${data['date']}',
+          );
+
+          final event = EventModel.fromJson(data);
+          events.add(event);
+        } catch (e) {
+          debugPrint('Error processing document ${doc.id}: $e');
+        }
+      }
+
+      return events;
+    } catch (e, s) {
+      debugPrint('Error in getUpcomingEvents: $e');
+      debugPrint('Stack trace: $s');
+      return [];
+    }
+  }
+
+  ///
+  ///. get concert events from database
+  ///
+  Future<List<EventModel>> getConcertEvents(EventModel eventModel) async {
+    try {
+      final snapshot =
+          await _db
+              .collection('events')
+              .where('category', isEqualTo: 'Concert')
+              .get();
+
+      debugPrint('Found ${snapshot.docs.length} documents');
+
+      final events = <EventModel>[];
+
+      for (var doc in snapshot.docs) {
+        try {
+          final data = doc.data();
+          // Add document ID to the data
+          data['id'] = doc.id;
+
+          debugPrint(
+            'Processing event: ${data['eventName']} on ${data['date']}',
+          );
+
+          final event = EventModel.fromJson(data);
+          events.add(event);
+        } catch (e) {
+          debugPrint('Error processing document ${doc.id}: $e');
+        }
+      }
+
+      return events;
+    } catch (e, s) {
+      debugPrint('Error in getUpcomingEvents: $e');
+      debugPrint('Stack trace: $s');
+      return [];
+    }
+  }
+
+  ///
+  ///. get party events from database
+  ///
+  Future<List<EventModel>> getPartyEvents(EventModel eventModel) async {
+    try {
+      final snapshot =
+          await _db
+              .collection('events')
+              .where('category', isEqualTo: 'Party')
+              .get();
+
+      debugPrint('Found ${snapshot.docs.length} documents');
+
+      final events = <EventModel>[];
+
+      for (var doc in snapshot.docs) {
+        try {
+          final data = doc.data();
+          // Add document ID to the data
+          data['id'] = doc.id;
+
+          debugPrint(
+            'Processing event: ${data['eventName']} on ${data['date']}',
+          );
+
+          final event = EventModel.fromJson(data);
+          events.add(event);
+        } catch (e) {
+          debugPrint('Error processing document ${doc.id}: $e');
+        }
+      }
+
+      return events;
+    } catch (e, s) {
+      debugPrint('Error in getUpcomingEvents: $e');
+      debugPrint('Stack trace: $s');
+      return [];
+    }
+  }
+
+  ///
+  ///. get Workshop events from database
+  ///
+  Future<List<EventModel>> getWorkShopEvents(EventModel eventModel) async {
+    try {
+      final snapshot =
+          await _db
+              .collection('events')
+              .where('category', isEqualTo: 'Workshop')
+              .get();
+
+      debugPrint('Found ${snapshot.docs.length} documents');
+
+      final events = <EventModel>[];
+
+      for (var doc in snapshot.docs) {
+        try {
+          final data = doc.data();
+          // Add document ID to the data
+          data['id'] = doc.id;
+
+          debugPrint(
+            'Processing event: ${data['eventName']} on ${data['date']}',
+          );
+
+          final event = EventModel.fromJson(data);
+          events.add(event);
+        } catch (e) {
+          debugPrint('Error processing document ${doc.id}: $e');
+        }
+      }
+
+      return events;
+    } catch (e, s) {
+      debugPrint('Error in getUpcomingEvents: $e');
+      debugPrint('Stack trace: $s');
+      return [];
+    }
+  }
+
+  ///
+  ///. get sports events from database
+  ///
+  Future<List<EventModel>> getSportsEvents(EventModel eventModel) async {
+    try {
+      final snapshot =
+          await _db
+              .collection('events')
+              .where('category', isEqualTo: 'Sports')
+              .get();
+
+      debugPrint('Found ${snapshot.docs.length} documents');
+
+      final events = <EventModel>[];
+
+      for (var doc in snapshot.docs) {
+        try {
+          final data = doc.data();
+          // Add document ID to the data
+          data['id'] = doc.id;
+
+          debugPrint(
+            'Processing event: ${data['eventName']} on ${data['date']}',
+          );
+
+          final event = EventModel.fromJson(data);
+          events.add(event);
+        } catch (e) {
+          debugPrint('Error processing document ${doc.id}: $e');
+        }
+      }
+
+      return events;
+    } catch (e, s) {
+      debugPrint('Error in getUpcomingEvents: $e');
+      debugPrint('Stack trace: $s');
+      return [];
+    }
+  }
+
+  ///
+  ///. get Art Exhibitions events from database
+  ///
+  Future<List<EventModel>> getArtExhibitionsEvents(
+    EventModel eventModel,
+  ) async {
+    try {
+      final snapshot =
+          await _db
+              .collection('events')
+              .where('category', isEqualTo: 'ArtExhibitions')
+              .get();
+
+      debugPrint('Found ${snapshot.docs.length} documents');
+
+      final events = <EventModel>[];
+
+      for (var doc in snapshot.docs) {
+        try {
+          final data = doc.data();
+          // Add document ID to the data
+          data['id'] = doc.id;
+
+          debugPrint(
+            'Processing event: ${data['eventName']} on ${data['date']}',
+          );
+
+          final event = EventModel.fromJson(data);
+          events.add(event);
+        } catch (e) {
+          debugPrint('Error processing document ${doc.id}: $e');
+        }
+      }
+
+      return events;
+    } catch (e, s) {
+      debugPrint('Error in getUpcomingEvents: $e');
       debugPrint('Stack trace: $s');
       return [];
     }

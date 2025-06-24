@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:girl_clan/core/constants/app_assets.dart';
 
 class EventModel {
   final currentUser = FirebaseAuth.instance.currentUser;
@@ -37,7 +38,7 @@ class EventModel {
       'date': date ?? '',
       'startTime': startTime ?? '',
       'category': category ?? '',
-      'imageUrl': imageUrl ?? '',
+      'imageUrl': imageUrl ?? AppAssets().loginImage,
       'joiningPeople': joiningPeople ?? 0,
       'availablePeople': availablePeople ?? 0,
       'description': description ?? '',

@@ -17,12 +17,29 @@ class HomeViewModel extends BaseViewModel {
   ///
   List<EventModel> upcomingEventsList = [];
   List<EventModel> allEventsList = [];
+  List<EventModel> hikingList = [];
+  List<EventModel> concertList = [];
+  List<EventModel> partyList = [];
+  List<EventModel> workshopList = [];
+  List<EventModel> sportsList = [];
+  List<EventModel> artExhibitionsList = [];
+
+  HomeViewModel() {
+    upComingEvents();
+    getAllEvents();
+    getHikingEvents();
+    getConcertEvents();
+    getPartyEvents();
+    getWorkShopEvents();
+    getSportsEvents();
+    getArtExhibitionsEvents();
+  }
 
   ///
   /// let debug first fetch all events from the database then classify them
   ///
 
-  Future<void> init() async {
+  Future<void> upComingEvents() async {
     setState(ViewState.busy);
     try {
       upcomingEventsList = await db.getUpcomingEvents();
@@ -63,89 +80,107 @@ class HomeViewModel extends BaseViewModel {
   }
 
   ///
+  ///. hiking events
   ///
-  ///
+  Future<void> getHikingEvents() async {
+    setState(ViewState.busy);
+    try {
+      allEventsList = await db.getHikingEvents(eventModel);
+      debugPrint('Successfully fetched ${allEventsList.length} events');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching all events: $e');
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
 
   ///
-  ///     top picks
+  ///. concert events
+  ///
+  Future<void> getConcertEvents() async {
+    setState(ViewState.busy);
+    try {
+      allEventsList = await db.getConcertEvents(eventModel);
+      debugPrint('Successfully fetched ${allEventsList.length} events');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching all events: $e');
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  ///
+  ///. party events
+  ///
+  Future<void> getPartyEvents() async {
+    setState(ViewState.busy);
+    try {
+      allEventsList = await db.getPartyEvents(eventModel);
+      debugPrint('Successfully fetched ${allEventsList.length} events');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching all events: $e');
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  ///
+  ///. workshop events
+  ///
+  Future<void> getWorkShopEvents() async {
+    setState(ViewState.busy);
+    try {
+      allEventsList = await db.getWorkShopEvents(eventModel);
+      debugPrint('Successfully fetched ${allEventsList.length} events');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching all events: $e');
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  ///
+  ///. sports events
+  ///
+  Future<void> getSportsEvents() async {
+    setState(ViewState.busy);
+    try {
+      allEventsList = await db.getSportsEvents(eventModel);
+      debugPrint('Successfully fetched ${allEventsList.length} events');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching all events: $e');
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  ///
+  ///. art exhibitions events
+  ///
+  Future<void> getArtExhibitionsEvents() async {
+    setState(ViewState.busy);
+    try {
+      allEventsList = await db.getArtExhibitionsEvents(eventModel);
+      debugPrint('Successfully fetched ${allEventsList.length} events');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching all events: $e');
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  ///
+  ///     tabs
   ///
   int selectedTabIndex = 0;
   selectedTabFunction(index) {
     selectedTabIndex = index;
     notifyListeners();
   }
-
-  ///
-  ///
-  List<EventModel> TopPickEventsList = [
-    EventModel(
-      id: '1',
-      eventName: 'Discover the World',
-      location: 'location',
-      date: '12/03/2024',
-      startTime: '45/05',
-      category: 'Hiking',
-      imageUrl: AppAssets().loginImage,
-      joiningPeople: '10',
-      availablePeople: '3',
-      capacity: '5000',
-    ),
-    EventModel(
-      id: '1',
-      eventName: 'Discover the World',
-      location: 'location',
-      date: '12/03/2024',
-      startTime: '45/05',
-      category: 'Hiking',
-      imageUrl: AppAssets().loginImage,
-      joiningPeople: '10',
-      availablePeople: '3',
-      capacity: '5000',
-    ),
-    EventModel(
-      id: '1',
-      eventName: 'Discover the World',
-      location: 'location',
-      date: '12/03/2024',
-      startTime: '45/05',
-      category: 'Hiking',
-      imageUrl: AppAssets().loginImage,
-      joiningPeople: '10',
-      availablePeople: '3',
-      capacity: '5000',
-    ),
-    EventModel(
-      id: '1',
-      eventName: 'Discover the World',
-      location: 'location',
-      date: '12/03/2024',
-      startTime: '45/05',
-      category: 'Hiking',
-      imageUrl: AppAssets().loginImage,
-      joiningPeople: '10',
-      availablePeople: '3',
-      capacity: '5000',
-    ),
-    EventModel(
-      id: '1',
-      eventName: 'Discover the World',
-      location: 'location',
-      date: '12/03/2024',
-      startTime: '45/05',
-      category: 'Hiking',
-      imageUrl: AppAssets().loginImage,
-      joiningPeople: '10',
-      availablePeople: '3',
-      capacity: '5000',
-    ),
-
-    // TopPicksCardModel(
-    //   title: "Wanderlight Festival",
-    //   imageUrl: AppAssets().loginImage,
-    //   category: 'Hiking',
-    //   location: 'Northern Mountains',
-    //   joined: '12/25 Joined',
-    //   date: '12/12/2025',
-    // ),
-  ];
 }

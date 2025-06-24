@@ -19,7 +19,7 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
       width: double.infinity, // Take full width
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage(eventModel.imageUrl ?? ""),
+          image: NetworkImage(eventModel.imageUrl ?? ""),
           fit: BoxFit.cover,
         ),
         color: thinGreyColor, // Background color

@@ -4,168 +4,178 @@ import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/app_assets.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
+import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:girl_clan/ui/interests/interest_screen.dart';
 import 'package:girl_clan/ui/notification_screen/notification_screen.dart';
 import 'package:girl_clan/ui/password/Change_Password_Screen.dart';
 import 'package:girl_clan/ui/password/privacy_policy_screen.dart';
 import 'package:girl_clan/ui/profile/my_profile_screen.dart';
+import 'package:girl_clan/ui/profile/profile_view_model.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: whiteColor,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              width: 375.w,
-              height: 234.h,
-
-              decoration: BoxDecoration(
-                color: blackColor,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(40.r),
-                  bottomRight: Radius.circular(40.r),
-                ),
-              ),
+    return Consumer2<HomeViewModel, ProfileViewModel>(
+      builder:
+          (context, homeModel, profileModel, child) => Scaffold(
+            backgroundColor: whiteColor,
+            body: SingleChildScrollView(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Container(
+                    width: 375.w,
+                    height: 234.h,
+
+                    decoration: BoxDecoration(
+                      color: blackColor,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(40.r),
+                        bottomRight: Radius.circular(40.r),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        20.verticalSpace,
+                        CircleAvatar(
+                          radius: 60.r,
+                          child: Image.asset(AppAssets().appLogo),
+                        ),
+                        //
+                        15.verticalSpace,
+                        //
+                        Text(
+                          'Mate Cruz',
+                          style: style18B.copyWith(color: whiteColor),
+                        ),
+                        Text(
+                          'Mateocru912@gmail.com',
+                          style: style12.copyWith(color: whiteColor),
+                        ),
+                      ],
+                    ),
+                  ),
+                  //
                   20.verticalSpace,
-                  CircleAvatar(
-                    radius: 60.r,
-                    child: Image.asset(AppAssets().appLogo),
-                  ),
                   //
-                  15.verticalSpace,
                   //
-                  Text(
-                    'Mate Cruz',
-                    style: style18B.copyWith(color: whiteColor),
-                  ),
-                  Text(
-                    'Mateocru912@gmail.com',
-                    style: style12.copyWith(color: whiteColor),
+                  //  Events row start
+                  //
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 72.h,
+                          width: 327.w,
+                          decoration: BoxDecoration(
+                            color: containerColor,
+                            borderRadius: BorderRadius.circular(24.r),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                buildEvent('08', 'Join events'),
+                                VerticalDivider(),
+                                buildEvent('03', 'My events'),
+                                VerticalDivider(),
+                                buildEvent(
+                                  homeModel.upcomingEventsList.length
+                                      .toString(),
+                                  'Upcoming events',
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        //
+                        // events row end
+                        //
+                        //
+                        20.verticalSpace,
+
+                        //
+                        //
+                        // Menu selection start
+                        //
+                        Container(
+                          decoration: BoxDecoration(
+                            color: containerColor,
+                            borderRadius: BorderRadius.circular(32.r),
+                          ),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              // mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(left: 15, top: 25),
+                                  child: Text(
+                                    'Account',
+                                    style: style12.copyWith(
+                                      fontSize: 10,
+                                      // ignore: deprecated_member_use
+                                      color: blackColor.withOpacity(0.4),
+                                    ),
+                                  ),
+                                ),
+                                buildMenuItem('My Profile', () {
+                                  Get.to(MyProfileScreen());
+                                }),
+                                buildMenuItem('My Interests', () {
+                                  Get.to(InterestScreen(selected: []));
+                                }),
+                                buildMenuItem('Notification', () {
+                                  Get.to(NotificationScreen());
+                                }),
+
+                                Padding(
+                                  padding: EdgeInsets.only(left: 15, top: 20),
+                                  child: Text(
+                                    'Setting',
+                                    style: style12.copyWith(
+                                      fontSize: 10,
+                                      // ignore: deprecated_member_use
+                                      color: blackColor.withOpacity(0.4),
+                                    ),
+                                  ),
+                                ),
+
+                                buildMenuItem('Change Password', () {
+                                  try {
+                                    Get.to(() => ChangePasswordScreen());
+                                  } catch (e, stackTrace) {
+                                    // ignore: avoid_print
+                                    print('Navigation failed: $e');
+                                    // ignore: avoid_print
+                                    print(stackTrace);
+                                  }
+                                }),
+                                buildMenuItem('Privacy Policy', () {
+                                  Get.to(PrivacyPolicyScreen());
+                                }),
+                                buildMenuItem('Logout', () {
+                                  _showLogoutDialog(context, profileModel);
+                                }),
+                                15.verticalSpace,
+                              ],
+                            ),
+                          ),
+                        ),
+                        50.verticalSpace,
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-            //
-            20.verticalSpace,
-            //
-            //
-            //  Events row start
-            //
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                children: [
-                  Container(
-                    height: 72.h,
-                    width: 327.w,
-                    decoration: BoxDecoration(
-                      color: containerColor,
-                      borderRadius: BorderRadius.circular(24.r),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          buildEvent('08', 'Join events'),
-                          VerticalDivider(),
-                          buildEvent('03', 'My events'),
-                          VerticalDivider(),
-                          buildEvent('02', 'Upcoming events'),
-                        ],
-                      ),
-                    ),
-                  ),
-                  //
-                  // events row end
-                  //
-                  //
-                  20.verticalSpace,
-
-                  //
-                  //
-                  // Menu selection start
-                  //
-                  Container(
-                    decoration: BoxDecoration(
-                      color: containerColor,
-                      borderRadius: BorderRadius.circular(32.r),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        // mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(left: 15, top: 25),
-                            child: Text(
-                              'Account',
-                              style: style12.copyWith(
-                                fontSize: 10,
-                                // ignore: deprecated_member_use
-                                color: blackColor.withOpacity(0.4),
-                              ),
-                            ),
-                          ),
-                          buildMenuItem('My Profile', () {
-                            Get.to(MyProfileScreen());
-                          }),
-                          buildMenuItem('My Interests', () {
-                            Get.to(InterestScreen(selected: []));
-                          }),
-                          buildMenuItem('Notification', () {
-                            Get.to(NotificationScreen());
-                          }),
-
-                          Padding(
-                            padding: EdgeInsets.only(left: 15, top: 20),
-                            child: Text(
-                              'Setting',
-                              style: style12.copyWith(
-                                fontSize: 10,
-                                // ignore: deprecated_member_use
-                                color: blackColor.withOpacity(0.4),
-                              ),
-                            ),
-                          ),
-
-                          buildMenuItem('Change Password', () {
-                            try {
-                              Get.to(() => ChangePasswordScreen());
-                            } catch (e, stackTrace) {
-                              // ignore: avoid_print
-                              print('Navigation failed: $e');
-                              // ignore: avoid_print
-                              print(stackTrace);
-                            }
-                          }),
-                          buildMenuItem('Privacy Policy', () {
-                            Get.to(PrivacyPolicyScreen());
-                          }),
-                          buildMenuItem('Logout', () {
-                            _showLogoutDialog(context);
-                          }),
-                          15.verticalSpace,
-                        ],
-                      ),
-                    ),
-                  ),
-                  50.verticalSpace,
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }
@@ -210,7 +220,7 @@ const Color containerColor = Color(0xffF7F7F7);
 ///
 ///     bottom sheet
 ///
-void _showLogoutDialog(BuildContext context) {
+void _showLogoutDialog(BuildContext context, ProfileViewModel model) {
   showDialog(
     context: context,
     builder:
@@ -242,7 +252,7 @@ void _showLogoutDialog(BuildContext context) {
                     style: style14.copyWith(color: whiteColor),
                   ),
                   onPressed: () {
-                    Navigator.of(context).pop(); // Close dialog
+                    model.logoutUser();
                   },
                 ),
               ),

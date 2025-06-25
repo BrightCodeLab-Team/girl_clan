@@ -9,9 +9,14 @@ import 'package:girl_clan/ui/home/events_details_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:provider/provider.dart';
 
-class UpComingEventsScreen extends StatelessWidget {
+class UpComingEventsScreen extends StatefulWidget {
   const UpComingEventsScreen({super.key});
 
+  @override
+  State<UpComingEventsScreen> createState() => _UpComingEventsScreenState();
+}
+
+class _UpComingEventsScreenState extends State<UpComingEventsScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeViewModel>(

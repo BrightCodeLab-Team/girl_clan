@@ -9,9 +9,14 @@ import 'package:girl_clan/ui/home/home_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:provider/provider.dart';
 
-class PopularEventsScreen extends StatelessWidget {
+class PopularEventsScreen extends StatefulWidget {
   const PopularEventsScreen({super.key});
 
+  @override
+  State<PopularEventsScreen> createState() => _PopularEventsScreenState();
+}
+
+class _PopularEventsScreenState extends State<PopularEventsScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeViewModel>(

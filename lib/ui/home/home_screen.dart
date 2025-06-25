@@ -17,9 +17,14 @@ import 'package:girl_clan/ui/notification_screen/notification_screen.dart';
 import 'package:girl_clan/ui/profile/profile_screen.dart';
 import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeViewModel>(

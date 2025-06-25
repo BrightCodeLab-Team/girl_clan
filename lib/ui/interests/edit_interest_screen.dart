@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:girl_clan/custom_widget/app_bar.dart';
-import 'package:girl_clan/ui/password/interest_view_screen.dart';
+import 'package:girl_clan/ui/interests/interest_screen.dart';
 
 class EditInterestScreen extends StatefulWidget {
   const EditInterestScreen({super.key});
@@ -84,9 +84,7 @@ class _InterestScreenState extends State<EditInterestScreen> {
               context,
               MaterialPageRoute(
                 builder:
-                    (_) => InterestsViewScreen(
-                      selected: selectedInterests.toList(),
-                    ),
+                    (_) => InterestScreen(selected: selectedInterests.toList()),
               ),
             );
           },

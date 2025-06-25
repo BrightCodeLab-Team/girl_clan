@@ -19,6 +19,8 @@ class SignUpViewModel extends BaseViewModel {
   TextEditingController surNameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController locationController = TextEditingController();
 
   ///
   ///
@@ -123,6 +125,9 @@ class SignUpViewModel extends BaseViewModel {
             'email': emailController.text.trim(),
             'password': passwordController.text.trim(),
             'date': DateTime.now().toIso8601String(),
+            'phoneNumber':
+                phoneNumberController.text.trim() ?? 'set phone number',
+            'location': locationController.text.trim() ?? 'set location',
           });
 
       Get.snackbar('Success', "User details added to database");

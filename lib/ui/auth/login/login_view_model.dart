@@ -70,6 +70,7 @@ class LoginViewModel extends BaseViewModel {
           // ignore: avoid_types_as_parameter_names
           .onError((error, StackTrace) {
             loading = false;
+            Get.snackbar("Error", "Login failed: ${error.toString()}");
             notifyListeners();
           });
     } catch (e) {

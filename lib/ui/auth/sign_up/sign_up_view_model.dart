@@ -125,8 +125,7 @@ class SignUpViewModel extends BaseViewModel {
             'email': emailController.text.trim(),
             'password': passwordController.text.trim(),
             'date': DateTime.now().toIso8601String(),
-            'phoneNumber':
-                phoneNumberController.text.trim() ?? 'set phone number',
+            'phoneNumber': phoneNumberController.text.trim() ?? 0000000000,
             'location': locationController.text.trim() ?? 'set location',
           });
 

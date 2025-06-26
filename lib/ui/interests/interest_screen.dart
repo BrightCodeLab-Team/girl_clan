@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/app_assets.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
-import 'package:girl_clan/custom_widget/app_bar.dart';
 import 'package:girl_clan/ui/interests/edit_interest_screen.dart';
 import 'package:girl_clan/ui/profile/profile_screen.dart';
 

@@ -53,7 +53,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Consumer<ProfileViewModel>(
       builder:
           (context, model, child) => Scaffold(
-            appBar: CustomAppBar(title: 'My Profile'),
+            appBar: CustomAppBar(title: 'Edit Profile'),
             body: SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
               child: ConstrainedBox(

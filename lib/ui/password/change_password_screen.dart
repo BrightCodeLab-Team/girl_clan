@@ -29,6 +29,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool isInvalidCurrent = false;
 
   void validateForm() {
+    if (_formKey.currentState == null) return; // Add null check
+
     setState(() {
       isInvalidCurrent = currentController.text != '123456';
     });

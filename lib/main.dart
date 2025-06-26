@@ -6,9 +6,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/firebase_options.dart';
 import 'package:girl_clan/locator.dart';
+import 'package:girl_clan/ui/auth/splash_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
+import 'package:girl_clan/ui/password/change_password_screen.dart';
 import 'package:girl_clan/ui/profile/profile_screen.dart';
 import 'package:girl_clan/ui/profile/profile_view_model.dart';
+import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:girl_clan/ui/root_screen/root_view_model.dart';
 
 import 'package:provider/provider.dart';
@@ -55,7 +58,7 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               useMaterial3: true,
             ),
-            home: ProfileScreen(),
+            home: SplashScreen(),
             // StreamBuilder(
             //   stream: FirebaseAuth.instance.authStateChanges(),
             //   builder: (context, snapshot) {

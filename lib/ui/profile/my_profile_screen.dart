@@ -3,14 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/route_manager.dart';
-
 import 'package:girl_clan/core/constants/app_assets.dart' show AppAssets;
-
 import 'package:girl_clan/core/constants/text_style.dart';
-import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/custom_widget/app_bar.dart';
-import 'package:girl_clan/ui/home/home_view_model.dart';
-
 import 'package:girl_clan/ui/profile/edit_profile_screen.dart';
 import 'package:girl_clan/ui/profile/profile_view_model.dart';
 import 'package:provider/provider.dart';

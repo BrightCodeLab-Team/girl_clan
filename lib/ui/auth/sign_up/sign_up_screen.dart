@@ -48,7 +48,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                         15.verticalSpace,
                         Center(
-                          child: Text("Login", style: style25B.copyWith()),
+                          child: Text("SignUp", style: style25B.copyWith()),
                         ),
                         const SizedBox(height: 10),
 

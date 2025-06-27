@@ -32,7 +32,8 @@ class EventModel {
   // Method to convert an Event to a Map (useful for persistence)
   Map<String, dynamic> toJson() {
     return {
-      'id': currentUser?.uid ?? '',
+      // 'id': currentUser?.uid ?? '',
+      'id': id ?? '',
       'eventName': eventName ?? '',
       'location': location ?? '',
       'date': date ?? '',

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -14,8 +16,8 @@ import 'package:girl_clan/ui/profile/profile_view_model.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-
+  ProfileScreen({super.key});
+  final currentUser = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     return Consumer2<HomeViewModel, ProfileViewModel>(
@@ -25,38 +27,60 @@ class ProfileScreen extends StatelessWidget {
             body: SingleChildScrollView(
               child: Column(
                 children: [
-                  Container(
-                    width: 375.w,
-                    height: 234.h,
+                  StreamBuilder(
+                    stream:
+                        currentUser != null
+                            ? FirebaseFirestore.instance
+                                .collection("app-user")
+                                .doc(currentUser!.uid)
+                                .snapshots()
+                            : null,
 
-                    decoration: BoxDecoration(
-                      color: blackColor,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(40.r),
-                        bottomRight: Radius.circular(40.r),
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        20.verticalSpace,
-                        CircleAvatar(
-                          radius: 60.r,
-                          child: Image.asset(AppAssets().appLogo),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (!snapshot.hasData || !snapshot.data!.exists) {
+                        return Center(child: Text('No user profile found.'));
+                      }
+                      final data = snapshot.data!.data()!;
+                      final firstName = data['firstName'] ?? '';
+                      final surName = data['surName'] ?? '';
+                      final email = data['email'] ?? 'set email';
+                      return Container(
+                        width: 375.w,
+                        height: 234.h,
+
+                        decoration: BoxDecoration(
+                          color: blackColor,
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(40.r),
+                            bottomRight: Radius.circular(40.r),
+                          ),
                         ),
-                        //
-                        15.verticalSpace,
-                        //
-                        Text(
-                          'Mate Cruz',
-                          style: style18B.copyWith(color: whiteColor),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            20.verticalSpace,
+                            CircleAvatar(
+                              radius: 60.r,
+                              child: Image.asset(AppAssets().appLogo),
+                            ),
+                            //
+                            15.verticalSpace,
+                            //
+                            Text(
+                              '${firstName + surName}',
+                              style: style18B.copyWith(color: whiteColor),
+                            ),
+                            Text(
+                              '$email',
+                              style: style12.copyWith(color: whiteColor),
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Mateocru912@gmail.com',
-                          style: style12.copyWith(color: whiteColor),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                   //
                   20.verticalSpace,
@@ -82,7 +106,11 @@ class ProfileScreen extends StatelessWidget {
                               children: [
                                 buildEvent('08', 'Join events'),
                                 VerticalDivider(),
-                                buildEvent('03', 'My events'),
+                                buildEvent(
+                                  homeModel.currentUserEventsList.length
+                                      .toString(),
+                                  'My events',
+                                ),
                                 VerticalDivider(),
                                 buildEvent(
                                   homeModel.upcomingEventsList.length

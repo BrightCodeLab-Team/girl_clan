@@ -37,23 +37,10 @@ class ProfileViewModel extends BaseViewModel {
             'location': locationController.text.toString(),
           })
           .then((value) {
-            Get.snackbar(
-              'Success',
-              'Profile updated successfully',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: secondaryColor,
-              colorText: Colors.white,
-            );
+            debugPrint('Profile updated successfully');
           })
           .onError((error, stackTrace) {
-            Get.snackbar(
-              'Error',
-              'error while updating profile $error',
-
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.red,
-              colorText: Colors.white,
-            );
+            debugPrint('Error updating profile: $error');
           });
     }
   }

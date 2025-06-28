@@ -13,6 +13,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 class EventsDetailsScreen extends StatefulWidget {
+  // final EventModel eventModel;
   const EventsDetailsScreen({super.key});
 
   @override
@@ -233,3 +234,191 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
     );
   }
 }
+/*
+ Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 275.h,
+                    width: double.infinity,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.asset(
+                        AppAssets().loginImage,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  10.verticalSpace,
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${eventModel.eventName}',
+                              style: style18B.copyWith(),
+                            ),
+                            Spacer(),
+                            Row(
+                              children: [
+                                Text(
+                                  '06/24',
+                                  style: style14B.copyWith(color: primaryColor),
+                                ),
+                                1.horizontalSpace,
+                                5.verticalSpace,
+                                Text(
+                                  'Available',
+                                  style: style14B.copyWith(fontSize: 10),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        10.verticalSpace,
+                        Row(
+                          children: [
+                            Text(
+                              '03/23/2025',
+                              style: style14.copyWith(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            4.horizontalSpace,
+                            Container(
+                              height: 10.h,
+                              width: 1.w,
+                              color: blackColor,
+                            ),
+                            4.horizontalSpace,
+                            Text(
+                              '09:00 PM',
+                              style: style14.copyWith(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Spacer(),
+                            Container(
+                              height: 27.h,
+                              width: 72,
+                              decoration: BoxDecoration(
+                                color: primaryColor,
+                                borderRadius: BorderRadius.circular(99),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  eventModel.category.toString().trim(),
+                                  style: style14B.copyWith(color: whiteColor),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        10.verticalSpace,
+
+                        ///
+                        ///  location
+                        ///
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.location_on_outlined, size: 15.h),
+                            1.horizontalSpace,
+                            Text(
+                              eventModel.location.toString().trim(),
+                              style: style14.copyWith(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                        20.verticalSpacingRadius,
+                        Text('About Event', style: style16B.copyWith()),
+                        10.verticalSpace,
+                        Text(
+                          eventModel.description.toString().trim(),
+                          style: style14.copyWith(fontSize: 13),
+                        ),
+                        20.verticalSpace,
+                        Text('Location', style: style16B.copyWith()),
+                        10.verticalSpace,
+
+                        ///
+                        ///      location --> google map
+                        ///
+                        Container(
+                          height: 180.h,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Text(
+                              'Google Map Placeholder',
+                              style: style14.copyWith(color: Colors.grey),
+                              textAlign: TextAlign.center,
+                            ),
+                            // GoogleMap(
+                            //   initialCameraPosition: _kGooglePlex,
+                            //   markers: _markers,
+                            //   mapType: MapType.normal,
+                            //   zoomControlsEnabled: false,
+                            //   myLocationButtonEnabled: false,
+                            // ),
+                          ),
+                        ),
+                        50.verticalSpace,
+
+                        ///
+                        ///  last button - conditionally show join button or action buttons
+                        ///
+                        if (!isJoined)
+                          CustomButton(
+                            onTap: () {
+                              setState(() {
+                                isJoined = true;
+                              });
+                            },
+                            text: 'Join Events',
+                            backgroundColor: primaryColor,
+                          ),
+                        if (isJoined)
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomButton(
+                                  onTap: () {
+                                    Get.to(MainChatScreen());
+                                  },
+                                  text: 'Join Chat',
+                                  backgroundColor: secondaryColor,
+                                ),
+                              ),
+                              10.horizontalSpace,
+                              Expanded(
+                                child: CustomButton(
+                                  onTap: () {
+                                    setState(() {
+                                      isJoined = false;
+                                    });
+                                  },
+                                  text: 'Leave Event',
+                                  backgroundColor: primaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        50.verticalSpace,
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              */

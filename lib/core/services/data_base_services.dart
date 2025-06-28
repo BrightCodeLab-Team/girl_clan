@@ -14,6 +14,40 @@ class DatabaseServices {
   DatabaseServices._internal();
 
   ///
+  ///. fetch all current user events
+  ///
+  Future<List<EventModel>> getCurrentUserEvents(String userId) async {
+    try {
+      final snapshot =
+          await _db.collection('events').where('id', isEqualTo: userId).get();
+
+      debugPrint('Found ${snapshot.docs.length} user events for user $userId');
+
+      final events = <EventModel>[];
+
+      for (var doc in snapshot.docs) {
+        try {
+          final data = doc.data();
+          data['id'] = doc.id;
+
+          debugPrint('User event: ${data['eventName']} on ${data['date']}');
+
+          final event = EventModel.fromJson(data);
+          events.add(event);
+        } catch (e) {
+          debugPrint('Error processing user event ${doc.id}: $e');
+        }
+      }
+
+      return events;
+    } catch (e, s) {
+      debugPrint('Error in getting CurrentUser Events: $e');
+      debugPrint('Stack trace: $s');
+      return [];
+    }
+  }
+
+  ///
   ///. ad event details to database
   addEventsToDataBase(EventModel eventModel) async {
     try {
@@ -71,7 +105,7 @@ class DatabaseServices {
   Future<List<EventModel>> getAllEvents(EventModel eventModel) async {
     try {
       debugPrint('Fetching all events from Firestore...');
-      final snapshot = await _db.collection('events').get();
+      final snapshot = await _db.collection('events').orderBy('date').get();
 
       debugPrint('Found ${snapshot.docs.length} events');
 

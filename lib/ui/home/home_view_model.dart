@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
@@ -21,6 +22,7 @@ class HomeViewModel extends BaseViewModel {
   List<EventModel> workshopList = [];
   List<EventModel> sportsList = [];
   List<EventModel> artExhibitionsList = [];
+  List<EventModel> currentUserEventsList = [];
 
   ///
   ///. constructor if not use then no data fetching
@@ -34,6 +36,7 @@ class HomeViewModel extends BaseViewModel {
     getWorkShopEvents();
     getSportsEvents();
     getArtExhibitionsEvents();
+    getCurrentUserEvents();
   }
 
   ///
@@ -48,7 +51,31 @@ class HomeViewModel extends BaseViewModel {
     await getWorkShopEvents();
     await getSportsEvents();
     await getArtExhibitionsEvents();
+    getCurrentUserEvents();
     notifyListeners();
+  }
+
+  ///
+  ///. all current user events
+  ///
+  Future<void> getCurrentUserEvents() async {
+    setState(ViewState.busy);
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        currentUserEventsList = await db.getCurrentUserEvents(
+          currentUser.uid,
+        ); // Pass UID only
+        debugPrint(
+          'Fetched ${currentUserEventsList.length} current user events',
+        );
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error fetching current user events: $e');
+    } finally {
+      setState(ViewState.idle);
+    }
   }
 
   ///

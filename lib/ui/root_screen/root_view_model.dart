@@ -22,7 +22,7 @@ class RootScreenViewModel extends BaseViewModel {
   List<Widget> allScreen = [
     const HomeScreen(),
     MainChatScreen(),
-    const ProfileScreen(),
+    ProfileScreen(),
   ];
 
   ///

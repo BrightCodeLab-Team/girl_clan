@@ -67,7 +67,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       future:
                           model.currentUser != null
                               ? FirebaseFirestore.instance
-                                  .collection('user')
+                                  .collection('app-user')
                                   .doc(model.currentUser!.uid)
                                   .get()
                               : null,
@@ -179,7 +179,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       Get.back();
                                       Get.snackbar(
                                         'Profile Updated',
-                                        'Your profile changes have been saved.',
+                                        'Profile updated successfully.',
                                         snackPosition: SnackPosition.TOP,
                                         backgroundColor: primaryColor,
                                         colorText: whiteColor,

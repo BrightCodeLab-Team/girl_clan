@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/route_manager.dart';
+import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/ui/root_screen/root_screen.dart';
 
@@ -65,12 +66,22 @@ class LoginViewModel extends BaseViewModel {
           .then((onValue) {
             Get.offAll(Get.to(RootScreen()));
 
-            Get.snackbar("Success", "Login Success");
+            Get.snackbar(
+              "Success",
+              "Login successfully",
+              backgroundColor: secondaryColor,
+              snackPosition: SnackPosition.TOP,
+            );
           })
           // ignore: avoid_types_as_parameter_names
           .onError((error, StackTrace) {
             loading = false;
-            Get.snackbar("Error", "Login failed: ${error.toString()}");
+            Get.snackbar(
+              "Error",
+              "Login failed: ${error.toString()}",
+              backgroundColor: secondaryColor,
+              snackPosition: SnackPosition.TOP,
+            );
             notifyListeners();
           });
     } catch (e) {

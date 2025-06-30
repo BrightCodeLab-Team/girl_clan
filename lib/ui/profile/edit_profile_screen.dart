@@ -156,8 +156,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               decoration: EditProfileFieldDecoration.copyWith(
                                 hintText: "Enter your email",
                               ),
-                              validator: model.validateEmail,
-                              controller: model.emailController,
+                              readOnly: true,
+                              // validator: model.validateEmail,
+                              // controller: model.emailController,
                             ),
                             20.verticalSpace,
                             Text('Phone Number', style: style12),

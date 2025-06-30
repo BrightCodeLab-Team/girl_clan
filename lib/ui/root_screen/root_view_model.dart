@@ -3,6 +3,7 @@ import 'package:girl_clan/core/constants/app_assets.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/ui/chat/main_chat_screen.dart';
+import 'package:girl_clan/ui/chat/new_main_chat_screen.dart';
 import 'package:girl_clan/ui/home/home_screen.dart';
 import 'package:girl_clan/ui/profile/profile_screen.dart';
 

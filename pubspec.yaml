@@ -58,6 +58,8 @@ dependencies:
   locator: ^0.0.0-dev.2
   get_it:
   modal_progress_hud_nsn: 
+  rxdart: ^0.27.7
+  
 
 dev_dependencies:
   flutter_test:

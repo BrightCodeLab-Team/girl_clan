@@ -434,6 +434,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     Get.snackbar(
                                       'Error',
                                       'Failed to add event: $error',
+                                      colorText: blackColor,
+                                      backgroundColor: secondaryColor,
                                     );
                                   });
                             } else {

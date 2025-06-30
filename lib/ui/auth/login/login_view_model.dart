@@ -64,12 +64,12 @@ class LoginViewModel extends BaseViewModel {
             password: passwordController.text.trim(),
           )
           .then((onValue) {
-            Get.offAll(Get.to(RootScreen()));
+            Get.offAll((RootScreen()));
 
             Get.snackbar(
               "Success",
               "Login successfully",
-              backgroundColor: secondaryColor,
+              backgroundColor: primaryColor,
               snackPosition: SnackPosition.TOP,
             );
           })

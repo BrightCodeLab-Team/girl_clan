@@ -166,6 +166,7 @@ class _CustomFilterBottomSheetState extends State<CustomFilterBottomSheet> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
+            // ignore: deprecated_member_use
             dialogBackgroundColor: Colors.white,
             colorScheme: ColorScheme.light(
               primary: primaryColor, // header background

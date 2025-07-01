@@ -33,6 +33,7 @@ class RootScreen extends StatelessWidget {
                   color: whiteColor,
                   boxShadow: [
                     BoxShadow(
+                      // ignore: deprecated_member_use
                       color: Colors.black.withOpacity(0.1), // Soft shadow
                       offset: Offset(0, 2),
                       blurRadius: 10,
@@ -64,6 +65,7 @@ class RootScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(24),
                                 color:
                                     isSelected
+                                        // ignore: deprecated_member_use
                                         ? primaryColor.withOpacity(0.1)
                                         : whiteColor,
                               ),

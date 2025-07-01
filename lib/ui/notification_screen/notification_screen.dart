@@ -103,6 +103,7 @@ class NotificationScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   item['message']!,
+                  // ignore: deprecated_member_use
                   style: style14.copyWith(color: blackColor.withOpacity(0.4)),
                 ),
               ],
@@ -111,6 +112,7 @@ class NotificationScreen extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             item['time']!,
+            // ignore: deprecated_member_use
             style: style12.copyWith(color: blackColor.withOpacity(0.4)),
           ),
         ],

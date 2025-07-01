@@ -142,6 +142,7 @@ class DatabaseServices {
         data['id'] = doc.id;
         return EventModel.fromJson(data);
       }).toList();
+      // ignore: unused_catch_stack
     } catch (e, s) {
       debugPrint('Error in getHikingEvents: $e');
       return [];

@@ -37,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (result == true) {
                   // Refresh all event data
                   Provider.of<HomeViewModel>(
+                    // ignore: use_build_context_synchronously
                     context,
                     listen: false,
                   ).refreshAllEvents();
@@ -62,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('shayan zahid', style: style14.copyWith(fontSize: 12)),
+                  Text('Trump', style: style14.copyWith(fontSize: 12)),
                   2.verticalSpace,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -555,6 +556,7 @@ class CustomTabWidget extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
+  // ignore: use_super_parameters
   const CustomTabWidget({
     Key? key,
     required this.icon,

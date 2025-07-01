@@ -15,6 +15,7 @@ const Color greyBorderColor = Colors.grey;
 //***********************   not in use    **************************************** */
 const Color backGroundColor = Color(0xfffffdf7);
 const Color purpleColor = Color(0xff9370DB);
+// ignore: constant_identifier_names
 const Color DarkRedColor = Color.from(
   alpha: 1,
   red: 0.639,

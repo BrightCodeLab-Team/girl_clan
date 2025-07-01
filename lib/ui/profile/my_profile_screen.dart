@@ -95,17 +95,14 @@ class MyProfileScreen extends StatelessWidget {
                             children: [
                               Text('Username', style: style12.copyWith()),
                               SizedBox(height: 4),
-                              Text(
-                                '${firstName + surName}' ?? 'set username',
-                                style: style16B,
-                              ),
+                              Text('${firstName + surName}', style: style16B),
                               SizedBox(height: 16),
 
                               Text('Email', style: style12.copyWith()),
                               SizedBox(height: 4),
                               Text(
                                 //  'Mateocrus912@gmail.com'
-                                '$email' ?? 'set email',
+                                '$email',
                                 style: style16B,
                               ),
                               SizedBox(height: 16),
@@ -123,7 +120,7 @@ class MyProfileScreen extends StatelessWidget {
                               SizedBox(height: 4),
                               Text(
                                 //'Byron Bay, New South Wales',
-                                '$location' ?? 'set location',
+                                '$location',
 
                                 style: style16B,
                               ),
@@ -140,47 +137,3 @@ class MyProfileScreen extends StatelessWidget {
     );
   }
 }
-/*
- Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 40),
-                    CircleAvatar(
-                      radius: 60,
-                      backgroundImage: AssetImage(AppAssets().appLogo),
-                    ),
-                    20.verticalSpace,
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(30),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Username', style: style12.copyWith()),
-                          SizedBox(height: 4),
-                          Text('Mateo Crus', style: style16B),
-                          SizedBox(height: 16),
-
-                          Text('Email', style: style12.copyWith()),
-                          SizedBox(height: 4),
-                          Text('Mateocrus912@gmail.com', style: style16B),
-                          SizedBox(height: 16),
-
-                          Text('Phone Number', style: style12.copyWith()),
-                          SizedBox(height: 4),
-                          Text('+101 887755779', style: style16B),
-                          SizedBox(height: 16),
-
-                          Text('Location', style: style12.copyWith()),
-                          SizedBox(height: 4),
-                          Text('Byron Bay, New South Wales', style: style16B),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                */

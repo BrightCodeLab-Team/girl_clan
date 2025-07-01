@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_screen.dart';
 
@@ -21,7 +20,7 @@ class ProfileViewModel extends BaseViewModel {
   ///
   final currentUser = FirebaseAuth.instance.currentUser;
   void updateUserProfileInformation() async {
-    final user = await FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       FirebaseFirestore.instance
           .collection('app-user')

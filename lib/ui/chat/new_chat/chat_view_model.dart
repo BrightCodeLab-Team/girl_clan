@@ -1,46 +1,54 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:girl_clan/core/constants/app_assets.dart';
-import 'package:girl_clan/core/model/new_user_model.dart';
-import 'package:girl_clan/core/others/base_view_model.dart'; // Assuming this exists
+import 'package:girl_clan/core/enums/view_state_model.dart';
+import 'package:intl/intl.dart';
+import 'package:girl_clan/core/model/message_model.dart';
+import 'package:girl_clan/core/model/user_model.dart';
+import 'package:girl_clan/core/others/base_view_model.dart';
+import 'package:girl_clan/core/services/data_base_services.dart';
+import 'package:girl_clan/locator.dart'; // Assuming this exists
 
-class NewChatViewModel extends BaseViewModel {
+class ChatViewModel extends BaseViewModel {
   ///
   ///
   ///
 
-  List<NewUserModel> chatsList = [
-    NewUserModel(
-      name: 'Alice',
+  List<UserModel> chatsList = [
+    UserModel(
+      name: 'shayan',
       imageUrl: AppAssets().appLogo,
       message: 'Hey, how are you?',
       time: '10:30 AM',
     ),
-    NewUserModel(
-      name: 'Alice',
+    UserModel(
+      name: 'sanan',
       imageUrl: AppAssets().appLogo,
       message: 'Hey, how are you?',
       time: '10:30 AM',
     ),
-    NewUserModel(
-      name: 'Alice',
+    UserModel(
+      name: 'numan',
       imageUrl: AppAssets().appLogo,
       message: 'Hey, how are you?',
       time: '10:30 AM',
     ),
-    NewUserModel(
-      name: 'Alice',
+    UserModel(
+      name: 'awasi',
       imageUrl: AppAssets().appLogo,
       message: 'Hey, how are you?',
       time: '10:30 AM',
     ),
-    NewUserModel(
-      name: 'Alice',
+    UserModel(
+      name: 'jawad',
       imageUrl: AppAssets().appLogo,
       message: 'Hey, how are you?',
       time: '10:30 AM',
     ),
-    NewUserModel(
-      name: 'Alice',
+    UserModel(
+      name: 'umair',
       imageUrl: AppAssets().appLogo,
       message: 'Hey, how are you?',
       time: '10:30 AM',
@@ -50,38 +58,38 @@ class NewChatViewModel extends BaseViewModel {
   ///
   ///. groups
   ///
-  List<NewUserModel> groupsList = [
-    NewUserModel(
+  List<UserModel> groupsList = [
+    UserModel(
       name: 'Hiking',
       imageUrl: AppAssets().appLogo,
       message: 'Hey, how are you?',
       time: '10:30 AM',
     ),
-    NewUserModel(
+    UserModel(
       name: 'party',
       imageUrl: AppAssets().appLogo,
       message: 'Hey, how are you?',
       time: '10:30 AM',
     ),
-    NewUserModel(
+    UserModel(
       name: 'gathering',
       imageUrl: AppAssets().appLogo,
       message: 'Hey, how are you?',
       time: '10:30 AM',
     ),
-    NewUserModel(
+    UserModel(
       name: 'school friends',
       imageUrl: AppAssets().appLogo,
       message: 'Hey, how are you?',
       time: '10:30 AM',
     ),
-    NewUserModel(
+    UserModel(
       name: 'college friends',
       imageUrl: AppAssets().appLogo,
       message: 'Hey, how are you?',
       time: '10:30 AM',
     ),
-    NewUserModel(
+    UserModel(
       name: 'family',
       imageUrl: AppAssets().appLogo,
       message: 'Hey, how are you?',
@@ -91,7 +99,7 @@ class NewChatViewModel extends BaseViewModel {
 
   ///
   ///
-  final List<MessageModel> _messages = [];
+  List<MessageModel> _messages = [];
   TextEditingController messageController = TextEditingController();
 
   List<MessageModel> get messages => _messages;
@@ -99,15 +107,20 @@ class NewChatViewModel extends BaseViewModel {
   String chatTitle = '';
   String chatImageUrl = '';
   bool isGroupChat = false;
+  String receiverId = '';
 
-  NewChatViewModel({
+  ChatViewModel({
     required String chatTitle,
     required String chatImageUrl,
     required bool isGroupChat,
+    required String receiverId,
   }) {
     this.chatTitle = chatTitle;
     this.chatImageUrl = chatImageUrl;
+    this.receiverId = receiverId;
     this.isGroupChat = isGroupChat;
+    _initMessagesStream();
+    _loadUsers();
 
     // Initialize with dummy data based on the chat type
     // In a real application, you would fetch messages from a database/API
@@ -123,6 +136,8 @@ class NewChatViewModel extends BaseViewModel {
           content: 'Hey, are you coming to the meetup later?',
           timestamp: '04:56 AM',
           isMe: false,
+          senderId: '',
+          receiverId: '',
         ),
         MessageModel(
           senderName: 'Current User',
@@ -222,34 +237,89 @@ class NewChatViewModel extends BaseViewModel {
     // For any other chat, you might have a default empty list or fetch dynamically.
   }
 
-  void sendMessage() {
-    String messageContent = messageController.text.trim();
-    if (messageContent.isNotEmpty) {
-      _messages.add(
-        MessageModel(
-          senderName: 'Current User', // Use actual user's name
-          senderImageUrl:
-              'assets/images/current_user_profile.png', // Use actual path for current user
-          content: messageContent,
-          timestamp: _getCurrentTime(),
-          isMe: true,
-        ),
-      );
-      messageController.clear();
+  final DatabaseServices _db = locator<DatabaseServices>();
+  //final TextEditingController messageController = TextEditingController();
+  StreamSubscription? _messagesSubscription;
+
+  // List<UserModel> chatsList = [];
+  // List<MessageModel> _messages = [];
+  // String chatTitle = '';
+  // String chatImageUrl = '';
+
+  // List<MessageModel> get messages => _messages;
+
+  // ChatViewModel({
+  //   required String chatTitle,
+  //   required String chatImageUrl,
+  //   required String receiverId,
+  // }) {
+  //   this.chatTitle = chatTitle;
+  //   this.chatImageUrl = chatImageUrl;
+  //   this.receiverId = receiverId;
+
+  //   _initMessagesStream();
+  //   _loadUsers();
+  // }
+
+  void _initMessagesStream() {
+    _messagesSubscription = _db.getMessagesStream(receiverId).listen((
+      snapshot,
+    ) {
+      _messages =
+          snapshot.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return _parseMessage(data);
+          }).toList();
       notifyListeners();
+    });
+  }
+
+  MessageModel _parseMessage(Map<String, dynamic> data) {
+    final isMe = data['senderId'] == _db.currentUserId;
+    return MessageModel(
+      senderName: isMe ? 'You' : chatTitle,
+      senderImageUrl:
+          isMe ? 'assets/images/current_user_profile.png' : chatImageUrl,
+      content: data['text'] ?? '',
+      timestamp: _formatTimestamp(data['timestamp']),
+      isMe: isMe,
+    );
+  }
+
+  String _formatTimestamp(dynamic timestamp) {
+    if (timestamp == null) return 'Just now';
+    final date = (timestamp as Timestamp).toDate();
+    return DateFormat('h:mm a').format(date);
+  }
+
+  Future<void> _loadUsers() async {
+    setState(ViewState.busy);
+    try {
+      chatsList = await _db.getAllUsers();
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading users: $e');
+    } finally {
+      setState(ViewState.idle);
     }
   }
 
-  String _getCurrentTime() {
-    final now = DateTime.now();
-    final hour = now.hour > 12 ? now.hour - 12 : now.hour;
-    final amPm = now.hour >= 12 ? 'PM' : 'AM';
-    final minute = now.minute.toString().padLeft(2, '0');
-    return '$hour:$minute $amPm';
+  Future<void> sendMessage() async {
+    final text = messageController.text.trim();
+    if (text.isEmpty) return;
+
+    try {
+      await _db.sendMessage(receiverId: receiverId, text: text);
+      messageController.clear();
+    } catch (e) {
+      debugPrint('Error sending message: $e');
+      // You might want to show an error to the user here
+    }
   }
 
   @override
   void dispose() {
+    _messagesSubscription?.cancel();
     messageController.dispose();
     super.dispose();
   }

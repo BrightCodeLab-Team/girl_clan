@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -5,18 +6,18 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/custom_widget/new_chat.dart';
-import 'package:girl_clan/ui/chat/new_chat/chat_detail_screen.dart';
+import 'package:girl_clan/ui/chat/new_chat/chat_screen.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart';
 import 'package:provider/provider.dart';
 
-class NewMainChatScreen extends StatelessWidget {
-  const NewMainChatScreen({super.key});
+class MainChatScreen extends StatelessWidget {
+  const MainChatScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2, // People & Groups
-      child: Consumer<NewChatViewModel>(
+      child: Consumer<ChatViewModel>(
         builder:
             (context, model, child) => Scaffold(
               appBar: AppBar(
@@ -75,30 +76,25 @@ class NewMainChatScreen extends StatelessWidget {
                         // People Tab
                         ListView.builder(
                           itemCount: model.chatsList.length,
-                          shrinkWrap: true,
-                          itemBuilder: (BuildContext context, int index) {
-                            final chatItem =
-                                model
-                                    .chatsList[index]; // Get the specific chat item
+                          itemBuilder: (context, index) {
+                            final user = model.chatsList[index];
                             return mainChatItem(
-                              chat: chatItem,
+                              chat: user,
                               onTap: () {
-                                // Navigate to ChatScreen for one-to-one chat
                                 Get.to(
                                   ChangeNotifierProvider(
-                                    // Provide ChatScreenViewModel specific to THIS one-to-one chat
                                     create:
-                                        (ctx) => NewChatViewModel(
-                                          chatTitle: chatItem.name,
-                                          chatImageUrl: chatItem.imageUrl,
+                                        (ctx) => ChatViewModel(
+                                          chatTitle: user.name,
+                                          chatImageUrl: user.imageUrl,
+                                          receiverId: user.id!,
                                           isGroupChat:
-                                              false, // It's a person/one-to-one
+                                              false, // Now passing the actual user ID
                                         ),
                                     child: ChatScreen(
-                                      chatTitle: chatItem.name,
-                                      chatImageUrl: chatItem.imageUrl,
-                                      isGroupChat:
-                                          false, // Pass arguments to ChatScreen's constructor
+                                      chatTitle: user.name,
+                                      chatImageUrl: user.imageUrl,
+                                      isGroupChat: false,
                                     ),
                                   ),
                                 );
@@ -107,31 +103,28 @@ class NewMainChatScreen extends StatelessWidget {
                           },
                         ),
                         // Groups Tab
+                        // Update your ListView.builder in the People tab:
                         ListView.builder(
-                          itemCount: model.groupsList.length,
-                          shrinkWrap: true,
-                          itemBuilder: (BuildContext context, int index) {
-                            final groupItem =
-                                model
-                                    .groupsList[index]; // Get the specific group item
+                          itemCount: model.chatsList.length,
+                          itemBuilder: (context, index) {
+                            final user = model.chatsList[index];
                             return mainChatItem(
-                              chat: groupItem,
+                              chat: user,
                               onTap: () {
-                                // Navigate to ChatScreen for group chat
                                 Get.to(
                                   ChangeNotifierProvider(
-                                    // Provide ChatScreenViewModel specific to THIS group chat
                                     create:
-                                        (ctx) => NewChatViewModel(
-                                          chatTitle: groupItem.name,
-                                          chatImageUrl: groupItem.imageUrl,
-                                          isGroupChat: true, // It's a group
+                                        (ctx) => ChatViewModel(
+                                          chatTitle: user.name,
+                                          chatImageUrl: user.imageUrl,
+                                          receiverId: user.id!,
+                                          isGroupChat:
+                                              false, // Now passing the actual user ID
                                         ),
                                     child: ChatScreen(
-                                      chatTitle: groupItem.name,
-                                      chatImageUrl: groupItem.imageUrl,
-                                      isGroupChat:
-                                          true, // Pass arguments to ChatScreen's constructor
+                                      chatTitle: user.name,
+                                      chatImageUrl: user.imageUrl,
+                                      isGroupChat: false,
                                     ),
                                   ),
                                 );

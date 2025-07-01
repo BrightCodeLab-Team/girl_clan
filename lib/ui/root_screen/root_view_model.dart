@@ -21,7 +21,7 @@ class RootScreenViewModel extends BaseViewModel {
 
   List<Widget> allScreen = [
     const HomeScreen(),
-    NewMainChatScreen(),
+    MainChatScreen(),
     ProfileScreen(),
   ];
 

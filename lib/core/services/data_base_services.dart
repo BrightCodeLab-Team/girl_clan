@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:girl_clan/core/model/event_model.dart';
+import 'package:girl_clan/core/model/user_model.dart';
 
 class DatabaseServices {
   final _db = FirebaseFirestore.instance;
@@ -359,5 +361,143 @@ class DatabaseServices {
       debugPrint('Stack trace: $s');
       return [];
     }
+  }
+
+  ///
+  ///
+  ///
+  ///
+  ///. chat services
+  ///
+  ///
+
+  // Get all users for chat list
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // static final DatabaseServices _singleton = DatabaseServices._internal();
+  // factory DatabaseServices() => _singleton;
+  // DatabaseServices._internal();
+
+  // Get current user ID
+  String get currentUserId => _auth.currentUser?.uid ?? '';
+
+  // Generate consistent chat ID between two users
+  String _getChatId(String userId1, String userId2) {
+    return userId1.hashCode <= userId2.hashCode
+        ? '${userId1}_$userId2'
+        : '${userId2}_$userId1';
+  }
+
+  // Send a message
+  Future<void> sendMessage({
+    required String receiverId,
+    required String text,
+  }) async {
+    try {
+      final chatId = _getChatId(currentUserId, receiverId);
+      final messageRef =
+          _firestore
+              .collection('chats')
+              .doc(chatId)
+              .collection('messages')
+              .doc();
+
+      final messageData = {
+        'senderId': currentUserId,
+        'receiverId': receiverId,
+        'text': text,
+        'timestamp': FieldValue.serverTimestamp(),
+        'read': false,
+      };
+
+      // Batch write for atomic operation
+      final batch = _firestore.batch();
+
+      // Add message
+      batch.set(messageRef, messageData);
+
+      // Update chat metadata
+      batch.set(_firestore.collection('chats').doc(chatId), {
+        'lastMessage': text,
+        'lastMessageTime': FieldValue.serverTimestamp(),
+        'participants': [currentUserId, receiverId],
+        'participantNames': {
+          currentUserId: await _getUserName(currentUserId),
+          receiverId: await _getUserName(receiverId),
+        },
+        'participantAvatars': {
+          currentUserId: await _getUserAvatar(currentUserId),
+          receiverId: await _getUserAvatar(receiverId),
+        },
+      }, SetOptions(merge: true));
+
+      await batch.commit();
+    } catch (e) {
+      debugPrint('Error sending message: $e');
+      rethrow;
+    }
+  }
+
+  // Get messages stream
+  Stream<QuerySnapshot> getMessagesStream(String receiverId) {
+    final chatId = _getChatId(currentUserId, receiverId);
+    return _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('timestamp', descending: false)
+        .snapshots();
+  }
+
+  // Get all users for chat list
+  Future<List<UserModel>> getAllUsers() async {
+    try {
+      // Exclude current user from the list
+      final snapshot =
+          await _firestore
+              .collection('users')
+              .where('id', isNotEqualTo: currentUserId)
+              .get();
+
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return UserModel(
+          id: doc.id,
+          name: data['name'] ?? 'Unknown',
+          imageUrl: data['profileImageUrl'] ?? '',
+          message: data['lastMessage'] ?? '',
+          time:
+              data['lastMessageTime'] != null
+                  ? _formatTimestamp(data['lastMessageTime'])
+                  : '',
+        );
+      }).toList();
+    } catch (e) {
+      debugPrint('Error getting users: $e');
+      return [];
+    }
+  }
+
+  // Helper methods
+  Future<String> _getUserName(String userId) async {
+    final doc = await _firestore.collection('users').doc(userId).get();
+    return doc.data()?['name'] ?? 'Unknown';
+  }
+
+  Future<String> _getUserAvatar(String userId) async {
+    final doc = await _firestore.collection('users').doc(userId).get();
+    return doc.data()?['profileImageUrl'] ?? '';
+  }
+
+  String _formatTimestamp(Timestamp timestamp) {
+    final now = DateTime.now();
+    final date = timestamp.toDate();
+    final difference = now.difference(date);
+
+    if (difference.inMinutes < 1) return 'Just now';
+    if (difference.inHours < 1) return '${difference.inMinutes}m ago';
+    if (difference.inDays < 1) return '${difference.inHours}h ago';
+    return '${difference.inDays}d ago';
   }
 }

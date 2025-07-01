@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
-import 'package:girl_clan/core/model/new_user_model.dart';
+import 'package:girl_clan/core/model/message_model.dart';
+import 'package:girl_clan/core/model/user_model.dart';
 
 class MessageBubble extends StatelessWidget {
   final MessageModel message;
@@ -56,7 +57,7 @@ class MessageBubble extends StatelessWidget {
         child: Row(
           crossAxisAlignment:
               CrossAxisAlignment
-                  .end, // Changed back to end for proper alignment
+                  .start, // Changed back to end for proper alignment
           mainAxisSize: MainAxisSize.min,
           children: [
             // Profile picture for incoming messages (left side)

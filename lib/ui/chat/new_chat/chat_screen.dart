@@ -104,7 +104,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-      body: Consumer<NewChatViewModel>(
+      body: Consumer<ChatViewModel>(
         builder: (context, model, child) {
           _scrollToBottom();
           return Column(
@@ -164,20 +164,20 @@ class _ChatScreenState extends State<ChatScreen> {
                               horizontal: 20.w,
                               vertical: 12.h,
                             ),
-                            suffixIcon: Padding(
-                              padding: EdgeInsets.only(right: 10.w),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.mic_none, color: Colors.grey),
-                                  10.horizontalSpace,
-                                  Icon(
-                                    Icons.camera_alt_outlined,
-                                    color: Colors.grey,
-                                  ),
-                                ],
-                              ),
-                            ),
+                            // suffixIcon: Padding(
+                            //   padding: EdgeInsets.only(right: 10.w),
+                            //   child: Row(
+                            //     mainAxisSize: MainAxisSize.min,
+                            //     children: [
+                            //       Icon(Icons.mic_none, color: Colors.grey),
+                            //       10.horizontalSpace,
+                            //       Icon(
+                            //         Icons.camera_alt_outlined,
+                            //         color: Colors.grey,
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
                           ),
                           onSubmitted: (value) => model.sendMessage(),
                         ),
@@ -190,10 +190,10 @@ class _ChatScreenState extends State<ChatScreen> {
                       },
                       child: CircleAvatar(
                         radius: 25.r,
-                        backgroundColor: primaryColor,
+                        backgroundColor: Colors.grey.shade100,
                         child: Icon(
                           Icons.send,
-                          color: Colors.white,
+                          color: Colors.grey.shade500,
                           size: 20.r,
                         ),
                       ),

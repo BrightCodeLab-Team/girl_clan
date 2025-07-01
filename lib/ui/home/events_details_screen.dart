@@ -203,7 +203,7 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                               Expanded(
                                 child: CustomButton(
                                   onTap: () {
-                                    Get.to(NewMainChatScreen());
+                                    Get.to(MainChatScreen());
                                   },
                                   text: 'Join Chat',
                                   backgroundColor: secondaryColor,

@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
-import 'package:girl_clan/core/model/new_user_model.dart';
+import 'package:girl_clan/core/model/user_model.dart';
 
 class mainChatItem extends StatefulWidget {
   // final String imageUrl;
   // final String name;
   // final String message;
   // final String time;
-  final NewUserModel chat;
+  final UserModel chat;
   final VoidCallback onTap;
 
   const mainChatItem({

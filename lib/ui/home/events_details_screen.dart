@@ -7,7 +7,7 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
-import 'package:girl_clan/ui/chat/new_main_chat_screen.dart';
+import 'package:girl_clan/ui/chat/new_chat/main_chat_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -203,7 +203,7 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                               Expanded(
                                 child: CustomButton(
                                   onTap: () {
-                                    Get.to(MainChatScreen());
+                                    Get.to(NewMainChatScreen());
                                   },
                                   text: 'Join Chat',
                                   backgroundColor: secondaryColor,

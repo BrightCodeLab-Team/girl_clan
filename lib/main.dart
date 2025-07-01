@@ -1,13 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
-import 'package:get/get.dart';
+// import 'package:get/route_manager.dart'; // No longer needed directly, Get.to() is enough
+import 'package:get/get.dart'; // Keep this for GetMaterialApp and Get.to()
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/firebase_options.dart';
 import 'package:girl_clan/locator.dart';
 import 'package:girl_clan/ui/add_event/add_event_view_model.dart';
-import 'package:girl_clan/ui/chat/new_main_chat_screen.dart';
+import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart'; // This is correct
+import 'package:girl_clan/ui/chat/new_chat/main_chat_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:girl_clan/ui/password/password_view_model.dart';
 import 'package:girl_clan/ui/profile/profile_view_model.dart';
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(375, 812),
+      designSize: const Size(375, 812), // Confirm your design size
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (_, child) {
@@ -38,13 +39,17 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(create: (_) => ProfileViewModel()),
             ChangeNotifierProvider(create: (_) => AddEventViewModel()),
             ChangeNotifierProvider(create: (_) => PasswordViewModel()),
-            // ChangeNotifierProvider(
-            //   create:
-            //       (_) => ChatViewModel(
-            //         chatRepository: ChatRepository(), // Add this
-            //         auth: FirebaseAuth.instance, // Add this
-            //       ),
-            // ),
+
+            // CORRECTED: Provide NewChatViewModel without any parameters
+            // This ViewModel only holds the *lists* of chats/groups.
+            ChangeNotifierProvider(
+              create:
+                  (_) => NewChatViewModel(
+                    chatTitle: '',
+                    chatImageUrl: '',
+                    isGroupChat: false,
+                  ),
+            ),
           ],
           child: GetMaterialApp(
             debugShowCheckedModeBanner: false,
@@ -61,7 +66,7 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               useMaterial3: true,
             ),
-            home: MainChatScreen(),
+            home: NewMainChatScreen(), // Your main chat list screen
           ),
         );
       },

@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
@@ -10,6 +9,8 @@ import 'package:girl_clan/locator.dart';
 class HomeViewModel extends BaseViewModel {
   EventModel eventModel = EventModel();
   final db = locator<DatabaseServices>();
+  final currentUser = FirebaseAuth.instance;
+  data() {}
 
   ///
   ///      up coming events
@@ -51,20 +52,19 @@ class HomeViewModel extends BaseViewModel {
     await getWorkShopEvents();
     await getSportsEvents();
     await getArtExhibitionsEvents();
-    getCurrentUserEvents();
+    await getCurrentUserEvents();
     notifyListeners();
   }
 
   ///
   ///. all current user events
   ///
-  Future<void> getCurrentUserEvents() async {
+  getCurrentUserEvents() async {
     setState(ViewState.busy);
     try {
-      final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser != null) {
         currentUserEventsList = await db.getCurrentUserEvents(
-          currentUser.uid,
+          currentUser.currentUser!.uid,
         ); // Pass UID only
         debugPrint(
           'Fetched ${currentUserEventsList.length} current user events',
@@ -94,10 +94,6 @@ class HomeViewModel extends BaseViewModel {
       }
 
       notifyListeners();
-
-      if (upcomingEventsList.isEmpty) {
-        Get.snackbar('Info', 'No upcoming events found');
-      }
     } catch (e) {
       debugPrint('Error in init: $e');
       //Get.snackbar('Error', 'Failed to load events');
@@ -225,5 +221,67 @@ class HomeViewModel extends BaseViewModel {
   selectedTabFunction(index) {
     selectedTabIndex = index;
     notifyListeners();
+  }
+
+  ////
+  /// JOIN EVENTS AND LEAVE EVENTS
+  ///
+  Future<void> joinEvent(String eventId) async {
+    setState(ViewState.busy);
+    try {
+      final isAlreadyJoined = await db.isUserJoined(
+        eventId,
+        currentUser.currentUser!.uid,
+      );
+
+      if (!isAlreadyJoined) {
+        await db.joinEvent(eventId, currentUser.currentUser!.uid);
+        await refreshAllEvents(); // To refresh local lists
+      }
+    } catch (e) {
+      debugPrint("Error joining event: $e");
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  Future<void> leaveEvent(String eventId) async {
+    setState(ViewState.busy);
+    try {
+      await db.leaveEvent(eventId, currentUser.currentUser!.uid);
+      await refreshAllEvents();
+    } catch (e) {
+      debugPrint("Error leaving event: $e");
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  /// Get seat data (capacity & joined) from DatabaseServices
+  Future<Map<String, int>> getEventSeatData(String eventId) async {
+    try {
+      return await db.getEventSeatData(eventId);
+    } catch (e) {
+      debugPrint('Error getting event seat data: $e');
+      return {'capacity': 0, 'joined': 0};
+    }
+  }
+
+  /// Update the seat count in Firestore via DatabaseServices
+  Future<void> updateSeatCount(String eventId, int newCount) async {
+    try {
+      await db.updateSeatCount(eventId, newCount);
+    } catch (e) {
+      debugPrint('Error updating seat count: $e');
+    }
+  }
+
+  Future<bool> hasUserJoined(String eventId) async {
+    try {
+      return await db.isUserJoined(eventId, currentUser.currentUser!.uid);
+    } catch (e) {
+      debugPrint("Error checking joined status: $e");
+      return false;
+    }
   }
 }

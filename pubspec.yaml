@@ -43,7 +43,7 @@ dependencies:
   confetti:
   path_provider:
   animated_text_kit: ^4.2.3
-  intl: ^0.19.0
+  intl: ^0.20.2
   flutter_screenutil: ^5.8.4  # Or latest version
   flutter_colorpicker:
   image_picker:
@@ -59,6 +59,7 @@ dependencies:
   get_it:
   modal_progress_hud_nsn: 
   rxdart: ^0.27.7
+  shimmer: ^3.0.0
   
 
 dev_dependencies:

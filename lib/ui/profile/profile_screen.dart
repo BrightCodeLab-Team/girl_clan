@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +18,6 @@ import 'package:girl_clan/ui/profile/profile_view_model.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
-  ProfileScreen({super.key});
-  final currentUser = FirebaseAuth.instance.currentUser;
   @override
   Widget build(BuildContext context) {
     return Consumer2<HomeViewModel, ProfileViewModel>(
@@ -29,19 +29,16 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   StreamBuilder(
                     stream:
-                        currentUser != null
+                        homeModel.currentUser != null
                             ? FirebaseFirestore.instance
                                 .collection("app-user")
-                                .doc(currentUser!.uid)
+                                .doc(homeModel.currentUser.currentUser!.uid)
                                 .snapshots()
                             : null,
 
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      }
                       if (!snapshot.hasData || !snapshot.data!.exists) {
-                        return Center(child: Text('No user profile found.'));
+                        return Center(child: Text(''));
                       }
                       final data = snapshot.data!.data()!;
                       final firstName = data['firstName'] ?? '';
@@ -70,7 +67,7 @@ class ProfileScreen extends StatelessWidget {
                             15.verticalSpace,
                             //
                             Text(
-                              '${firstName + surName}',
+                              '$firstName $surName',
                               style: style18B.copyWith(color: whiteColor),
                             ),
                             Text(
@@ -93,7 +90,6 @@ class ProfileScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Container(
-                          height: 72.h,
                           width: 327.w,
                           decoration: BoxDecoration(
                             color: containerColor,
@@ -107,8 +103,7 @@ class ProfileScreen extends StatelessWidget {
                                 buildEvent('08', 'Join events'),
                                 VerticalDivider(),
                                 buildEvent(
-                                  homeModel.currentUserEventsList.length
-                                      .toString(),
+                                  "${homeModel.currentUserEventsList.length}",
                                   'My events',
                                 ),
                                 VerticalDivider(),

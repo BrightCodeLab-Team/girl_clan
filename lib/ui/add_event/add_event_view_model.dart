@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/model/event_model.dart';
@@ -15,15 +17,13 @@ class AddEventViewModel extends BaseViewModel {
   ///
   ///. add event to database
   ///
-  addEvent() async {
+  addEvent(hostName) async {
     try {
       setState(ViewState.busy);
-      await db.addEventsToDataBase(eventModel);
+      await db.addEventsToDataBase(eventModel, hostName);
 
       Get.snackbar('Success', "Add Event Successfully");
-      Get.find<HomeViewModel>().refreshAllEvents();
       Get.offAll(() => RootScreen());
-
       setState(ViewState.idle);
     } catch (e) {
       Get.snackbar('Error', "Failed to add event: $e");

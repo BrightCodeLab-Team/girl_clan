@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,6 +13,7 @@ import 'package:girl_clan/custom_widget/app_bar.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/ui/add_event/add_event_view_model.dart';
 import 'package:girl_clan/ui/home/home_screen.dart';
+import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
@@ -48,6 +51,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
       }
     }
   }
+
+  final currentUser = FirebaseAuth.instance.currentUser;
 
   ///
   ///
@@ -411,44 +416,79 @@ class _AddEventScreenState extends State<AddEventScreen> {
                           ),
                         ),
                         20.verticalSpace,
-                        CustomButton(
-                          onTap: () {
-                            if (_formKey.currentState!.validate()) {
-                              // Ensure all fields are assigned before saving
-                              if (_selectedCategory != null) {
-                                model.eventModel.category = _selectedCategory!;
-                              }
-                              if (_dateController.text.isNotEmpty) {
-                                model.eventModel.date = _dateController.text;
-                              }
-                              // Add any other missing field assignments here
 
-                              // Then save
-                              model
-                                  .addEvent()
-                                  .then((_) {
-                                    Get.off(() => HomeScreen());
-                                  })
-                                  .catchError((error) {
-                                    // Show error message
-                                    Get.snackbar(
-                                      'Error',
-                                      'Failed to add event: $error',
-                                      colorText: blackColor,
-                                      backgroundColor: secondaryColor,
-                                    );
-                                  });
-                            } else {
-                              // Show validation error
-                              Get.snackbar(
-                                'Validation Error',
-                                'Please fill all required fields correctly.',
-                                snackPosition: SnackPosition.TOP,
-                              );
+                        StreamBuilder(
+                          stream:
+                              currentUser != null
+                                  ? FirebaseFirestore.instance
+                                      .collection("app-user")
+                                      .doc(currentUser!.uid)
+                                      .snapshots()
+                                  : null,
+
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData || !snapshot.data!.exists) {
+                              return Center(child: Text(''));
                             }
+                            final data = snapshot.data!.data()!;
+                            final firstName = data['firstName'] ?? '';
+                            final surName = data['surName'] ?? '';
+
+                            return CustomButton(
+                              onTap: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  // Assign dropdown and date
+                                  if (_selectedCategory != null) {
+                                    model.eventModel.category =
+                                        _selectedCategory!;
+                                  }
+                                  if (_dateController.text.isNotEmpty) {
+                                    model.eventModel.date =
+                                        _dateController.text;
+                                  }
+
+                                  // ✅ Assign current user info
+                                  final user =
+                                      FirebaseAuth.instance.currentUser;
+                                  if (user != null) {
+                                    model.eventModel.hostUserId = user.uid;
+                                    model.eventModel.hostName =
+                                        user.displayName ?? '';
+                                    model.eventModel.hostImage =
+                                        user.photoURL ?? '';
+                                  } else {
+                                    // Optional: show error
+                                    Get.snackbar('Error', 'User not logged in');
+                                    return;
+                                  }
+
+                                  // 🔥 Save event
+                                  model
+                                      .addEvent("${firstName + surName}")
+                                      .then((_) {
+                                        Get.offAll(() => RootScreen());
+                                      })
+                                      .catchError((error) {
+                                        Get.snackbar(
+                                          'Error',
+                                          'Failed to add event: $error',
+                                          colorText: blackColor,
+                                          backgroundColor: secondaryColor,
+                                        );
+                                      });
+                                } else {
+                                  Get.snackbar(
+                                    'Validation Error',
+                                    'Please fill all required fields correctly.',
+                                    snackPosition: SnackPosition.TOP,
+                                  );
+                                }
+                              },
+
+                              text: 'Add Event',
+                              backgroundColor: primaryColor,
+                            );
                           },
-                          text: 'Add Event',
-                          backgroundColor: primaryColor,
                         ),
 
                         50.verticalSpace,

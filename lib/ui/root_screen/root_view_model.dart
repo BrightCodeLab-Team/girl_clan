@@ -19,11 +19,7 @@ class RootScreenViewModel extends BaseViewModel {
     AppAssets().profileIcon,
   ];
 
-  List<Widget> allScreen = [
-    const HomeScreen(),
-    MainChatScreen(),
-    ProfileScreen(),
-  ];
+  List<Widget> allScreen = [HomeScreen(), MainChatScreen(), ProfileScreen()];
 
   ///
   /// Constructor

@@ -1,19 +1,18 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/model/message_model.dart';
-import 'package:girl_clan/core/model/user_model.dart';
 
 class MessageBubble extends StatelessWidget {
   final MessageModel message;
   final bool showProfilePic; // Re-added this crucial property
 
   const MessageBubble({
-    Key? key,
     required this.message,
     this.showProfilePic = true, // Default to true for group chat behavior
-  }) : super(key: key);
-
+  });
   @override
   Widget build(BuildContext context) {
     if (message.isTypingIndicator) {

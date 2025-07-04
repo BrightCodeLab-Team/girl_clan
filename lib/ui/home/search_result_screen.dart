@@ -116,7 +116,13 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
                               scrollDirection: Axis.vertical,
                               itemBuilder: (BuildContext context, int index) {
                                 return GestureDetector(
-                                  onTap: () => Get.to(EventsDetailsScreen()),
+                                  onTap:
+                                      () => Get.to(
+                                        EventsDetailsScreen(
+                                          eventModel:
+                                              model.upcomingEventsList[index],
+                                        ),
+                                      ),
                                   child: CustomSearchResultCard(
                                     eventModel: model.upcomingEventsList[index],
                                   ),

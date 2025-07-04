@@ -90,7 +90,12 @@ class _UpComingEventsScreenState extends State<UpComingEventsScreen> {
                                   ) {
                                     return GestureDetector(
                                       onTap: () {
-                                        Get.to(EventsDetailsScreen());
+                                        Get.to(
+                                          EventsDetailsScreen(
+                                            eventModel:
+                                                model.upcomingEventsList[index],
+                                          ),
+                                        );
                                       },
                                       child: CustomSearchResultCard(
                                         eventModel:

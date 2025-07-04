@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/route_manager.dart';
@@ -12,7 +14,6 @@ import 'package:girl_clan/ui/password/forget_password_screen.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {

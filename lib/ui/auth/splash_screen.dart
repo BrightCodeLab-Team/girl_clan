@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/app_assets.dart';
-
-import 'package:girl_clan/ui/auth/welcome_screen.dart'
-    show WelcomeScreen; // Update this import to match your file structure
+import 'package:girl_clan/ui/auth/welcome_screen.dart';
+import 'package:girl_clan/ui/root_screen/root_screen.dart'; // Update this import to match your file structure
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -19,9 +20,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Navigate to WelcomeScreen after 5 seconds
     Timer(const Duration(seconds: 5), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const WelcomeScreen()),
-      );
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        // User is logged in → Navigate to RootScreen or HomeScreen
+        Get.offAll(() => RootScreen());
+      } else {
+        Get.offAll(() => WelcomeScreen());
+      }
     });
   }
 

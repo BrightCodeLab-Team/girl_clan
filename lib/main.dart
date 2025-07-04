@@ -11,7 +11,6 @@ import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart'; // This is cor
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:girl_clan/ui/password/password_view_model.dart';
 import 'package:girl_clan/ui/profile/profile_view_model.dart';
-import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:girl_clan/ui/root_screen/root_view_model.dart';
 import 'package:provider/provider.dart';
 
@@ -34,23 +33,12 @@ class MyApp extends StatelessWidget {
       builder: (_, child) {
         return MultiProvider(
           providers: [
-            ChangeNotifierProvider(create: (_) => RootScreenViewModel()),
-            ChangeNotifierProvider(create: (_) => HomeViewModel()),
-            ChangeNotifierProvider(create: (_) => ProfileViewModel()),
-            ChangeNotifierProvider(create: (_) => AddEventViewModel()),
-            ChangeNotifierProvider(create: (_) => PasswordViewModel()),
-
-            // CORRECTED: Provide NewChatViewModel without any parameters
-            // This ViewModel only holds the *lists* of chats/groups.
-            ChangeNotifierProvider(
-              create:
-                  (_) => ChatViewModel(
-                    chatTitle: '',
-                    chatImageUrl: '',
-                    isGroupChat: false,
-                    receiverId: '',
-                  ),
-            ),
+            ChangeNotifierProvider(create: (context) => RootScreenViewModel()),
+            ChangeNotifierProvider(create: (context) => HomeViewModel()),
+            ChangeNotifierProvider(create: (context) => ProfileViewModel()),
+            ChangeNotifierProvider(create: (context) => AddEventViewModel()),
+            ChangeNotifierProvider(create: (context) => PasswordViewModel()),
+            ChangeNotifierProvider(create: (context) => ChatViewModel()),
           ],
           child: GetMaterialApp(
             debugShowCheckedModeBanner: false,

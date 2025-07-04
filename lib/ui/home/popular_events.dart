@@ -116,7 +116,12 @@ class _PopularEventsScreenState extends State<PopularEventsScreen> {
                                       padding: const EdgeInsets.only(top: 10.0),
                                       child: GestureDetector(
                                         onTap: () {
-                                          Get.to(EventsDetailsScreen());
+                                          Get.to(
+                                            EventsDetailsScreen(
+                                              eventModel:
+                                                  model.allEventsList[index],
+                                            ),
+                                          );
                                         },
                                         child: CustomHomeTopPickEventsCard(
                                           eventModel:
@@ -152,7 +157,12 @@ class _PopularEventsScreenState extends State<PopularEventsScreen> {
                                       padding: const EdgeInsets.only(top: 10.0),
                                       child: GestureDetector(
                                         onTap: () {
-                                          Get.to(EventsDetailsScreen());
+                                          Get.to(
+                                            EventsDetailsScreen(
+                                              eventModel:
+                                                  model.hikingList[index],
+                                            ),
+                                          );
                                         },
                                         child: CustomHomeTopPickEventsCard(
                                           eventModel: model.hikingList[index],
@@ -187,7 +197,12 @@ class _PopularEventsScreenState extends State<PopularEventsScreen> {
                                       padding: const EdgeInsets.only(top: 10.0),
                                       child: GestureDetector(
                                         onTap: () {
-                                          Get.to(EventsDetailsScreen());
+                                          Get.to(
+                                            EventsDetailsScreen(
+                                              eventModel:
+                                                  model.partyList[index],
+                                            ),
+                                          );
                                         },
                                         child: CustomHomeTopPickEventsCard(
                                           eventModel: model.partyList[index],
@@ -222,7 +237,12 @@ class _PopularEventsScreenState extends State<PopularEventsScreen> {
                                       padding: const EdgeInsets.only(top: 10.0),
                                       child: GestureDetector(
                                         onTap: () {
-                                          Get.to(EventsDetailsScreen());
+                                          Get.to(
+                                            EventsDetailsScreen(
+                                              eventModel:
+                                                  model.concertList[index],
+                                            ),
+                                          );
                                         },
                                         child: CustomHomeTopPickEventsCard(
                                           eventModel: model.concertList[index],
@@ -257,7 +277,12 @@ class _PopularEventsScreenState extends State<PopularEventsScreen> {
                                       padding: const EdgeInsets.only(top: 10.0),
                                       child: GestureDetector(
                                         onTap: () {
-                                          Get.to(EventsDetailsScreen());
+                                          Get.to(
+                                            EventsDetailsScreen(
+                                              eventModel:
+                                                  model.workshopList[index],
+                                            ),
+                                          );
                                         },
                                         child: CustomHomeTopPickEventsCard(
                                           eventModel: model.workshopList[index],
@@ -292,7 +317,12 @@ class _PopularEventsScreenState extends State<PopularEventsScreen> {
                                       padding: const EdgeInsets.only(top: 10.0),
                                       child: GestureDetector(
                                         onTap: () {
-                                          Get.to(EventsDetailsScreen());
+                                          Get.to(
+                                            EventsDetailsScreen(
+                                              eventModel:
+                                                  model.sportsList[index],
+                                            ),
+                                          );
                                         },
                                         child: CustomHomeTopPickEventsCard(
                                           eventModel: model.sportsList[index],
@@ -327,7 +357,13 @@ class _PopularEventsScreenState extends State<PopularEventsScreen> {
                                       padding: const EdgeInsets.only(top: 10.0),
                                       child: GestureDetector(
                                         onTap: () {
-                                          Get.to(EventsDetailsScreen());
+                                          Get.to(
+                                            EventsDetailsScreen(
+                                              eventModel:
+                                                  model
+                                                      .artExhibitionsList[index],
+                                            ),
+                                          );
                                         },
                                         child: CustomHomeTopPickEventsCard(
                                           eventModel:

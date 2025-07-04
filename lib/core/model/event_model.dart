@@ -1,20 +1,25 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:girl_clan/core/constants/app_assets.dart';
 
 class EventModel {
-  final currentUser = FirebaseAuth.instance.currentUser;
-  String? id; // Unique ID for each event
+  String? id;
   String? eventName;
   String? location;
-  String? date; // Storing as String for now, could be DateTime
-  String? startTime; // Storing as String for now, could be TimeOfDay
+  String? date;
+  String? startTime;
   String? category;
-  String? imageUrl; // Path to the image
-  String? joiningPeople; // Number of people joining
-  String?
-  availablePeople; // Number of people available (not quite sure what this means in your context, but including it as requested)
+  String? imageUrl;
+  String? joiningPeople;
+  String? availablePeople;
   String? description;
   String? capacity;
+
+  // 🔥 Chat logic fields
+  String? hostUserId;
+  String? hostName;
+  String? hostImage;
+
+  // 🔥 NEW: List of users who joined
+  List<String>? joinedUsers;
 
   EventModel({
     this.id,
@@ -24,15 +29,18 @@ class EventModel {
     this.startTime,
     this.category,
     this.imageUrl,
-    this.joiningPeople, // Default to 0
-    this.availablePeople, // Default to 0
+    this.joiningPeople,
+    this.availablePeople,
     this.description,
     this.capacity,
+    this.hostUserId,
+    this.hostName,
+    this.hostImage,
+    this.joinedUsers,
   });
-  // Method to convert an Event to a Map (useful for persistence)
+
   Map<String, dynamic> toJson() {
     return {
-      //'id': currentUser?.uid ?? '',
       'id': id ?? '',
       'eventName': eventName ?? '',
       'location': location ?? '',
@@ -40,27 +48,37 @@ class EventModel {
       'startTime': startTime ?? '',
       'category': category ?? '',
       'imageUrl': imageUrl ?? AppAssets().loginImage,
-      'joiningPeople': joiningPeople ?? 0,
-      'availablePeople': availablePeople ?? 0,
+      'joiningPeople': joiningPeople ?? '0',
+      'availablePeople': availablePeople ?? '0',
       'description': description ?? '',
-      'capacity': capacity ?? '', // Default to 0
+      'capacity': capacity ?? '',
+      'hostUserId': hostUserId ?? '',
+      'hostName': hostName ?? '',
+      'hostImage': hostImage ?? '',
+      'joinedUsers': joinedUsers ?? [],
     };
   }
 
-  // Factory constructor to create an Event from a Map (useful for persistence)
   factory EventModel.fromJson(Map<String, dynamic> json) {
     return EventModel(
-      id: json['id'].toString(),
-      eventName: json['eventName'].toString(),
-      location: json['location'].toString(),
-      date: json['date'].toString(),
-      startTime: json['startTime'].toString(),
-      category: json['category'].toString(),
-      imageUrl: json['imageUrl'].toString(),
+      id: json['id']?.toString(),
+      eventName: json['eventName']?.toString(),
+      location: json['location']?.toString(),
+      date: json['date']?.toString(),
+      startTime: json['startTime']?.toString(),
+      category: json['category']?.toString(),
+      imageUrl: json['imageUrl']?.toString(),
       joiningPeople: json['joiningPeople']?.toString() ?? '0',
       availablePeople: json['availablePeople']?.toString() ?? '0',
-      capacity: json['capacity'].toString(),
-      description: json['description'].toString(),
+      capacity: json['capacity']?.toString(),
+      description: json['description']?.toString(),
+      hostUserId: json['hostUserId']?.toString(),
+      hostName: json['hostName']?.toString(),
+      hostImage: json['hostImage']?.toString(),
+      joinedUsers:
+          json['joinedUsers'] != null
+              ? List<String>.from(json['joinedUsers'])
+              : [],
     );
   }
 }

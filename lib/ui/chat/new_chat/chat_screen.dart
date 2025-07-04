@@ -1,7 +1,6 @@
 // lib/ui/chat_screen/chat_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart';
 import 'package:girl_clan/ui/chat/new_chat/message_bubble.dart';
 import 'package:provider/provider.dart';

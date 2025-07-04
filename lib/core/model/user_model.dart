@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:girl_clan/core/constants/app_assets.dart';
 
 class UserModel {
@@ -5,7 +6,7 @@ class UserModel {
   final String imageUrl;
   final String name;
   final String message;
-  final String time;
+  final DateTime? time;
 
   UserModel({
     this.id,
@@ -28,11 +29,12 @@ class UserModel {
   // Factory constructor to create an Event from a Map (useful for persistence)
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'].toString(),
+      id: json['id'] ?? '', // Optional: If Firestore stores 'id'
+
       name: json['name'].toString(),
       imageUrl: json['profileImageUrl'].toString(),
       message: json['message'].toString(),
-      time: json['time'].toString(),
+      time: json['time'] != null ? (json['time'] as Timestamp).toDate() : null,
     );
   }
 }

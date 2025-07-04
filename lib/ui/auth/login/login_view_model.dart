@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';

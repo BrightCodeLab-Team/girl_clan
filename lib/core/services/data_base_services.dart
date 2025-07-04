@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/core/model/user_model.dart';
 
 class DatabaseServices {
   final _db = FirebaseFirestore.instance;
+
+  final List<UserModel> userModels = [];
 
   static final DatabaseServices _singleton = DatabaseServices._internal();
 
@@ -18,27 +21,23 @@ class DatabaseServices {
   ///
   ///. fetch all current user events
   ///
-  Future<List<EventModel>> getCurrentUserEvents(String userId) async {
+  Future<List<EventModel>> getCurrentUserEvents(currentUserId) async {
     try {
       final snapshot =
-          await _db.collection('events').where('id', isEqualTo: userId).get();
-
-      debugPrint('Found ${snapshot.docs.length} user events for user $userId');
+          await _db
+              .collection('events')
+              .where('id', isEqualTo: currentUserId)
+              .get();
 
       final events = <EventModel>[];
 
+      print("events lenght==> ${events.length}");
+
       for (var doc in snapshot.docs) {
-        try {
-          final data = doc.data();
-          data['id'] = doc.id;
-
-          debugPrint('User event: ${data['eventName']} on ${data['date']}');
-
-          final event = EventModel.fromJson(data);
-          events.add(event);
-        } catch (e) {
-          debugPrint('Error processing user event ${doc.id}: $e');
-        }
+        final data = doc.data();
+        data['id'] = doc.id;
+        final event = EventModel.fromJson(data);
+        events.add(event);
       }
 
       return events;
@@ -51,12 +50,13 @@ class DatabaseServices {
 
   ///
   ///. ad event details to database
-  addEventsToDataBase(EventModel eventModel) async {
+  addEventsToDataBase(EventModel eventModel, hostName) async {
     try {
-      await _db
-          .collection('events')
-          .add(eventModel.toJson())
-          .then((value) => debugPrint('user registered successfully'));
+      final ref = _db.collection('events');
+      eventModel.id = currentUserId;
+      eventModel.hostName = hostName;
+      eventModel = ref.add(eventModel.toJson()) as EventModel;
+      print("event data ${eventModel.toJson()}");
     } catch (e, s) {
       debugPrint('Exception @DatabaseService/addEvent');
       debugPrint(s.toString());
@@ -395,7 +395,7 @@ class DatabaseServices {
     required String text,
   }) async {
     try {
-      final chatId = _getChatId(currentUserId, receiverId);
+      final chatId =   _getChatId(currentUserId, receiverId);
       final messageRef =
           _firestore
               .collection('chats')
@@ -451,38 +451,161 @@ class DatabaseServices {
   }
 
   // Get all users for chat list
-  Future<List<UserModel>> getAllUsers() async {
+  // Future<List<UserModel>> getChatUsersForCurrentUser() async {
+  //   try {
+  //     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+  //     if (currentUserId == null) return [];
+
+  //     final snapshot =
+  //         await FirebaseFirestore.instance
+  //             .collection('chats')
+  //             .where('participants', arrayContains: currentUserId)
+  //             .get();
+
+  //     final List<UserModel> userModels = [];
+
+  //     for (var doc in snapshot.docs) {
+  //       final participants = doc['participants'] as List<dynamic>;
+  //       final otherUserId = participants.firstWhere(
+  //         (id) => id != currentUserId,
+  //         orElse: () => null,
+  //       );
+
+  //       if (otherUserId != null) {
+  //         final userDoc =
+  //             await FirebaseFirestore.instance
+  //                 .collection('app-user')
+  //                 .doc(otherUserId)
+  //                 .get();
+
+  //         if (userDoc.exists) {
+  //           userModels.add(UserModel.fromJson(userDoc.data()!));
+  //         }
+  //       }
+  //     }
+
+  //     return userModels;
+  //   } catch (e) {
+  //     debugPrint('Error loading chat users: $e');
+  //     return [];
+  //   }
+  // }
+
+  Future<List<UserModel>> getAllChatUsers() async {
     try {
-      // Exclude current user from the list
+      final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+      if (currentUserId == null) return [];
+
       final snapshot =
-          await _firestore
-              .collection('users')
-              .where('id', isNotEqualTo: currentUserId)
+          await FirebaseFirestore.instance
+              .collection('chats')
+              .where('participants', arrayContains: currentUserId)
               .get();
 
-      return snapshot.docs.map((doc) {
-        final data = doc.data();
-        return UserModel(
-          id: doc.id,
-          name: data['name'] ?? 'Unknown',
-          imageUrl: data['profileImageUrl'] ?? '',
-          message: data['lastMessage'] ?? '',
-          time:
-              data['lastMessageTime'] != null
-                  ? _formatTimestamp(data['lastMessageTime'])
-                  : '',
+      final List<UserModel> userModels = [];
+
+      for (var doc in snapshot.docs) {
+        final participants = doc['participants'] as List<dynamic>;
+        final otherUserId = participants.firstWhereOrNull(
+          (id) => id != currentUserId,
         );
-      }).toList();
+
+        if (otherUserId != null) {
+          final userDoc =
+              await FirebaseFirestore.instance
+                  .collection('app-user')
+                  .doc(otherUserId)
+                  .get();
+
+          if (userDoc.exists && userDoc.data() != null) {
+            final userData = userDoc.data()!;
+            userData['id'] = userDoc.id;
+            userData['name'] =
+                '${userData['firstName']} ${userData['surName']}';
+            userData['imageUrl'] = userData['profileImageUrl'] ?? '';
+            userData['message'] = doc['lastMessage'];
+            userData['time'] = doc['lastMessageTime'];
+
+            userModels.add(UserModel.fromJson(userData));
+          }
+        }
+      }
+
+      return userModels;
     } catch (e) {
-      debugPrint('Error getting users: $e');
+      debugPrint('Error fetching chat users: $e');
       return [];
     }
+  }
+
+  Future<bool> joinEvent(String eventId, String userId) async {
+    try {
+      final eventRef = _db.collection('events').doc(eventId);
+
+      await eventRef.update({
+        'joinedUsers': FieldValue.arrayUnion([userId]),
+      });
+
+      return true;
+    } catch (e) {
+      debugPrint('Error in joinEvent: $e');
+      return false;
+    }
+  }
+
+  Future<bool> leaveEvent(String eventId, String userId) async {
+    try {
+      final eventRef = _db.collection('events').doc(eventId);
+
+      await eventRef.update({
+        'joinedUsers': FieldValue.arrayRemove([userId]),
+      });
+
+      return true;
+    } catch (e) {
+      debugPrint('Error in leaveEvent: $e');
+      return false;
+    }
+  }
+
+  Future<bool> isUserJoined(String eventId, String userId) async {
+    try {
+      final doc = await _db.collection('events').doc(eventId).get();
+
+      if (doc.exists) {
+        final data = doc.data();
+        final joinedUsers = List<String>.from(data?['joinedUsers'] ?? []);
+        return joinedUsers.contains(userId);
+      }
+
+      return false;
+    } catch (e) {
+      debugPrint('Error in isUserJoined: $e');
+      return false;
+    }
+  }
+
+  Future<Map<String, int>> getEventSeatData(String eventId) async {
+    final doc = await _db.collection('events').doc(eventId).get();
+    if (doc.exists) {
+      final data = doc.data();
+      final capacity = int.tryParse(data?['capacity'] ?? '0') ?? 0;
+      final joined = int.tryParse(data?['joiningPeople'] ?? '0') ?? 0;
+      return {'capacity': capacity, 'joined': joined};
+    }
+    return {'capacity': 0, 'joined': 0};
+  }
+
+  Future<void> updateSeatCount(String eventId, int newCount) async {
+    await _db.collection('events').doc(eventId).update({
+      'joiningPeople': newCount.toString(),
+    });
   }
 
   // Helper methods
   Future<String> _getUserName(String userId) async {
     final doc = await _firestore.collection('users').doc(userId).get();
-    return doc.data()?['name'] ?? 'Unknown';
+    return doc.data()?['name'] ?? '';
   }
 
   Future<String> _getUserAvatar(String userId) async {
@@ -490,14 +613,14 @@ class DatabaseServices {
     return doc.data()?['profileImageUrl'] ?? '';
   }
 
-  String _formatTimestamp(Timestamp timestamp) {
-    final now = DateTime.now();
-    final date = timestamp.toDate();
-    final difference = now.difference(date);
+  // String _formatTimestamp(Timestamp timestamp) {
+  //   final now = DateTime.now();
+  //   final date = timestamp.toDate();
+  //   final difference = now.difference(date);
 
-    if (difference.inMinutes < 1) return 'Just now';
-    if (difference.inHours < 1) return '${difference.inMinutes}m ago';
-    if (difference.inDays < 1) return '${difference.inHours}h ago';
-    return '${difference.inDays}d ago';
-  }
+  //   if (difference.inMinutes < 1) return 'Just now';
+  //   if (difference.inHours < 1) return '${difference.inMinutes}m ago';
+  //   if (difference.inDays < 1) return '${difference.inHours}h ago';
+  //   return '${difference.inDays}d ago';
+  // }
 }

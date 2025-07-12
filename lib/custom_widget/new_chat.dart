@@ -30,7 +30,7 @@ class MainChatItem extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage(chat.imageUrl),
+                  backgroundImage: AssetImage(chat.imageUrl ?? ""),
                 ),
                 10.horizontalSpace,
                 Column(
@@ -38,7 +38,7 @@ class MainChatItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
-                    Text(chat.name, style: style14B),
+                    Text(chat.name ?? "", style: style14B),
                     Text(
                       chat.message ?? "",
                       style: style12.copyWith(

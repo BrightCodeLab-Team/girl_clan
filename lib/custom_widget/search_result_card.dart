@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors_in_immutables
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
@@ -5,13 +7,8 @@ import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/model/event_model.dart';
 
 class CustomSearchResultCard extends StatelessWidget {
-  // final UpComingEventsCardModel upComingEventsCardModel;
   final EventModel eventModel;
-  const CustomSearchResultCard({
-    super.key,
-    //  required this.upComingEventsCardModel,
-    required this.eventModel,
-  });
+  CustomSearchResultCard({required this.eventModel});
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +33,10 @@ class CustomSearchResultCard extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
+              child: Image.network(
                 // image
-                eventModel.imageUrl ?? '',
+                eventModel.imageUrl ??
+                    "https://as2.ftcdn.net/jpg/01/24/14/21/1000_F_124142194_1n6MwMGUm9LQOSoa63jBfLlW0E2KNi7E.jpg",
                 height: 105.h,
                 width: double.infinity,
                 fit: BoxFit.cover,

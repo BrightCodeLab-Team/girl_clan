@@ -3,18 +3,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/route_manager.dart';
-import 'package:girl_clan/core/constants/app_assets.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/model/event_model.dart';
+import 'package:girl_clan/core/services/data_base_services.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
+import 'package:girl_clan/custom_widget/loaders/join_event_loader.dart';
+import 'package:girl_clan/custom_widget/loaders/leave_event_loader.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_screen.dart';
+import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:provider/provider.dart';
 
 class EventsDetailsScreen extends StatefulWidget {
   EventModel? eventModel;
-  EventsDetailsScreen({required this.eventModel});
+  EventsDetailsScreen({this.eventModel});
 
   @override
   State<EventsDetailsScreen> createState() => _EventsDetailsScreenState();
@@ -74,19 +77,36 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
       return;
     }
 
-    setState(() => isLoading = true);
-    await model.joinEvent(widget.eventModel!.id!);
-    await model.updateSeatCount(widget.eventModel!.id!, bookedSeats + 1);
-    await fetchInitialData();
-    setState(() => isLoading = false);
+    // loader screen pe jao aur process waha chalega
+    Get.to(
+      () => JoiningEventLoaderScreen(
+        processCall: () async {
+          await model.joinEvent(widget.eventModel!.id!);
+          await model.updateSeatCount(widget.eventModel!.id!, bookedSeats + 1);
+          await fetchInitialData();
+          return true;
+        },
+        eventName: '${widget.eventModel!.eventName}',
+        eventTime: '${widget.eventModel!.startTime}',
+        eventModel: widget.eventModel!,
+        // onClose: () async {
+        //   await fetchInitialData();
+        //   Get.back(); // ✅ just go back
+        // },
+      ),
+    );
   }
 
   Future<void> handleLeave(HomeViewModel model) async {
-    setState(() => isLoading = true);
-    await model.leaveEvent(widget.eventModel!.id!);
-    await model.updateSeatCount(widget.eventModel!.id!, bookedSeats - 1);
-    await fetchInitialData();
-    setState(() => isLoading = false);
+    await Get.to(
+      LeaveEventLoader(
+        onFinished: () async {
+          await model.leaveEvent(widget.eventModel!.id!);
+          await model.updateSeatCount(widget.eventModel!.id!, bookedSeats - 1);
+          await fetchInitialData(); // refresh data
+        },
+      ),
+    );
   }
 
   @override
@@ -104,16 +124,38 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           /// Event Image
-                          SizedBox(
-                            height: 275.h,
-                            width: double.infinity,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Image.asset(
-                                AppAssets().loginImage,
-                                fit: BoxFit.cover,
+                          Stack(
+                            children: [
+                              SizedBox(
+                                height: 275.h,
+                                width: double.infinity,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(20),
+                                    bottomLeft: Radius.circular(20),
+                                  ),
+                                  child: Image.network(
+                                    widget.eventModel!.imageUrl ??
+                                        "https://as2.ftcdn.net/jpg/01/24/14/21/1000_F_124142194_1n6MwMGUm9LQOSoa63jBfLlW0E2KNi7E.jpg",
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
                               ),
-                            ),
+
+                              Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: IconButton(
+                                  onPressed: () {
+                                    Get.back();
+                                  },
+                                  icon: Icon(
+                                    Icons.arrow_back_ios_new,
+                                    size: 30,
+                                    color: primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           10.verticalSpace,
 
@@ -257,74 +299,167 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                                     backgroundColor: primaryColor,
                                   )
                                 else
-                                  Row(
+                                  Column(
                                     children: [
-                                      Expanded(
-                                        child: CustomButton(
-                                          onTap: () {
-                                            if (widget.eventModel!.hostUserId !=
-                                                    null &&
-                                                widget
-                                                    .eventModel!
-                                                    .hostUserId!
-                                                    .isNotEmpty) {
-                                              Get.to(
-                                                () => ChatScreen(
-                                                  chatTitle:
-                                                      widget
-                                                          .eventModel!
-                                                          .hostName ??
-                                                      'Host',
-                                                  chatImageUrl:
-                                                      widget
-                                                          .eventModel!
-                                                          .hostImage ??
-                                                      '',
-                                                  isGroupChat: false,
-                                                ),
-                                              );
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: CustomButton(
+                                              onTap: () {
+                                                if (widget
+                                                            .eventModel!
+                                                            .hostUserId !=
+                                                        null &&
+                                                    widget
+                                                        .eventModel!
+                                                        .hostUserId!
+                                                        .isNotEmpty) {
+                                                  Get.to(
+                                                    () => ChangeNotifierProvider(
+                                                      create:
+                                                          (_) => ChatViewModel(
+                                                            chatTitle:
+                                                                widget
+                                                                    .eventModel!
+                                                                    .hostName ??
+                                                                '',
+                                                            chatImageUrl:
+                                                                widget
+                                                                    .eventModel!
+                                                                    .hostImage ??
+                                                                '',
+                                                            isGroupChat: false,
+                                                            receiverId:
+                                                                widget
+                                                                    .eventModel!
+                                                                    .hostUserId ??
+                                                                '',
+                                                          ),
+                                                      child: ChatScreen(
+                                                        chatTitle:
+                                                            widget
+                                                                .eventModel!
+                                                                .hostName ??
+                                                            '',
+                                                        chatImageUrl:
+                                                            widget
+                                                                .eventModel!
+                                                                .hostImage ??
+                                                            '',
+                                                        isGroupChat: false,
+                                                      ),
+                                                    ),
+                                                  );
 
-                                              print(
-                                                "user hostUserName: ${widget.eventModel?.hostName}",
-                                              );
+                                                  print(
+                                                    "user hostUserName: ${widget.eventModel?.hostName}",
+                                                  );
 
-                                              print(
-                                                "user hostUserId: ${widget.eventModel?.hostUserId}",
-                                              );
+                                                  print(
+                                                    "user hostUserId: ${widget.eventModel?.hostUserId}",
+                                                  );
 
-                                              print(
-                                                "user id: ${widget.eventModel?.id}",
-                                              );
-                                            } else {
-                                              ScaffoldMessenger.of(
-                                                context,
-                                              ).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    'Host info not available.',
-                                                  ),
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          text: 'Join Chat',
-                                          backgroundColor: secondaryColor,
-                                        ),
+                                                  print(
+                                                    "user id: ${widget.eventModel?.id}",
+                                                  );
+                                                } else {
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'Host info not available.',
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+                                              text: 'Message to Host',
+                                              backgroundColor: Color(
+                                                0xff2B2B2B,
+                                              ),
+                                            ),
+                                          ),
+                                          10.horizontalSpace,
+                                          Expanded(
+                                            child: CustomButton(
+                                              onTap: () async {
+                                                try {
+                                                  final db = DatabaseServices();
+
+                                                  final groupId = await db
+                                                      .createOrGetGroupForEvent(
+                                                        widget.eventModel!,
+                                                      );
+
+                                                  print(
+                                                    'Joined group with id: $groupId',
+                                                  );
+
+                                                  Get.to(
+                                                    () => ChangeNotifierProvider(
+                                                      create:
+                                                          (_) => ChatViewModel(
+                                                            chatTitle:
+                                                                widget
+                                                                    .eventModel
+                                                                    ?.eventName ??
+                                                                '',
+                                                            chatImageUrl:
+                                                                widget
+                                                                    .eventModel
+                                                                    ?.imageUrl ??
+                                                                '',
+                                                            isGroupChat: true,
+                                                            groupId: groupId,
+                                                          ),
+                                                      child: ChatScreen(
+                                                        chatTitle:
+                                                            widget
+                                                                .eventModel
+                                                                ?.eventName ??
+                                                            '',
+                                                        chatImageUrl:
+                                                            widget
+                                                                .eventModel
+                                                                ?.imageUrl ??
+                                                            '',
+                                                        isGroupChat: true,
+                                                      ),
+                                                    ),
+                                                  );
+                                                } catch (e) {
+                                                  ScaffoldMessenger.of(
+                                                    context,
+                                                  ).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        'Failed to join group: $e',
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              },
+
+                                              text: 'Join Group',
+                                              backgroundColor: primaryColor,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      10.horizontalSpace,
-                                      Expanded(
-                                        child: CustomButton(
-                                          onTap: () => handleLeave(model),
-                                          text: 'Leave Event',
-                                          backgroundColor: primaryColor,
-                                        ),
+
+                                      20.verticalSpace,
+                                      CustomButton(
+                                        onTap: () => handleLeave(model),
+                                        text: 'Leave Event',
+                                        backgroundColor: secondaryColor,
                                       ),
                                     ],
                                   ),
-                                50.verticalSpace,
                               ],
                             ),
                           ),
+                          50.verticalSpace,
                         ],
                       ),
                     ),
@@ -332,265 +467,3 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:get/get.dart';
-// import 'package:girl_clan/core/constants/app_assets.dart';
-// import 'package:girl_clan/core/constants/colors.dart';
-// import 'package:girl_clan/core/constants/text_style.dart';
-// import 'package:girl_clan/core/model/event_model.dart';
-// import 'package:girl_clan/custom_widget/custom_button.dart';
-// import 'package:girl_clan/ui/chat/new_chat/chat_screen.dart';
-// import 'package:girl_clan/ui/home/home_view_model.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:provider/provider.dart';
-
-// class EventsDetailsScreen extends StatefulWidget {
-//   EventModel? eventModel;
-//   EventsDetailsScreen({required this.eventModel});
-//   @override
-//   State<EventsDetailsScreen> createState() => _EventsDetailsScreenState();
-// }
-
-// class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
-//   final CameraPosition _kGooglePlex = CameraPosition(
-//     target: LatLng(37.42796133580664, -122.085749655962),
-//     zoom: 14.4746,
-//   );
-
-//   final Set<Marker> _markers = {
-//     Marker(
-//       markerId: MarkerId('eventLocation'),
-//       position: LatLng(37.42796133580664, -122.085749655962),
-//       infoWindow: InfoWindow(title: 'Event Location'),
-//     ),
-//   };
-
-//   bool isJoined = false; // Track if user has joined the event
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Consumer<HomeViewModel>(
-//       builder:
-//           (context, model, child) => Scaffold(
-//             body: SingleChildScrollView(
-//               child: Column(
-//                 mainAxisAlignment: MainAxisAlignment.start,
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   SizedBox(
-//                     height: 275.h,
-//                     width: double.infinity,
-//                     child: ClipRRect(
-//                       borderRadius: BorderRadius.circular(20),
-//                       child: Image.asset(
-//                         AppAssets().loginImage,
-//                         fit: BoxFit.cover,
-//                       ),
-//                     ),
-//                   ),
-//                   10.verticalSpace,
-//                   Padding(
-//                     padding: EdgeInsets.symmetric(horizontal: 10.w),
-//                     child: Column(
-//                       crossAxisAlignment: CrossAxisAlignment.start,
-//                       mainAxisAlignment: MainAxisAlignment.start,
-//                       children: [
-//                         Row(
-//                           crossAxisAlignment: CrossAxisAlignment.start,
-//                           children: [
-//                             Text(
-//                               "${widget.eventModel!.eventName}" ?? "",
-//                               style: style18B.copyWith(),
-//                             ),
-//                             Spacer(),
-//                             Row(
-//                               children: [
-//                                 Text(
-//                                   '06/24',
-//                                   style: style14B.copyWith(color: primaryColor),
-//                                 ),
-//                                 4.horizontalSpace,
-//                                 5.verticalSpace,
-//                                 Text(
-//                                   'Available',
-//                                   style: style14B.copyWith(fontSize: 10),
-//                                 ),
-//                               ],
-//                             ),
-//                           ],
-//                         ),
-//                         10.verticalSpace,
-//                         Row(
-//                           children: [
-//                             Text(
-//                               '03/23/2025',
-//                               style: style14.copyWith(
-//                                 fontSize: 12,
-//                                 fontWeight: FontWeight.w500,
-//                               ),
-//                             ),
-//                             4.horizontalSpace,
-//                             Container(
-//                               height: 10.h,
-//                               width: 1.w,
-//                               color: blackColor,
-//                             ),
-//                             4.horizontalSpace,
-//                             Text(
-//                               '09:00 PM',
-//                               style: style14.copyWith(
-//                                 fontSize: 12,
-//                                 fontWeight: FontWeight.w500,
-//                               ),
-//                             ),
-//                             Spacer(),
-//                             Container(
-//                               height: 27.h,
-//                               width: 72,
-//                               decoration: BoxDecoration(
-//                                 color: primaryColor,
-//                                 borderRadius: BorderRadius.circular(99),
-//                               ),
-//                               child: Center(
-//                                 child: Text(
-//                                   "${widget.eventModel!.category}" ?? "",
-
-//                                   style: style14B.copyWith(color: whiteColor),
-//                                 ),
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                         10.verticalSpace,
-
-//                         ///
-//                         ///  location
-//                         ///
-//                         Row(
-//                           crossAxisAlignment: CrossAxisAlignment.start,
-//                           children: [
-//                             Icon(Icons.location_on_outlined, size: 15.h),
-//                             1.horizontalSpace,
-//                             Text(
-//                               "${widget.eventModel!.location}" ?? "",
-//                               style: style14.copyWith(fontSize: 12),
-//                             ),
-//                           ],
-//                         ),
-//                         20.verticalSpacingRadius,
-//                         Text('About Event', style: style16B.copyWith()),
-//                         10.verticalSpace,
-//                         Text(
-//                           "${widget.eventModel!.description}" ?? "",
-//                           style: style14.copyWith(fontSize: 13),
-//                         ),
-//                         20.verticalSpace,
-//                         Text('Location', style: style16B.copyWith()),
-//                         10.verticalSpace,
-
-//                         ///
-//                         ///      location --> google map
-//                         ///
-//                         Container(
-//                           height: 180.h,
-//                           width: double.infinity,
-//                           decoration: BoxDecoration(
-//                             borderRadius: BorderRadius.circular(20),
-//                           ),
-//                           child: ClipRRect(
-//                             borderRadius: BorderRadius.circular(10),
-//                             child: Text(
-//                               'Google Map Placeholder',
-//                               style: style14.copyWith(color: Colors.grey),
-//                               textAlign: TextAlign.center,
-//                             ),
-//                             // GoogleMap(
-//                             //   initialCameraPosition: _kGooglePlex,
-//                             //   markers: _markers,
-//                             //   mapType: MapType.normal,
-//                             //   zoomControlsEnabled: false,
-//                             //   myLocationButtonEnabled: false,
-//                             // ),
-//                           ),
-//                         ),
-//                         50.verticalSpace,
-
-//                         ///
-//                         ///  last button - conditionally show join button or action buttons
-//                         ///
-//                         if (!isJoined)
-//                           CustomButton(
-//                             onTap: () {
-//                               setState(() {
-//                                 isJoined = true;
-//                               });
-//                             },
-//                             text: 'Join Events',
-//                             backgroundColor: primaryColor,
-//                           ),
-//                         if (isJoined)
-//                           Row(
-//                             children: [
-//                               Expanded(
-//                                 child: CustomButton(
-//                                   onTap: () {
-//                                     if (widget.eventModel!.hostUserId != null &&
-//                                         widget
-//                                             .eventModel!
-//                                             .hostUserId!
-//                                             .isNotEmpty) {
-//                                       Get.to(
-//                                         () => ChatScreen(
-//                                           chatTitle:
-//                                               widget.eventModel!.hostName ??
-//                                               'Host',
-//                                           chatImageUrl:
-//                                               widget.eventModel!.hostImage ??
-//                                               "",
-//                                           isGroupChat: false,
-//                                         ),
-//                                       );
-//                                     } else {
-//                                       ScaffoldMessenger.of(
-//                                         context,
-//                                       ).showSnackBar(
-//                                         SnackBar(
-//                                           content: Text(
-//                                             'Host info not available.',
-//                                           ),
-//                                         ),
-//                                       );
-//                                     }
-//                                   },
-
-//                                   text: 'Join Chat',
-//                                   backgroundColor: secondaryColor,
-//                                 ),
-//                               ),
-//                               10.horizontalSpace,
-//                               Expanded(
-//                                 child: CustomButton(
-//                                   onTap: () {
-//                                     setState(() {
-//                                       isJoined = false;
-//                                     });
-//                                   },
-//                                   text: 'Leave Event',
-//                                   backgroundColor: primaryColor,
-//                                 ),
-//                               ),
-//                             ],
-//                           ),
-//                         50.verticalSpace,
-//                       ],
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ),
-//     );
-//   }
-// }

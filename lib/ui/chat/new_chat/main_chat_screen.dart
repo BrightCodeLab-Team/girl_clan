@@ -1,11 +1,13 @@
 // ignore_for_file: use_key_in_widget_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/get_navigation.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/core/model/user_model.dart';
 import 'package:girl_clan/custom_widget/new_chat.dart';
 import 'package:girl_clan/custom_widget/shimmer/chat_shimmer.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_screen.dart';
@@ -22,6 +24,7 @@ class MainChatScreen extends StatelessWidget {
             (context, model, child) => RefreshIndicator(
               onRefresh: () async {
                 await model.loadUsers();
+                await model.loadGroups();
                 await model.initMessagesStream();
               },
               child: Scaffold(
@@ -55,6 +58,7 @@ class MainChatScreen extends StatelessWidget {
                               RefreshIndicator(
                                 onRefresh: () async {
                                   model.loadUsers();
+
                                   model.initMessagesStream();
                                 },
                                 child: ListView.builder(
@@ -75,8 +79,8 @@ class MainChatScreen extends StatelessWidget {
                                                       false, // Now passing the actual user ID
                                                 ),
                                             child: ChatScreen(
-                                              chatTitle: user.name,
-                                              chatImageUrl: user.imageUrl,
+                                              chatTitle: user.name ?? "",
+                                              chatImageUrl: user.imageUrl ?? "",
                                               isGroupChat: false,
                                             ),
                                           ),
@@ -95,37 +99,46 @@ class MainChatScreen extends StatelessWidget {
                               ? const ChatShimmerLoader()
                               : RefreshIndicator(
                                 onRefresh: () async {
-                                  model.loadUsers();
+                                  await model.loadGroups();
                                   model.initMessagesStream();
                                 },
                                 child: ListView.builder(
-                                  itemCount: model.chatsList.length,
+                                  itemCount: model.groupsList.length,
                                   itemBuilder: (context, index) {
-                                    final user = model.chatsList[index];
+                                    final group = model.groupsList[index];
                                     return MainChatItem(
-                                      chat: user,
+                                      chat: UserModel(
+                                        id: group['id'],
+                                        name: group['name'],
+                                        imageUrl: group['imageUrl'],
+                                        message: group['lastMessage'] ?? "",
+                                        time:
+                                            (group['lastMessageTime']
+                                                    as Timestamp?)
+                                                ?.toDate(),
+
+                                        // Optionally add message and time if you want
+                                      ),
                                       onTap: () {
                                         Get.to(
                                           ChangeNotifierProvider(
                                             create:
                                                 (ctx) => ChatViewModel(
-                                                  chatTitle: user.name,
-                                                  chatImageUrl: user.imageUrl,
-                                                  receiverId: user.id!,
-                                                  isGroupChat:
-                                                      false, // Now passing the actual user ID
+                                                  chatTitle: group['name'],
+                                                  chatImageUrl:
+                                                      group['imageUrl'],
+                                                  isGroupChat: true,
+                                                  groupId: group['id'],
                                                 ),
                                             child: ChatScreen(
-                                              chatTitle: user.name,
-                                              chatImageUrl: user.imageUrl,
-                                              isGroupChat: false,
+                                              chatTitle: group['name'],
+                                              chatImageUrl: group['imageUrl'],
+                                              isGroupChat: true,
                                             ),
                                           ),
                                         );
-
-                                        print("user name: ${user.name}");
-
-                                        print("user name. ${user.id}");
+                                        print("Group name: ${group['name']}");
+                                        print("Group id: ${group['id']}");
                                       },
                                     );
                                   },

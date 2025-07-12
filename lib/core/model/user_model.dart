@@ -1,27 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:girl_clan/core/constants/app_assets.dart';
 
 class UserModel {
   final String? id;
-  final String imageUrl;
-  final String name;
-  final String message;
+  final String? imageUrl;
+  final String? name;
+  final String? message;
   final DateTime? time;
 
-  UserModel({
-    this.id,
-    required this.imageUrl,
-    required this.name,
-    required this.message,
-    required this.time,
-  });
+  UserModel({this.id, this.imageUrl, this.name, this.message, this.time});
   Map<String, dynamic> toJson() {
     return {
       //'id': currentUser?.uid ?? '',
       'id': id ?? '',
       'name': name ?? '',
       'time': time ?? '',
-      'profileImageUrl': imageUrl ?? AppAssets().loginImage,
+      'profileImageUrl': imageUrl ?? '',
       'message': message ?? '',
     };
   }

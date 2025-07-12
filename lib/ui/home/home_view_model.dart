@@ -284,4 +284,12 @@ class HomeViewModel extends BaseViewModel {
       return false;
     }
   }
+
+  // Future<void> joinGroup(String groupId) async {
+  //   final userId = db.currentUserId;
+  //   final groupDoc = db.firestore.collection('groups').doc(groupId);
+  //   await groupDoc.set({
+  //     'members': FieldValue.arrayUnion([userId]),
+  //   }, SetOptions(merge: true));
+  // }
 }

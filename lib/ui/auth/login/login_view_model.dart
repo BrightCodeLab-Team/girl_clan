@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/ui/root_screen/root_screen.dart';
 
@@ -56,6 +57,7 @@ class LoginViewModel extends BaseViewModel {
   // }
 
   Future<void> LoginUser() async {
+    setState(ViewState.busy);
     try {
       await auth
           .signInWithEmailAndPassword(
@@ -86,6 +88,7 @@ class LoginViewModel extends BaseViewModel {
     } catch (e) {
       print("Login Failed $e");
     }
+    setState(ViewState.idle);
   }
 
   ///

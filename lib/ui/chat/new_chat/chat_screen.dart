@@ -1,6 +1,7 @@
 // lib/ui/chat_screen/chat_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart';
 import 'package:girl_clan/ui/chat/new_chat/message_bubble.dart';
 import 'package:provider/provider.dart';
@@ -185,16 +186,19 @@ class _ChatScreenState extends State<ChatScreen> {
                     10.horizontalSpace,
                     GestureDetector(
                       onTap: () {
-                        model.sendMessage();
+                        if (model.isTyping) {
+                          model.sendMessage();
+                        }
                       },
                       child: CircleAvatar(
                         radius: 25.r,
-                        backgroundColor: Colors.grey.shade100,
-                        child: Icon(
-                          Icons.send,
-                          color: Colors.grey.shade500,
-                          size: 20.r,
-                        ),
+
+                        backgroundColor:
+                            model.isTyping
+                                ? primaryColor
+                                : primaryColor.withOpacity(0.20),
+
+                        child: Icon(Icons.send, color: whiteColor, size: 20.r),
                       ),
                     ),
                   ],

@@ -1,14 +1,21 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, avoid_print
+
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
+import 'package:girl_clan/ui/root_screen/root_screen.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SignUpViewModel extends BaseViewModel {
   bool isLoading = false;
-
+  File? profileImage;
+  String? uploadedImageUrl;
   void setLoading(bool value) {
     isLoading = value;
     notifyListeners(); // or update() if using GetX
@@ -23,6 +30,18 @@ class SignUpViewModel extends BaseViewModel {
   TextEditingController passwordController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController locationController = TextEditingController();
+
+  TextEditingController countryController = TextEditingController();
+  TextEditingController dobController =
+      TextEditingController(); // or store DateTime
+  TextEditingController nationalityController = TextEditingController();
+
+  bool agreeToTerms = false;
+
+  onclickTerms(newValue) {
+    agreeToTerms = newValue ?? false;
+    notifyListeners();
+  }
 
   ///
   ///
@@ -63,6 +82,17 @@ class SignUpViewModel extends BaseViewModel {
   }
 
   ///
+  /// validate Phone number
+  ///
+  String? validatePhoneNumber(String? value) {
+    if (value!.trim().isEmpty) {
+      return 'Please enter your Phone Number';
+    } else {
+      return null;
+    }
+  }
+
+  ///
   ///  validate email Address
   ///
   String? validateEmail(String? value) {
@@ -87,21 +117,71 @@ class SignUpViewModel extends BaseViewModel {
     return null;
   }
 
+  String? validateCountry(String? value) {
+    if (value!.trim().isEmpty) return 'Please select your country/region';
+    return null;
+  }
+
+  String? validateDob(String? value) {
+    if (value!.trim().isEmpty) return 'Please enter your date of birth';
+    return null;
+  }
+
+  String? validateNationality(String? value) {
+    if (value!.trim().isEmpty) return 'Please enter your nationality';
+    return null;
+  }
+
+  final picker = ImagePicker();
+
+  Future<void> pickImageFromGallery() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      profileImage = File(pickedFile.path);
+      notifyListeners();
+    }
+  }
+
+  Future<void> pickImageFromCamera() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      profileImage = File(pickedFile.path);
+      notifyListeners();
+    }
+  }
+
+  Future<void> uploadProfileImageToFirebase() async {
+    if (profileImage == null) return;
+
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child("profile_images")
+        .child("${DateTime.now().millisecondsSinceEpoch}.jpg");
+
+    UploadTask uploadTask = storageRef.putFile(profileImage!);
+    TaskSnapshot snapshot = await uploadTask;
+    uploadedImageUrl = await snapshot.ref.getDownloadURL();
+  }
+
   ///
   ///. signIn user
   ///
 
   Future<void> signInUser() async {
+    setState(ViewState.busy);
     try {
       await auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
       Get.snackbar("Success", "User signed up");
+
+      Get.offAll(RootScreen());
     } on FirebaseAuthException catch (e) {
       print("signIN failed $e");
       Get.snackbar("Error", e.message ?? "Registration failed");
     }
+    setState(ViewState.idle);
   }
 
   ///
@@ -129,14 +209,32 @@ class SignUpViewModel extends BaseViewModel {
             'date': DateTime.now().toIso8601String(),
             'phoneNumber': phoneNumberController.text.trim(),
             'location': locationController.text.trim(),
+            'country': countryController.text.trim(),
+            'dob': dobController.text.trim(),
+            'nationality': nationalityController.text.trim(),
+            'imgUrl': uploadedImageUrl ?? "",
           });
 
-      Get.snackbar('Success', "User details added to database");
       return true;
     } catch (e) {
       print('Uploading user details failed: $e');
       Get.snackbar('Error', "Failed to add user details");
       return false;
     }
+  }
+
+  @override
+  void dispose() {
+    firstNameController.dispose();
+    surNameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    phoneNumberController.dispose();
+    locationController.dispose();
+    countryController.dispose();
+    dobController.dispose();
+    nationalityController.dispose();
+
+    super.dispose();
   }
 }

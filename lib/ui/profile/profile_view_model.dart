@@ -11,7 +11,6 @@ class ProfileViewModel extends BaseViewModel {
   ///
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController surNameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
 
@@ -31,7 +30,6 @@ class ProfileViewModel extends BaseViewModel {
           .update({
             'firstName': firstNameController.text.toString(),
             'surName': surNameController.text.toString(),
-            'email': emailController.text.toString(),
             'phoneNumber': phoneController.text.toString(),
             'location': locationController.text.toString(),
           })
@@ -58,16 +56,9 @@ class ProfileViewModel extends BaseViewModel {
 
       // Firebase logout
       await FirebaseAuth.instance.signOut();
-
-      // Remove loading
-      Get.back();
-
       // Navigate to signup screen
       Get.offAll(() => LoginScreen());
     } catch (e) {
-      // Remove loading if it was shown
-      Get.back();
-
       // Show error
       Get.snackbar(
         'Logout Failed',
@@ -157,5 +148,15 @@ class ProfileViewModel extends BaseViewModel {
       return 'Please enter a valid phone number';
     }
     return null;
+  }
+
+  @override
+  void dispose() {
+    firstNameController.dispose();
+    surNameController.dispose();
+    locationController.dispose();
+
+    phoneController.dispose();
+    super.dispose();
   }
 }

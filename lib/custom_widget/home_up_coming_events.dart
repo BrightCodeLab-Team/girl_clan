@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:girl_clan/core/constants/app_assets.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/model/event_model.dart';
@@ -29,7 +28,11 @@ class CustomUpComingEventsCard extends StatelessWidget {
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.asset(AppAssets().loginImage, fit: BoxFit.cover),
+              child: Image.network(
+                eventModel.imageUrl ??
+                    "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           7.horizontalSpace,

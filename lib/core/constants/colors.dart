@@ -11,6 +11,7 @@ const Color orangeColor = Color(0xffF9A452);
 const Color greenColor = Color(0xff0CEB35);
 const Color redColor = Color(0xffFF2022);
 const Color greyBorderColor = Colors.grey;
+const Color tealColor = Color(0xFF07989E);
 
 //***********************   not in use    **************************************** */
 const Color backGroundColor = Color(0xfffffdf7);

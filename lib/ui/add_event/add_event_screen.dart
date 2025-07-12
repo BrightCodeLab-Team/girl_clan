@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,14 +10,11 @@ import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
-import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/custom_widget/app_bar.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
+import 'package:girl_clan/custom_widget/loaders/add_event_laoder.dart';
 import 'package:girl_clan/ui/add_event/add_event_view_model.dart';
-import 'package:girl_clan/ui/home/home_screen.dart';
-import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
 class AddEventScreen extends StatefulWidget {
@@ -74,6 +73,27 @@ class _AddEventScreenState extends State<AddEventScreen> {
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
+
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            // background color
+            dialogBackgroundColor: Colors.white,
+
+            colorScheme: ColorScheme.light(
+              primary: primaryColor, // header background & selection color
+              onPrimary: Colors.white, // text color on primary (e.g., year)
+              onSurface: Colors.black, // default text color
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: primaryColor, // button text color
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
@@ -81,7 +101,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
       setState(() {
         _dateController.text = formattedDate;
       });
-      // Update the model directly with the DateTime object or formatted string
       Provider.of<AddEventViewModel>(context, listen: false).eventModel.date =
           formattedDate;
     }
@@ -98,137 +117,150 @@ class _AddEventScreenState extends State<AddEventScreen> {
   Widget build(BuildContext context) {
     return Consumer<AddEventViewModel>(
       builder:
-          (context, model, child) => ModalProgressHUD(
-            inAsyncCall: model.state == ViewState.busy,
-            child: Scaffold(
-              appBar: CustomAppBar(title: 'Add Events'),
-              body: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: SingleChildScrollView(
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        10.verticalSpace,
+          (context, model, child) => Scaffold(
+            appBar: CustomAppBar(title: 'Add Events'),
+            body: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      10.verticalSpace,
 
-                        ///
-                        /// name
-                        ///
-                        Text(
-                          'Name',
-                          style: style12.copyWith(
-                            color: blackColor.withOpacity(0.5),
-                          ),
+                      ///
+                      /// name
+                      ///
+                      Text(
+                        'Name',
+                        style: style12.copyWith(
+                          color: blackColor.withOpacity(0.5),
                         ),
-                        5.verticalSpace,
-                        // text form field
-                        TextFormField(
-                          decoration: EditProfileFieldDecoration.copyWith(
-                            hintText: 'Enter Event Name',
-                          ),
-                          onChanged: (value) {
-                            model.eventModel.eventName = value;
-                          },
-                          validator: model.validateEventName,
+                      ),
+                      5.verticalSpace,
+                      // text form field
+                      TextFormField(
+                        decoration: EditProfileFieldDecoration.copyWith(
+                          hintText: 'Enter Event Name',
                         ),
-                        10.verticalSpace,
+                        onChanged: (value) {
+                          model.eventModel.eventName = value;
+                        },
+                        validator: model.validateEventName,
+                      ),
+                      10.verticalSpace,
 
-                        ///
-                        ///  date
-                        ///
+                      ///
+                      ///  date
+                      ///
 
-                        // Date Field
-                        Text(
-                          'Date',
-                          style: style12.copyWith(
-                            color: blackColor.withOpacity(0.5),
-                          ),
+                      // Date Field
+                      Text(
+                        'Date',
+                        style: style12.copyWith(
+                          color: blackColor.withOpacity(0.5),
                         ),
-                        10.verticalSpace,
-                        TextFormField(
-                          controller: _dateController,
-                          readOnly: true,
-                          onTap: () => _selectDate(context),
-                          style: style14.copyWith(fontSize: 14),
-                          decoration: EditProfileFieldDecoration.copyWith(
-                            border: OutlineInputBorder(),
-                            suffixIcon: Icon(Icons.calendar_month_rounded),
-                          ),
-                          // onChanged: (value) {
-                          //   model.eventModel.date = value;
-                          // },
-                          validator: model.validateDate,
+                      ),
+                      10.verticalSpace,
+                      TextFormField(
+                        controller: _dateController,
+                        readOnly: true,
+                        onTap: () => _selectDate(context),
+                        style: style14.copyWith(fontSize: 14),
+                        decoration: EditProfileFieldDecoration.copyWith(
+                          border: OutlineInputBorder(),
+                          suffixIcon: Icon(Icons.calendar_month_rounded),
                         ),
-                        10.verticalSpace,
+                        // onChanged: (value) {
+                        //   model.eventModel.date = value;
+                        // },
+                        validator: model.validateDate,
+                      ),
+                      10.verticalSpace,
 
-                        ///
-                        ///   start time
-                        ///
-                        Text(
-                          'Start Time',
-                          style: style12.copyWith(
-                            color: blackColor.withOpacity(0.5),
-                          ),
+                      ///
+                      ///   start time
+                      ///
+                      Text(
+                        'Start Time',
+                        style: style12.copyWith(
+                          color: blackColor.withOpacity(0.5),
                         ),
-                        5.verticalSpace,
-                        TextFormField(
-                          decoration: EditProfileFieldDecoration.copyWith(
-                            hintText: 'MM/HH',
-                          ),
-                          onChanged: (value) {
-                            model.eventModel.startTime = value;
-                          },
-                          validator: model.validateTime,
-                        ),
-                        10.verticalSpace,
+                      ),
 
-                        ///
-                        ///  capacity
-                        ///
-                        Text(
-                          'Capacity',
-                          style: style12.copyWith(
-                            color: blackColor.withOpacity(0.5),
-                          ),
+                      5.verticalSpace,
+                      TextFormField(
+                        readOnly: true,
+                        decoration: EditProfileFieldDecoration.copyWith(
+                          hintText:
+                              model.selectedTime != null
+                                  ? model.selectedTime!.format(
+                                    context,
+                                  ) // shows e.g., 10:30 AM
+                                  : 'Select Time',
                         ),
-                        5.verticalSpace,
-                        TextFormField(
-                          decoration: EditProfileFieldDecoration.copyWith(
-                            hintText: 'e.g 20 People',
-                          ),
-                          onChanged: (value) {
-                            model.eventModel.capacity = value;
-                          },
-                          validator: model.validateCapacity,
-                        ),
-                        10.verticalSpace,
+                        onTap: () {
+                          model.pickTime(context);
+                        },
+                        onChanged: (value) {
+                          model.eventModel.startTime = value;
+                        },
+                        validator: (val) {
+                          model.validateSelectedTime();
+                        },
+                      ),
+                      10.verticalSpace,
 
-                        ///
-                        ///  category
-                        ///
-                        Text(
-                          'Category',
-                          style: style12.copyWith(
-                            color: blackColor.withOpacity(0.5),
+                      ///
+                      ///  capacity
+                      ///
+                      Text(
+                        'Capacity',
+                        style: style12.copyWith(
+                          color: blackColor.withOpacity(0.5),
+                        ),
+                      ),
+                      5.verticalSpace,
+                      TextFormField(
+                        keyboardType: TextInputType.number,
+                        decoration: EditProfileFieldDecoration.copyWith(
+                          hintText: 'e.g 20 People',
+                        ),
+                        onChanged: (value) {
+                          model.eventModel.capacity = value;
+                        },
+                        validator: model.validateCapacity,
+                      ),
+                      10.verticalSpace,
+
+                      ///
+                      ///  category
+                      ///
+                      Text(
+                        'Category',
+                        style: style12.copyWith(
+                          color: blackColor.withOpacity(0.5),
+                        ),
+                      ),
+                      5.verticalSpace,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white, // dropdown background
+                          borderRadius: BorderRadius.circular(99.r),
+                          border: Border.all(
+                            color: borderColor.withOpacity(0.4),
                           ),
                         ),
-                        5.verticalSpace,
-                        Container(
-                          padding: EdgeInsets.symmetric(horizontal: 5.w),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(99.r),
-                            border: Border.all(
-                              color: borderColor.withOpacity(0.4),
-                            ),
-                          ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12.w,
+                          ), // outer left-right padding
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
-                              onTap: () {
-                                // model.validateCategory;
-                              },
+                              dropdownColor: whiteColor,
+                              borderRadius: BorderRadius.circular(10),
                               isExpanded: true,
                               hint: Text(
                                 'Select Category',
@@ -239,17 +271,10 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                 Icons.keyboard_arrow_down,
                                 color: Colors.grey.shade900,
                               ),
-
-                              // onChanged: (String? newValue) {
-                              //   setState(() {
-                              //     _selectedCategory = newValue;
-                              //   });
-                              // },
                               onChanged: (String? newValue) {
                                 setState(() {
                                   _selectedCategory = newValue;
                                 });
-                                // Add this line to update the model immediately
                                 model.eventModel.category = newValue;
                               },
                               items:
@@ -264,236 +289,257 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                       ),
                                     );
                                   }).toList(),
-                              padding:
-                                  EdgeInsets.symmetric(), // Match vertical padding
                             ),
                           ),
                         ),
-                        10.verticalSpace,
+                      ),
+                      10.verticalSpace,
 
-                        ///
-                        ///  location
-                        ///
-                        Text(
-                          'Location',
-                          style: style12.copyWith(
-                            color: blackColor.withOpacity(0.5),
-                          ),
+                      ///
+                      ///  location
+                      ///
+                      Text(
+                        'Location',
+                        style: style12.copyWith(
+                          color: blackColor.withOpacity(0.5),
                         ),
-                        10.verticalSpace,
-                        TextFormField(
-                          onChanged: (value) {
-                            model.eventModel.location = value;
-                          },
-                          validator: model.validateLocation,
-                          style: style14.copyWith(fontSize: 14),
-                          decoration: EditProfileFieldDecoration.copyWith(
-                            hintText: 'Enter Location',
-                            suffixIcon: GestureDetector(
-                              onTap: () {
-                                Get.to(() {
-                                  // Get.to(LocationPickerScreen());
-                                });
-                              },
-                              child: Icon(
-                                Icons.map_outlined,
-                                color: Colors.grey.shade900,
-                              ),
+                      ),
+                      10.verticalSpace,
+                      TextFormField(
+                        onChanged: (value) {
+                          model.eventModel.location = value;
+                        },
+                        validator: model.validateLocation,
+                        style: style14.copyWith(fontSize: 14),
+                        decoration: EditProfileFieldDecoration.copyWith(
+                          hintText: 'Enter Location',
+                          suffixIcon: GestureDetector(
+                            onTap: () {
+                              Get.to(() {
+                                // Get.to(LocationPickerScreen());
+                              });
+                            },
+                            child: Icon(
+                              Icons.map_outlined,
+                              color: Colors.grey.shade900,
                             ),
                           ),
                         ),
-                        10.verticalSpace,
+                      ),
+                      10.verticalSpace,
 
-                        ///
-                        ///  description
-                        ///
-                        Text(
-                          'Description',
-                          style: style12.copyWith(
-                            color: blackColor.withOpacity(0.5),
-                          ),
+                      ///
+                      ///  description
+                      ///
+                      Text(
+                        'Description',
+                        style: style12.copyWith(
+                          color: blackColor.withOpacity(0.5),
                         ),
-                        5.verticalSpace,
-                        TextFormField(
-                          maxLines: 6,
+                      ),
+                      5.verticalSpace,
+                      TextFormField(
+                        maxLines: 6,
 
-                          onChanged: (value) {
-                            model.eventModel.description = value;
-                          },
-                          decoration: EditProfileFieldDecoration.copyWith(
-                            hintText: 'e.g Under the stars or around ...',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                16.r,
-                              ), // Your custom radius
-                              borderSide: BorderSide(
-                                color: borderColor.withOpacity(0.4),
-                              ),
-                            ),
+                        onChanged: (value) {
+                          model.eventModel.description = value;
+                        },
+                        decoration: EditProfileFieldDecoration.copyWith(
+                          hintText: 'e.g Under the stars or around ...',
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              16.r,
+                            ), // Your custom radius
 
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                16.r,
-                              ), // Your custom radius
-                              borderSide: BorderSide(color: Colors.grey),
+                            borderSide: BorderSide(
+                              color: borderColor.withOpacity(0.4),
                             ),
                           ),
-                          validator: model.validateDescription,
-                        ),
-                        10.verticalSpace,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              16.r,
+                            ), // Your custom radius
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
 
-                        ///
-                        ///  image
-                        ///
-                        Text(
-                          'image',
-                          style: style12.copyWith(
-                            color: blackColor.withOpacity(0.5),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              16.r,
+                            ), // Your custom radius
+                            borderSide: BorderSide(color: Colors.grey),
                           ),
                         ),
-                        5.verticalSpace,
-                        // add image here
-                        GestureDetector(
-                          onTap: _pickImage,
-                          child: Container(
-                            width: double.infinity,
-                            height: 180.h,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
-                                color: borderColor.withOpacity(0.4),
-                              ),
-                              borderRadius: BorderRadius.circular(16.r),
+                        validator: model.validateDescription,
+                      ),
+                      10.verticalSpace,
+
+                      ///
+                      ///  image
+                      ///
+                      Text(
+                        'image',
+                        style: style12.copyWith(
+                          color: blackColor.withOpacity(0.5),
+                        ),
+                      ),
+                      5.verticalSpace,
+                      // add image here
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: Container(
+                          width: double.infinity,
+                          height: 180.h,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: borderColor.withOpacity(0.4),
                             ),
-                            child: Center(
-                              child:
-                                  _pickedImageFile != null || _webImage != null
-                                      ? ClipRRect(
-                                        borderRadius: BorderRadius.circular(
-                                          16.r,
+                            borderRadius: BorderRadius.circular(16.r),
+                          ),
+                          child: Center(
+                            child:
+                                _pickedImageFile != null || _webImage != null
+                                    ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(16.r),
+                                      child:
+                                          kIsWeb
+                                              ? Image.memory(
+                                                _webImage!,
+                                                fit: BoxFit.cover,
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                              )
+                                              : Image.file(
+                                                _pickedImageFile!,
+                                                fit: BoxFit.cover,
+                                                width: double.infinity,
+                                                height: double.infinity,
+                                              ),
+                                    )
+                                    : Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.shade200,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Icon(
+                                            Icons.cloud_upload_outlined,
+                                            size: 36,
+                                            color: Colors.black,
+                                          ),
                                         ),
-                                        child:
-                                            kIsWeb
-                                                ? Image.memory(
-                                                  _webImage!,
-                                                  fit: BoxFit.cover,
-                                                  width: double.infinity,
-                                                  height: double.infinity,
-                                                )
-                                                : Image.file(
-                                                  _pickedImageFile!,
-                                                  fit: BoxFit.cover,
-                                                  width: double.infinity,
-                                                  height: double.infinity,
-                                                ),
-                                      )
-                                      : Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            padding: EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey.shade200,
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Icon(
-                                              Icons.cloud_upload_outlined,
-                                              size: 36,
-                                              color: Colors.black,
-                                            ),
+                                        10.verticalSpace,
+                                        Text(
+                                          'Upload Photo',
+                                          style: style14.copyWith(
+                                            fontWeight: FontWeight.w500,
                                           ),
-                                          10.verticalSpace,
-                                          Text(
-                                            'Upload Photo',
-                                            style: style14.copyWith(
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                            ),
+                                        ),
+                                      ],
+                                    ),
                           ),
                         ),
-                        20.verticalSpace,
+                      ),
+                      20.verticalSpace,
 
-                        StreamBuilder(
-                          stream:
-                              currentUser != null
-                                  ? FirebaseFirestore.instance
-                                      .collection("app-user")
-                                      .doc(currentUser!.uid)
-                                      .snapshots()
-                                  : null,
+                      StreamBuilder(
+                        stream:
+                            currentUser != null
+                                ? FirebaseFirestore.instance
+                                    .collection("app-user")
+                                    .doc(currentUser!.uid)
+                                    .snapshots()
+                                : null,
 
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData || !snapshot.data!.exists) {
-                              return Center(child: Text(''));
-                            }
-                            final data = snapshot.data!.data()!;
-                            final firstName = data['firstName'] ?? '';
-                            final surName = data['surName'] ?? '';
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData || !snapshot.data!.exists) {
+                            return Center(child: Text(''));
+                          }
+                          final data = snapshot.data!.data()!;
+                          final firstName = data['firstName'] ?? '';
+                          final surName = data['surName'] ?? '';
 
-                            return CustomButton(
-                              onTap: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  // Assign dropdown and date
-                                  if (_selectedCategory != null) {
-                                    model.eventModel.category =
-                                        _selectedCategory!;
-                                  }
-                                  if (_dateController.text.isNotEmpty) {
-                                    model.eventModel.date =
-                                        _dateController.text;
-                                  }
-
-                                  // ✅ Assign current user info
-                                  final user =
-                                      FirebaseAuth.instance.currentUser;
-                                  if (user != null) {
-                                    model.eventModel.hostUserId = user.uid;
-                                    model.eventModel.hostName =
-                                        user.displayName ?? '';
-                                    model.eventModel.hostImage =
-                                        user.photoURL ?? '';
-                                  } else {
-                                    // Optional: show error
-                                    Get.snackbar('Error', 'User not logged in');
-                                    return;
-                                  }
-
-                                  // 🔥 Save event
-                                  model
-                                      .addEvent("${firstName + surName}")
-                                      .then((_) {
-                                        Get.offAll(() => RootScreen());
-                                      })
-                                      .catchError((error) {
-                                        Get.snackbar(
-                                          'Error',
-                                          'Failed to add event: $error',
-                                          colorText: blackColor,
-                                          backgroundColor: secondaryColor,
-                                        );
-                                      });
-                                } else {
-                                  Get.snackbar(
-                                    'Validation Error',
-                                    'Please fill all required fields correctly.',
-                                    snackPosition: SnackPosition.TOP,
-                                  );
+                          return CustomButton(
+                            onTap: () async {
+                              if (_formKey.currentState!.validate()) {
+                                // Assign dropdown and date
+                                if (_selectedCategory != null) {
+                                  model.eventModel.category =
+                                      _selectedCategory!;
                                 }
-                              },
+                                if (_dateController.text.isNotEmpty) {
+                                  model.eventModel.date = _dateController.text;
+                                }
 
-                              text: 'Add Event',
-                              backgroundColor: primaryColor,
-                            );
-                          },
-                        ),
+                                // ✅ Assign current user info
+                                final user = FirebaseAuth.instance.currentUser;
+                                if (user != null) {
+                                  model.eventModel.hostUserId = user.uid;
+                                  model.eventModel.hostName =
+                                      user.displayName ?? '';
+                                  model.eventModel.hostImage =
+                                      user.photoURL ?? '';
+                                } else {
+                                  Get.snackbar('Error', 'User not logged in');
+                                  return;
+                                }
 
-                        50.verticalSpace,
-                      ],
-                    ),
+                                // 👇 Loader screen pe jaye aur wait kare
+                                Get.to(
+                                  () => AddEventLoader(
+                                    addEventCall:
+                                        () => model.addEvent(
+                                          "${firstName + surName}",
+                                        ),
+                                    eventName: "${model.eventModel.eventName}",
+                                    eventTime: "${model.eventModel.startTime}",
+                                  ),
+                                );
+
+                                // try {
+                                //   await model.addEvent(
+                                //     "${firstName + surName}",
+                                //   );
+                                //   // Success → go to success screen
+                                //   Get.off(
+                                //     () => SuccessScreen(
+                                //       eventName:
+                                //           "${model.eventModel.eventName}",
+                                //       eventTime:
+                                //           "${model.eventModel.startTime}",
+                                //     ),
+                                //   );
+                                // } catch (error) {
+                                //   // Failure → go to error screen
+                                //   Get.off(() => const ErrorScreen());
+                                //   Get.snackbar(
+                                //     'Error',
+                                //     'Failed to add event: $error',
+                                //     colorText: blackColor,
+                                //     backgroundColor: secondaryColor,
+                                //   );
+                                // }
+                              } else {
+                                Get.snackbar(
+                                  'Validation Error',
+                                  'Please fill all required fields correctly.',
+                                  snackPosition: SnackPosition.TOP,
+                                );
+                              }
+                            },
+
+                            text: 'Add Event',
+                            backgroundColor: primaryColor,
+                          );
+                        },
+                      ),
+
+                      50.verticalSpace,
+                    ],
                   ),
                 ),
               ),

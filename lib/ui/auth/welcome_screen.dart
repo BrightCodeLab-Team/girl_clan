@@ -50,19 +50,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             const SizedBox(height: 10),
 
             Text(
-              "thanks For Joining",
+              "Thanks For Joining \n Access Or Create Account",
               style: style16B.copyWith(color: whiteColor, fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 5),
+
             Text(
-              "access Or Create Account",
-              style: style16B.copyWith(color: whiteColor, fontSize: 16),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 5),
-            Text(
-              "ge Started On Journey",
+              "Get Started On Journey",
               style: style16B.copyWith(color: whiteColor, fontSize: 16),
               textAlign: TextAlign.center,
             ),

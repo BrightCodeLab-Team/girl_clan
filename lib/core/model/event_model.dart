@@ -1,5 +1,3 @@
-import 'package:girl_clan/core/constants/app_assets.dart';
-
 class EventModel {
   String? id;
   String? eventName;
@@ -47,7 +45,7 @@ class EventModel {
       'date': date ?? '',
       'startTime': startTime ?? '',
       'category': category ?? '',
-      'imageUrl': imageUrl ?? AppAssets().loginImage,
+      'imageUrl': imageUrl ?? '',
       'joiningPeople': joiningPeople ?? '0',
       'availablePeople': availablePeople ?? '0',
       'description': description ?? '',

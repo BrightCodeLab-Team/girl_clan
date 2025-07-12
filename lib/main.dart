@@ -1,3 +1,5 @@
+// ignore_for_file: sort_child_properties_last, deprecated_member_use, library_private_types_in_public_api
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart'; // Keep this for GetMaterialApp and Get.to()
@@ -6,6 +8,7 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/firebase_options.dart';
 import 'package:girl_clan/locator.dart';
 import 'package:girl_clan/ui/add_event/add_event_view_model.dart';
+import 'package:girl_clan/ui/auth/sign_up/sign_up_view_model.dart';
 import 'package:girl_clan/ui/auth/splash_screen.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart'; // This is correct
 import 'package:girl_clan/ui/home/home_view_model.dart';
@@ -39,6 +42,7 @@ class MyApp extends StatelessWidget {
             ChangeNotifierProvider(create: (context) => AddEventViewModel()),
             ChangeNotifierProvider(create: (context) => PasswordViewModel()),
             ChangeNotifierProvider(create: (context) => ChatViewModel()),
+            ChangeNotifierProvider(create: (context) => SignUpViewModel()),
           ],
           child: GetMaterialApp(
             debugShowCheckedModeBanner: false,
@@ -46,6 +50,14 @@ class MyApp extends StatelessWidget {
             useInheritedMediaQuery: true,
             defaultTransition: Transition.leftToRight,
             theme: ThemeData(
+              checkboxTheme: CheckboxThemeData(
+                side: BorderSide(
+                  color: Colors.white,
+                  width: 2,
+                ), // border color & thickness
+                checkColor: MaterialStateProperty.all(whiteColor),
+              ),
+
               appBarTheme: AppBarTheme(
                 backgroundColor: transparentColor,
                 shadowColor: transparentColor,

@@ -64,7 +64,7 @@ class RootScreen extends StatelessWidget {
                               color:
                                   isSelected
                                       // ignore: deprecated_member_use
-                                      ? primaryColor.withOpacity(0.1)
+                                      ? primaryColor
                                       : whiteColor,
                             ),
                             child: Padding(
@@ -76,18 +76,14 @@ class RootScreen extends StatelessWidget {
                                   Image.asset(
                                     model.tabIcons[index],
                                     scale: 4,
-                                    color:
-                                        isSelected ? primaryColor : blackColor,
+                                    color: isSelected ? whiteColor : blackColor,
                                   ),
                                   5.horizontalSpace,
                                   Text(
                                     model.tabTitlesList[index],
                                     style: style14B.copyWith(
-                                      color:
-                                          isSelected
-                                              ? primaryColor
-                                              : whiteColor,
-                                      fontSize: 10,
+                                      color: whiteColor,
+                                      // fontSize: 10,
                                       fontWeight: FontWeight.w300,
                                     ),
                                   ),

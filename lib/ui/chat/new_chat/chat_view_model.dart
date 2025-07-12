@@ -18,8 +18,12 @@ class ChatViewModel extends BaseViewModel {
   final String? chatImageUrl;
   final bool? isGroupChat;
   final String? receiverId;
+  final String? groupId;
+  List<Map<String, dynamic>> groupsList = [];
 
   final TextEditingController messageController = TextEditingController();
+  bool isTyping = false;
+
   final List<MessageModel> _messages = [];
   List<UserModel> chatsList = [];
 
@@ -32,25 +36,87 @@ class ChatViewModel extends BaseViewModel {
     this.chatImageUrl,
     this.isGroupChat,
     this.receiverId,
+    this.groupId,
   }) {
     initMessagesStream();
     loadUsers();
+    loadGroups();
+    messageController.addListener(_onTyping);
+  }
+
+  void _onTyping() {
+    final hasText = messageController.text.trim().isNotEmpty;
+    if (hasText != isTyping) {
+      isTyping = hasText;
+      notifyListeners();
+    }
   }
 
   /// Initializes Firestore message stream
+  // initMessagesStream() {
+  //   _messagesSubscription = _db.getMessagesStream(receiverId ?? "").listen((
+  //     snapshot,
+  //   ) {
+  //     _messages.clear();
+  //     _messages.addAll(
+  //       snapshot.docs.map((doc) {
+  //         final data = doc.data() as Map<String, dynamic>;
+  //         return _parseMessage(data);
+  //       }),
+  //     );
+  //     messageController.addListener(() {
+  //       notifyListeners(); // tell UI to update send button
+  //     });
+  //     notifyListeners();
+  //   });
+  // }
+
   initMessagesStream() {
-    _messagesSubscription = _db.getMessagesStream(receiverId ?? "").listen((
-      snapshot,
-    ) {
-      _messages.clear();
-      _messages.addAll(
-        snapshot.docs.map((doc) {
-          final data = doc.data() as Map<String, dynamic>;
-          return _parseMessage(data);
-        }),
-      );
-      notifyListeners();
-    });
+    if (isGroupChat == true && groupId != null) {
+      // group chat stream
+      _messagesSubscription = _db.getGroupMessagesStream(groupId!).listen((
+        snapshot,
+      ) {
+        _messages.clear();
+        _messages.addAll(
+          snapshot.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return _parseGroupMessage(data);
+          }),
+        );
+        notifyListeners();
+      });
+    } else if (receiverId != null) {
+      // personal chat stream
+      _messagesSubscription = _db.getMessagesStream(receiverId!).listen((
+        snapshot,
+      ) {
+        _messages.clear();
+        _messages.addAll(
+          snapshot.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return _parseMessage(data);
+          }),
+        );
+        notifyListeners();
+      });
+    }
+  }
+
+  MessageModel _parseGroupMessage(Map<String, dynamic> data) {
+    final isMe = data['senderId'] == _db.currentUserId;
+    return MessageModel(
+      senderId: data['senderId'],
+      receiverId: groupId ?? "",
+      senderName: isMe ? 'You' : (data['senderName'] ?? chatTitle ?? ""),
+      senderImageUrl:
+          isMe
+              ? 'assets/images/current_user_profile.png'
+              : (chatImageUrl ?? ""),
+      content: data['text'] ?? '',
+      timestamp: _formatTimestamp(data['timestamp']),
+      isMe: isMe,
+    );
   }
 
   /// Converts Firestore document into a MessageModel
@@ -98,17 +164,51 @@ class ChatViewModel extends BaseViewModel {
     }
   }
 
+  Future<void> loadGroups() async {
+    try {
+      setState(ViewState.busy);
+      isLoading = true;
+      notifyListeners();
+
+      groupsList = await _db.getUserGroups();
+      debugPrint("Loaded groups: ${groupsList.length}");
+    } catch (e) {
+      debugPrint('Error loading groups: $e');
+    } finally {
+      isLoading = false;
+      notifyListeners();
+      setState(ViewState.idle);
+    }
+  }
+
   /// Sends a message
   Future<void> sendMessage() async {
     final text = messageController.text.trim();
-    if (text.isEmpty || receiverId == null || receiverId!.isEmpty) {
-      debugPrint('Cannot send message. Text or receiverId is invalid.');
-      return;
-    }
+    if (text.isEmpty) return;
 
     try {
-      await _db.sendMessage(receiverId: receiverId!, text: text);
+      final localMessage = MessageModel(
+        senderId: _db.currentUserId!,
+        receiverId: isGroupChat == true ? (groupId ?? '') : (receiverId ?? ''),
+        senderName: 'You',
+        senderImageUrl: 'assets/images/current_user_profile.png',
+        content: text,
+        timestamp: DateFormat('h:mm a').format(DateTime.now()),
+        isMe: true,
+      );
+
+      _messages.add(localMessage);
+      notifyListeners();
+
       messageController.clear();
+      isTyping = false;
+      notifyListeners();
+
+      if (isGroupChat == true && groupId != null) {
+        await _db.sendGroupMessage(groupId: groupId!, text: text);
+      } else if (receiverId != null) {
+        await _db.sendMessage(receiverId: receiverId!, text: text);
+      }
     } catch (e) {
       debugPrint('Error sending message: $e');
     }
@@ -116,8 +216,8 @@ class ChatViewModel extends BaseViewModel {
 
   @override
   void dispose() {
-    _messagesSubscription?.cancel();
     messageController.dispose();
+    _messagesSubscription?.cancel();
     super.dispose();
   }
 }

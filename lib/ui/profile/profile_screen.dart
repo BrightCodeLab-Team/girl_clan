@@ -151,7 +151,7 @@ class ProfileScreen extends StatelessWidget {
                                   Get.to(MyProfileScreen());
                                 }),
                                 buildMenuItem('My Interests', () {
-                                  Get.to(InterestScreen(selected: []));
+                                  Get.to(() => InterestSelectionScreen());
                                 }),
                                 buildMenuItem('Notification', () {
                                   Get.to(NotificationScreen());

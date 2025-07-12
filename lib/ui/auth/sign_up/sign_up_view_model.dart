@@ -16,6 +16,8 @@ class SignUpViewModel extends BaseViewModel {
   bool isLoading = false;
   File? profileImage;
   String? uploadedImageUrl;
+  List<String> selectedInterests = [];
+
   void setLoading(bool value) {
     isLoading = value;
     notifyListeners(); // or update() if using GetX
@@ -174,9 +176,6 @@ class SignUpViewModel extends BaseViewModel {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
-      Get.snackbar("Success", "User signed up");
-
-      Get.offAll(RootScreen());
     } on FirebaseAuthException catch (e) {
       print("signIN failed $e");
       Get.snackbar("Error", e.message ?? "Registration failed");
@@ -213,6 +212,7 @@ class SignUpViewModel extends BaseViewModel {
             'dob': dobController.text.trim(),
             'nationality': nationalityController.text.trim(),
             'imgUrl': uploadedImageUrl ?? "",
+            'interests': selectedInterests, // ✅ yahan interests bhi save ho gai
           });
 
       return true;

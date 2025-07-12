@@ -64,7 +64,7 @@ class MyProfileScreen extends StatelessWidget {
                       return Center(child: CircularProgressIndicator());
                     }
                     if (!snapshot.hasData || !snapshot.data!.exists) {
-                      return Center(child: Text('No user profile found.'));
+                      return Center(child: Text(''));
                     }
                     final data = snapshot.data!.data()!;
                     final firstName = data['firstName'] ?? '';

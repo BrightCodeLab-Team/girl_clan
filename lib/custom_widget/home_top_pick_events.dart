@@ -3,10 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/model/event_model.dart';
-import '../core/model/event_model.dart' show EventModel;
 
 class CustomHomeTopPickEventsCard extends StatelessWidget {
-  //final TopPicksCardModel topPickModel;
   final EventModel eventModel;
   const CustomHomeTopPickEventsCard({super.key, required this.eventModel});
 
@@ -14,17 +12,16 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 190.h,
-      width: double.infinity, // Take full width
+      width: double.infinity,
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: NetworkImage(eventModel.imageUrl ?? ""),
+          image: NetworkImage("${eventModel.imageUrl}"),
           fit: BoxFit.cover,
         ),
-        color: thinGreyColor, // Background color
+        color: thinGreyColor,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Stack(
-        // Use Stack to layer the gradient and content
         children: [
           // Gradient Overlay
           Positioned.fill(
@@ -66,12 +63,12 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
               Spacer(),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           eventModel.eventName ?? " ",
@@ -82,40 +79,43 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        8.verticalSpace,
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.location_on,
-                              color: whiteColor,
-                              size: 16.h,
-                            ),
-                            2.horizontalSpace,
-                            Text(
-                              eventModel.location ?? '',
-                              style: style14.copyWith(
-                                fontSize: 13,
-                                color: whiteColor,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
                         Text(
-                          "${eventModel.availablePeople}/${eventModel.joiningPeople}",
+                          "${eventModel.capacity}/${eventModel.joiningPeople} Joined",
                           style: style14.copyWith(
                             fontSize: 13,
                             color: whiteColor,
                           ),
                         ),
-                        10.verticalSpace,
+                      ],
+                    ),
+                    SizedBox(height: 4), // small space
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          // ✅ Expanded forces this child to use remaining width safely
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.location_on,
+                                color: whiteColor,
+                                size: 16.h,
+                              ),
+                              2.horizontalSpace,
+                              Flexible(
+                                child: Text(
+                                  eventModel.location ?? '',
+                                  style: style14.copyWith(
+                                    fontSize: 13,
+                                    color: whiteColor,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         Text(
                           eventModel.date ?? '',
                           style: style14B.copyWith(

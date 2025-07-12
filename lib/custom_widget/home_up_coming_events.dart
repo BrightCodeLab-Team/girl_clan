@@ -25,12 +25,10 @@ class CustomUpComingEventsCard extends StatelessWidget {
           Container(
             width: 67,
             height: double.infinity,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-            child: ClipRRect(
+            decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                eventModel.imageUrl ??
-                    "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+              image: DecorationImage(
+                image: NetworkImage("${eventModel.imageUrl}"),
                 fit: BoxFit.cover,
               ),
             ),
@@ -74,11 +72,12 @@ class CustomUpComingEventsCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Expanded(
+                      // or Flexible
                       child: Text(
                         eventModel.location ?? '',
                         style: style14B.copyWith(fontSize: 10),
-                        maxLines: 1,
                         overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                   ],

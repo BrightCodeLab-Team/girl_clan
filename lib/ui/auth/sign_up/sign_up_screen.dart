@@ -10,7 +10,6 @@ import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/ui/auth/login/login_screen.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_view_model.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_extra_screen.dart';
-import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
@@ -36,7 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 width: MediaQuery.of(context).size.width * 1,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(AppAssets().loginImage),
+                    image: AssetImage("assets/static_assets/loginImage.jpg"),
                     fit: BoxFit.cover,
                   ),
                 ),

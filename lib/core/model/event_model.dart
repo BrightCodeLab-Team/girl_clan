@@ -19,6 +19,9 @@ class EventModel {
   // 🔥 NEW: List of users who joined
   List<String>? joinedUsers;
 
+  double? locationLat;
+  double? locationLng;
+
   EventModel({
     this.id,
     this.eventName,
@@ -35,6 +38,8 @@ class EventModel {
     this.hostName,
     this.hostImage,
     this.joinedUsers,
+    this.locationLat,
+    this.locationLng,
   });
 
   Map<String, dynamic> toJson() {
@@ -54,6 +59,8 @@ class EventModel {
       'hostName': hostName ?? '',
       'hostImage': hostImage ?? '',
       'joinedUsers': joinedUsers ?? [],
+      'locationLat': locationLat,
+      'locationLng': locationLng,
     };
   }
 
@@ -77,6 +84,14 @@ class EventModel {
           json['joinedUsers'] != null
               ? List<String>.from(json['joinedUsers'])
               : [],
+      locationLat:
+          json['locationLat'] != null
+              ? double.tryParse(json['locationLat'].toString())
+              : null,
+      locationLng:
+          json['locationLng'] != null
+              ? double.tryParse(json['locationLng'].toString())
+              : null,
     );
   }
 }

@@ -1,7 +1,5 @@
 // ignore_for_file: use_build_context_synchronously, deprecated_member_use
 
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/colors.dart';
@@ -13,6 +11,7 @@ import 'package:girl_clan/locator.dart';
 import 'package:girl_clan/ui/root_screen/root_screen.dart';
 
 class AddEventViewModel extends BaseViewModel {
+  final TextEditingController locationController = TextEditingController();
   EventModel eventModel = EventModel();
   //List
   final db = locator<DatabaseServices>();
@@ -64,10 +63,6 @@ class AddEventViewModel extends BaseViewModel {
     try {
       setState(ViewState.busy);
       await db.addEventsToDataBase(eventModel, hostName);
-
-      Get.snackbar('Success', "Add Event Successfully");
-      Get.offAll(() => RootScreen());
-      setState(ViewState.idle);
     } catch (e) {
       Get.snackbar('Error', "Failed to add event: $e");
     } finally {

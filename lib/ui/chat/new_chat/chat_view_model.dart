@@ -188,7 +188,7 @@ class ChatViewModel extends BaseViewModel {
 
     try {
       final localMessage = MessageModel(
-        senderId: _db.currentUserId!,
+        senderId: _db.currentUserId,
         receiverId: isGroupChat == true ? (groupId ?? '') : (receiverId ?? ''),
         senderName: 'You',
         senderImageUrl: 'assets/images/current_user_profile.png',

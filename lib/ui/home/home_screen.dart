@@ -11,6 +11,9 @@ import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/custom_widget/home_top_pick_events.dart';
 import 'package:girl_clan/custom_widget/home_up_coming_events.dart';
+import 'package:girl_clan/custom_widget/shimmer/all_events_shimmer.dart';
+import 'package:girl_clan/custom_widget/shimmer/home_full_shimer.dart';
+import 'package:girl_clan/custom_widget/shimmer/up_coming_events.dart';
 import 'package:girl_clan/ui/add_event/add_event_screen.dart';
 import 'package:girl_clan/ui/home/events_details_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
@@ -132,7 +135,10 @@ class HomeScreen extends StatelessWidget {
                       SizedBox(
                         height: 88.h,
                         child:
-                            model.upcomingEventsList.isEmpty
+                            model.state == ViewState.busy
+                                ? UpcomingEventsShimmer()
+                                : model.upcomingEventsList.isEmpty &&
+                                    model.upcomingEventsList == null
                                 ? Center(child: Text('No Upcoming Events '))
                                 : ListView.builder(
                                   shrinkWrap: true,
@@ -260,8 +266,9 @@ class HomeScreen extends StatelessWidget {
                       ///    top picks card
                       ///
                       ///.   All tabs
-                      ///
-                      model.selectedTabIndex == 0
+                      model.state == ViewState.busy
+                          ? TopPicksShimmer()
+                          : model.selectedTabIndex == 0
                           ? model.allEventsList.isEmpty
                               ? Center(
                                 child: Text(
@@ -715,7 +722,7 @@ _appBar(HomeViewModel model) {
 
           builder: (context, snapshot) {
             if (!snapshot.hasData || !snapshot.data!.exists) {
-              return Center(child: Text('No user profile found.'));
+              return Center(child: Text(''));
             }
             final data = snapshot.data!.data()!;
             final firstName = data['firstName'] ?? '';

@@ -522,11 +522,11 @@ class DatabaseServices {
             userData['id'] = userDoc.id;
             userData['name'] =
                 '${userData['firstName']} ${userData['surName']}';
-            userData['imageUrl'] = userData['profileImageUrl'] ?? '';
+            userData['imgUrl'] = userData['imgUrl'] ?? '';
             userData['message'] = doc['lastMessage'];
             userData['time'] = doc['lastMessageTime'];
 
-            print("user profileImageUrl:  ${userData['firstName']}");
+            print("user profileImageUrl:  ${userData['profileImageUrl']}");
             print("user message:  ${userData['lastMessage']}");
             print("user lastMessageTime:  ${userData['lastMessage']}");
             userModels.add(UserModel.fromJson(userData));

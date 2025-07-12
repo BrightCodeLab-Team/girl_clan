@@ -31,7 +31,7 @@ class LoginScreen extends StatelessWidget {
                 width: MediaQuery.of(context).size.width * 1,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage(AppAssets().loginImage),
+                    image: AssetImage("assets/static_assets/loginImage.jpg"),
                     fit: BoxFit.cover,
                   ),
                 ),

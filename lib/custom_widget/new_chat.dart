@@ -30,7 +30,7 @@ class MainChatItem extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage(chat.imageUrl ?? ""),
+                  backgroundImage: NetworkImage(chat.imageUrl ?? ""),
                 ),
                 10.horizontalSpace,
                 Column(

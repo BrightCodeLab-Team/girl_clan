@@ -29,20 +29,19 @@ class CustomSearchResultCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ClipRRect(
+          Container(
+            margin: const EdgeInsets.all(8.0),
+            height: 105.h,
+            width: double.infinity,
+            decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                // image
-                eventModel.imageUrl ??
-                    "https://as2.ftcdn.net/jpg/01/24/14/21/1000_F_124142194_1n6MwMGUm9LQOSoa63jBfLlW0E2KNi7E.jpg",
-                height: 105.h,
-                width: double.infinity,
+              image: DecorationImage(
+                image: NetworkImage("${eventModel.imageUrl}"),
                 fit: BoxFit.cover,
               ),
             ),
           ),
+
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 10.h),
             child: Column(

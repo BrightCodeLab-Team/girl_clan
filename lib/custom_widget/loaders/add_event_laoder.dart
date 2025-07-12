@@ -1,12 +1,10 @@
 // ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api
 
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/constants/strings.dart';
-import 'package:girl_clan/ui/add_event/error_screen.dart';
 import 'package:girl_clan/ui/add_event/sucess_screen.dart';
 
 class AddEventLoader extends StatefulWidget {
@@ -43,6 +41,7 @@ class _JoiningEventLoaderScreenState extends State<AddEventLoader>
     try {
       // wait at least 3 seconds to show loader
       await Future.delayed(Duration(seconds: 3));
+      widget.addEventCall();
       Get.offAll(
         () => SuccessScreen(
           image: '$staticAssets/success1.png',

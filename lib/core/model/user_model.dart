@@ -14,7 +14,7 @@ class UserModel {
       'id': id ?? '',
       'name': name ?? '',
       'time': time ?? '',
-      'profileImageUrl': imageUrl ?? '',
+      'imgUrl': imageUrl ?? '',
       'message': message ?? '',
     };
   }
@@ -23,9 +23,8 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'] ?? '', // Optional: If Firestore stores 'id'
-
       name: json['name'].toString(),
-      imageUrl: json['profileImageUrl'].toString(),
+      imageUrl: json['imgUrl'].toString(),
       message: json['message'].toString(),
       time: json['time'] != null ? (json['time'] as Timestamp).toDate() : null,
     );

@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, body_might_complete_normally_nullable
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,6 +14,7 @@ import 'package:girl_clan/custom_widget/app_bar.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/custom_widget/loaders/add_event_laoder.dart';
 import 'package:girl_clan/ui/add_event/add_event_view_model.dart';
+import 'package:girl_clan/ui/add_event/location_picker_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -306,23 +307,34 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       ),
                       10.verticalSpace,
                       TextFormField(
-                        onChanged: (value) {
-                          model.eventModel.location = value;
+                        readOnly: true,
+                        controller: model.locationController,
+                        onTap: () async {
+                          final selectedLocation = await Get.to(
+                            () => LocationPickerScreen(),
+                          );
+                          if (selectedLocation != null) {
+                            model.locationController.text =
+                                selectedLocation['address'];
+                            model.eventModel.location =
+                                selectedLocation['address'];
+                            model.eventModel.locationLat =
+                                selectedLocation['lat'];
+                            model.eventModel.locationLng =
+                                selectedLocation['lng'];
+                          }
+
+                          // if (selectedLocation != null) {
+                          //   model.locationController.text = selectedLocation;
+                          //   model.eventModel.location = selectedLocation;
+                          // }
                         },
                         validator: model.validateLocation,
-                        style: style14.copyWith(fontSize: 14),
                         decoration: EditProfileFieldDecoration.copyWith(
-                          hintText: 'Enter Location',
-                          suffixIcon: GestureDetector(
-                            onTap: () {
-                              Get.to(() {
-                                // Get.to(LocationPickerScreen());
-                              });
-                            },
-                            child: Icon(
-                              Icons.map_outlined,
-                              color: Colors.grey.shade900,
-                            ),
+                          hintText: 'Select Location',
+                          suffixIcon: Icon(
+                            Icons.map_outlined,
+                            color: Colors.grey.shade900,
                           ),
                         ),
                       ),

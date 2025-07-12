@@ -11,6 +11,7 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
+import 'package:girl_clan/ui/interests/interest_screen.dart';
 import 'package:girl_clan/ui/auth/sign_up/location_screen.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_view_model.dart';
 import 'package:girl_clan/ui/auth/terms_and_condition_screen.dart';
@@ -33,7 +34,7 @@ class SignUpExtraScreen extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 1,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage(AppAssets().loginImage),
+                  image: AssetImage("assets/static_assets/loginImage.jpg"),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -228,6 +229,8 @@ class SignUpExtraScreen extends StatelessWidget {
                             model.agreeToTerms) {
                           await model.signInUser();
                           await model.uploadUserDetailToFireStoreDatabase();
+                          // Navigate to interest selection
+                          Get.to(() => InterestSelectionScreen());
                         } else {
                           Get.snackbar(
                             "Error",

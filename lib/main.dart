@@ -74,3 +74,61 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// // import 'package:flutter/material.dart';
+// // import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+
+// void main() {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   runApp(MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'WebView JS Injection Demo',
+//       theme: ThemeData(primarySwatch: Colors.blue),
+//       home: WebViewDemo(),
+//     );
+//   }
+// }
+
+// class WebViewDemo extends StatefulWidget {
+//   @override
+//   _WebViewDemoState createState() => _WebViewDemoState();
+// }
+
+// class _WebViewDemoState extends State<WebViewDemo> {
+//   InAppWebViewController? webViewController;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('JS Injection Demo'),
+//         actions: [
+//           IconButton(
+//             icon: Icon(Icons.play_arrow),
+//             onPressed: () async {
+//               await webViewController?.evaluateJavascript(
+//                 source: """
+//                 document.getElementById('myInput').value = 'Hello from Flutter!';
+//                 document.getElementById('myButton').click();
+//               """,
+//               );
+//             },
+//           ),
+//         ],
+//       ),
+//       body: InAppWebView(
+//         initialUrlRequest: URLRequest(url: WebUri("https://www.youtube.com")),
+//         onWebViewCreated: (controller) {
+//           webViewController = controller;
+//         },
+//       ),
+//     );
+//   }
+// }

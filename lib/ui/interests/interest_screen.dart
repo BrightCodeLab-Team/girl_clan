@@ -1,83 +1,123 @@
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:girl_clan/core/constants/app_assets.dart';
+import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
-import 'package:girl_clan/ui/interests/edit_interest_screen.dart';
-import 'package:girl_clan/ui/profile/profile_screen.dart';
+import 'package:girl_clan/custom_widget/custom_button.dart';
+import 'package:girl_clan/ui/root_screen/root_screen.dart';
 
-class InterestScreen extends StatelessWidget {
-  final List<String> selected;
+class InterestSelectionScreen extends StatefulWidget {
+  @override
+  _InterestSelectionScreenState createState() =>
+      _InterestSelectionScreenState();
+}
 
-  const InterestScreen({super.key, required this.selected});
+class _InterestSelectionScreenState extends State<InterestSelectionScreen> {
+  final List<String> interests = [
+    'Party',
+    'Concert',
+    'Travel',
+    'Festival',
+    'Hiking',
+    'Food & Drinks',
+    'Beach Day',
+    'Road Trip',
+    'Camping',
+    'Workshop',
+  ];
+  final List<String> selectedInterests = [];
+
+  void toggleInterest(String interest) {
+    setState(() {
+      if (selectedInterests.contains(interest)) {
+        selectedInterests.remove(interest);
+      } else {
+        selectedInterests.add(interest);
+      }
+    });
+  }
+
+  Future<void> saveInterests() async {
+    if (selectedInterests.length < 3) {
+      Get.snackbar(
+        'Select at least 3',
+        'Please select at least 3 interests to continue.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: secondaryColor,
+        colorText: Colors.white,
+      );
+      return;
+    }
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('app-user')
+          .doc(user.uid)
+          .update({'interests': selectedInterests});
+      // Navigate to root screen
+      Get.offAll(RootScreen());
+    }
+  }
+
+  Future<void> loadSavedInterests() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final doc =
+          await FirebaseFirestore.instance
+              .collection('app-user')
+              .doc(user.uid)
+              .get();
+      final saved = doc.data()?['interests'] as List<dynamic>? ?? [];
+      setState(() {
+        selectedInterests.addAll(saved.map((e) => e.toString()));
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadSavedInterests();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 15),
-          child: CircleAvatar(
-            backgroundColor: Colors.grey.shade200,
-            child: GestureDetector(
-              onTap: () {
-                //  Navigator.pop(context);
-                Get.to(ProfileScreen());
-              },
-              child: const Icon(Icons.arrow_back_ios_outlined),
-            ),
-          ),
-        ),
-        centerTitle: false,
-        title: Text('Interest', style: style25B.copyWith(fontSize: 22)),
-        actions: [
-          IconButton(
-            icon: Image.asset(
-              AppAssets().editIcon,
-              scale: 4,
-              color: Colors.blue, // Replace with primaryColor
-            ),
-            onPressed: () {
-              Get.to(EditInterestScreen());
-            },
-          ),
-        ],
-      ),
-      //  CustomAppBar(
-      //   title: 'Interest Screen',
-      //   showEdit: true,
-      //   onEditTap: () {
-      //     Get.to(EditInterestScreen());
-      //   },
-      // ),
+      appBar: AppBar(title: Text('Select Your Interests', style: style20B)),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Wrap(
           spacing: 10,
-          runSpacing: 10,
           children:
-              selected.map((interest) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: Colors.black12),
-                  ),
-                  child: Text(
+              interests.map((interest) {
+                final isSelected = selectedInterests.contains(interest);
+                return ChoiceChip(
+                  checkmarkColor: whiteColor,
+                  selectedColor: primaryColor,
+                  backgroundColor: secondaryColor,
+                  selectedShadowColor: blackColor,
+                  side: BorderSide.none, // <-- yahan border remove kiya
+                  label: Text(
                     interest,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: style14.copyWith(color: whiteColor),
                   ),
+
+                  selected: isSelected,
+                  onSelected: (_) => toggleInterest(interest),
                 );
               }).toList(),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: CustomButton(
+          onTap: saveInterests,
+          text: 'Save & Continue',
+          backgroundColor: primaryColor,
+          textColor: whiteColor,
         ),
       ),
     );

@@ -82,6 +82,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     if (!snapshot.hasData) {
                       return Center(child: Text('No data found'));
                     }
+
+                    // get data
+                    final userData =
+                        snapshot.data!.data() as Map<String, dynamic>;
+
+                    // set controllers only if empty (so it doesn't overwrite user typing)
+                    if (model.firstNameController.text.isEmpty) {
+                      model.firstNameController.text =
+                          userData['firstName'] ?? '';
+                    }
+                    if (model.surNameController.text.isEmpty) {
+                      model.surNameController.text = userData['surName'] ?? '';
+                    }
+                    if (model.locationController.text.isEmpty) {
+                      model.locationController.text =
+                          userData['location'] ?? '';
+                    }
+                    if (model.phoneController.text.isEmpty) {
+                      model.phoneController.text =
+                          userData['phoneNumber'] ?? '';
+                    }
+
+                    // same if you have emailController
+                    // model.emailController.text = userData['email'] ?? '';
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -97,13 +121,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         ? FileImage(_image!)
                                         : _webImage != null
                                         ? MemoryImage(_webImage!)
+                                        : (userData['imgUrl'] != null &&
+                                            userData['imgUrl'].isNotEmpty)
+                                        ? NetworkImage(userData['imgUrl'])
                                         : null,
                                 child:
-                                    (_image == null && _webImage == null)
+                                    _image == null &&
+                                            _webImage == null &&
+                                            userData['imgUrl'] == null
                                         ? Icon(
                                           Icons.person,
                                           size: 70,
-                                          color: Colors.grey,
+                                          color: blackColor,
                                         )
                                         : null,
                               ),

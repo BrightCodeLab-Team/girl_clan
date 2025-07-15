@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/route_manager.dart';
@@ -10,127 +12,140 @@ import 'package:girl_clan/ui/home/events_details_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:provider/provider.dart';
 
-class SearchResultScreen extends StatefulWidget {
-  const SearchResultScreen({super.key});
-
-  @override
-  State<SearchResultScreen> createState() => _SearchResultScreenState();
-}
-
-class _SearchResultScreenState extends State<SearchResultScreen> {
+class SearchResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeViewModel>(
       builder:
-          (context, model, child) => Scaffold(
-            appBar: AppBar(
-              leading: Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: CircleAvatar(
-                  backgroundColor: thinGreyColor,
-                  child: GestureDetector(
-                    onTap: () {
-                      try {
-                        Navigator.maybePop(context);
-                      } catch (e) {
-                        debugPrint('Navigation error: $e');
-                        Navigator.pop(context); // Fallback
-                      }
-                    },
-                    child: Icon(Icons.arrow_back_ios_new_outlined),
+          (context, model, child) => WillPopScope(
+            onWillPop: () async {
+              model.resetFilters();
+              return true; // allow pop
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                leading: Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: CircleAvatar(
+                    backgroundColor: thinGreyColor,
+                    child: GestureDetector(
+                      onTap: () {
+                        try {
+                          model.resetFilters();
+                          Navigator.maybePop(context);
+                        } catch (e) {
+                          model.resetFilters();
+                          debugPrint('Navigation error: $e');
+                          Navigator.pop(context); // Fallback
+                        }
+                      },
+                      child: Icon(Icons.arrow_back_ios_new_outlined),
+                    ),
                   ),
                 ),
-              ),
-              title: TextFormField(
-                decoration: customHomeAuthField.copyWith(
-                  suffixIcon: Padding(
-                    padding: EdgeInsets.all(10),
-                    child: CircleAvatar(
-                      backgroundColor: whiteColor,
-                      child: IconButton(
-                        icon: Icon(Icons.tune),
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            isScrollControlled: true,
-                            backgroundColor: Colors.transparent,
-                            builder: (BuildContext context) {
-                              return CustomFilterBottomSheet();
-                            },
-                          );
-                        },
+                title: TextFormField(
+                  onChanged: (value) {
+                    model.searchEvents(value);
+                  },
+                  decoration: customHomeAuthField.copyWith(
+                    suffixIcon: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: CircleAvatar(
+                        backgroundColor: whiteColor,
+                        child: IconButton(
+                          icon: Icon(Icons.tune),
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (BuildContext context) {
+                                return CustomFilterBottomSheet(
+                                  onApply: (category, date, location) {
+                                    model.applyFilter(
+                                      category: category,
+                                      date: date,
+                                      location: location,
+                                    );
+                                  },
+                                );
+                              },
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            body: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  10.verticalSpace,
-                  // Search found count
-                  Row(
-                    children: [
-                      Text(
-                        'search found:',
-                        style: style14.copyWith(fontSize: 12),
-                      ),
-                      2.horizontalSpace,
-                      Text(
-                        model.upcomingEventsList.length <= 9
-                            ? '0${model.upcomingEventsList.length}'
-                            : model.upcomingEventsList.length.toString(),
-                        style: style14B.copyWith(
-                          fontSize: 13,
-                          color: primaryColor,
+              body: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    10.verticalSpace,
+                    // Search found count
+                    Row(
+                      children: [
+                        Text(
+                          'Search Found:',
+                          style: style14.copyWith(fontSize: 12),
                         ),
-                      ),
-                    ],
-                  ),
-                  10.verticalSpace,
+                        2.horizontalSpace,
+                        Text(
+                          model.upcomingEventsList.length <= 9
+                              ? '0${model.upcomingEventsList.length}'
+                              : model.upcomingEventsList.length.toString(),
+                          style: style14B.copyWith(
+                            fontSize: 13,
+                            color: primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    10.verticalSpace,
 
-                  // Search results grid
-                  Expanded(
-                    child:
-                        model.upcomingEventsList.isEmpty
-                            ? Center(
-                              child: Text(
-                                'No events found',
-                                style: style14.copyWith(fontSize: 16),
-                              ),
-                            )
-                            : GridView.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    childAspectRatio: 0.8,
-                                    crossAxisSpacing: 10,
-                                    mainAxisSpacing: 10,
-                                  ),
-                              itemCount: model.upcomingEventsList.length,
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              itemBuilder: (BuildContext context, int index) {
-                                return GestureDetector(
-                                  onTap:
-                                      () => Get.to(
-                                        EventsDetailsScreen(
-                                          eventModel:
-                                              model.upcomingEventsList[index],
+                    // Search results grid
+                    Expanded(
+                      child:
+                          model.upcomingEventsList.isEmpty
+                              ? Center(
+                                child: Text(
+                                  'No events found',
+                                  style: style14.copyWith(fontSize: 16),
+                                ),
+                              )
+                              : GridView.builder(
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      childAspectRatio: 0.8,
+                                      crossAxisSpacing: 10,
+                                      mainAxisSpacing: 10,
+                                    ),
+                                itemCount: model.upcomingEventsList.length,
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return GestureDetector(
+                                    onTap:
+                                        () => Get.to(
+                                          EventsDetailsScreen(
+                                            eventModel:
+                                                model.upcomingEventsList[index],
+                                          ),
                                         ),
-                                      ),
-                                  child: CustomSearchResultCard(
-                                    eventModel: model.upcomingEventsList[index],
-                                  ),
-                                );
-                              },
-                            ),
-                  ),
-                ],
+                                    child: CustomSearchResultCard(
+                                      eventModel:
+                                          model.upcomingEventsList[index],
+                                    ),
+                                  );
+                                },
+                              ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -143,8 +158,8 @@ class _SearchResultScreenState extends State<SearchResultScreen> {
 ///
 
 class CustomFilterBottomSheet extends StatefulWidget {
-  const CustomFilterBottomSheet({super.key});
-
+  final Function(String? category, String? date, String? location) onApply;
+  const CustomFilterBottomSheet({super.key, required this.onApply});
   @override
   State<CustomFilterBottomSheet> createState() =>
       _CustomFilterBottomSheetState();
@@ -271,7 +286,7 @@ class _CustomFilterBottomSheetState extends State<CustomFilterBottomSheet> {
           ),
           10.verticalSpace,
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 5.w),
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(99.r),
@@ -324,6 +339,7 @@ class _CustomFilterBottomSheetState extends State<CustomFilterBottomSheet> {
           ),
           10.verticalSpace,
           Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(99.r),
@@ -358,6 +374,7 @@ class _CustomFilterBottomSheetState extends State<CustomFilterBottomSheet> {
           ),
           10.verticalSpace,
           Container(
+            padding: EdgeInsets.symmetric(horizontal: 10.w),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(99.r),
@@ -392,13 +409,9 @@ class _CustomFilterBottomSheetState extends State<CustomFilterBottomSheet> {
               Expanded(
                 child: CustomButton(
                   onTap: () {
-                    setState(() {
-                      _selectedCategory = null;
-                      _dateController.clear();
-                      _locationController.clear();
-                    });
+                    Navigator.pop(context);
                   },
-                  text: 'Reset',
+                  text: 'Cancel',
                   backgroundColor: secondaryColor,
                   textColor: whiteColor,
                 ),
@@ -407,20 +420,22 @@ class _CustomFilterBottomSheetState extends State<CustomFilterBottomSheet> {
               Expanded(
                 child: CustomButton(
                   onTap: () {
-                    if (_selectedCategory == null ||
-                        _dateController.text.isEmpty ||
-                        _locationController.text.isEmpty) {
-                      showTopSnackBar(context, 'Please fill all fields');
-                    } else {
-                      Navigator.pop(context); // Close bottom sheet
-                      showTopSnackBar(
-                        context,
-                        'Filter applied',
-                        backgroundColor: primaryColor,
-                      );
-                    }
+                    widget.onApply(
+                      _selectedCategory,
+                      _dateController.text.isEmpty
+                          ? null
+                          : _dateController.text,
+                      _locationController.text.isEmpty
+                          ? null
+                          : _locationController.text,
+                    );
+                    Navigator.pop(context);
+                    showTopSnackBar(
+                      context,
+                      'Filter applied',
+                      backgroundColor: primaryColor,
+                    );
                   },
-
                   text: 'Apply',
                   backgroundColor: primaryColor,
                   textColor: whiteColor,

@@ -12,19 +12,22 @@ class HomeViewModel extends BaseViewModel {
   EventModel eventModel = EventModel();
   final db = locator<DatabaseServices>();
   final currentUser = FirebaseAuth.instance;
-  data() {}
+
+  final List<Map<String, dynamic>> tabs = [
+    {'icon': Icons.apps, 'text': 'All'},
+    {'icon': Icons.hiking, 'text': 'Hiking'},
+    {'icon': Icons.music_note, 'text': 'Concert'},
+    {'icon': Icons.music_note, 'text': 'Party'},
+    {'icon': Icons.music_note, 'text': 'Workshop'},
+    {'icon': Icons.music_note, 'text': 'Sports'},
+    {'icon': Icons.music_note, 'text': 'Art Exhibitions'},
+  ];
 
   ///
   ///      up coming events
   ///
   List<EventModel> upcomingEventsList = [];
   List<EventModel> allEventsList = [];
-  List<EventModel> hikingList = [];
-  List<EventModel> concertList = [];
-  List<EventModel> partyList = [];
-  List<EventModel> workshopList = [];
-  List<EventModel> sportsList = [];
-  List<EventModel> artExhibitionsList = [];
   List<EventModel> currentUserEventsList = [];
 
   ///
@@ -32,13 +35,7 @@ class HomeViewModel extends BaseViewModel {
   ///
   HomeViewModel() {
     upComingEvents();
-    getAllEvents();
-    getHikingEvents();
-    getConcertEvents();
-    getPartyEvents();
-    getWorkShopEvents();
-    getSportsEvents();
-    getArtExhibitionsEvents();
+    getAllEvent(tabs[selectedTabIndex]['text']); // Pass "All"
     getCurrentUserEvents();
   }
 
@@ -47,13 +44,7 @@ class HomeViewModel extends BaseViewModel {
   ///
   Future<void> refreshAllEvents() async {
     await upComingEvents();
-    await getAllEvents();
-    await getHikingEvents();
-    await getConcertEvents();
-    await getPartyEvents();
-    await getWorkShopEvents();
-    await getSportsEvents();
-    await getArtExhibitionsEvents();
+    await getAllEvent("$selectedTabIndex");
     await getCurrentUserEvents();
     notifyListeners();
   }
@@ -107,10 +98,10 @@ class HomeViewModel extends BaseViewModel {
   ///
   ///.  get all events from database
   ///
-  Future<void> getAllEvents() async {
+  Future<void> getAllEvent(String? category) async {
     setState(ViewState.busy);
     try {
-      allEventsList = await db.getAllEvents(eventModel);
+      allEventsList = await db.getAllEventsByCategory("$category");
       debugPrint('Successfully fetched ${allEventsList.length} events');
       notifyListeners();
     } catch (e) {
@@ -121,107 +112,16 @@ class HomeViewModel extends BaseViewModel {
   }
 
   ///
-  ///. hiking events
-  ///
-  Future<void> getHikingEvents() async {
-    setState(ViewState.busy);
-    try {
-      hikingList = await db.getHikingEvents(eventModel);
-      debugPrint('Successfully fetched ${hikingList.length} events');
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error fetching hiking events: $e');
-    } finally {
-      setState(ViewState.idle);
-    }
-  }
-
-  ///
-  ///. concert events
-  ///
-  Future<void> getConcertEvents() async {
-    setState(ViewState.busy);
-    try {
-      concertList = await db.getConcertEvents(eventModel);
-      debugPrint('Successfully fetched ${concertList.length} events');
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error fetching concert events: $e');
-    } finally {
-      setState(ViewState.idle);
-    }
-  }
-
-  ///
-  ///. party events
-  ///
-  Future<void> getPartyEvents() async {
-    setState(ViewState.busy);
-    try {
-      partyList = await db.getPartyEvents(eventModel);
-      debugPrint('Successfully fetched ${partyList.length} events');
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error fetching party events: $e');
-    } finally {
-      setState(ViewState.idle);
-    }
-  }
-
-  ///
-  ///. workshop events
-  ///
-  Future<void> getWorkShopEvents() async {
-    setState(ViewState.busy);
-    try {
-      workshopList = await db.getWorkShopEvents(eventModel);
-      debugPrint('Successfully fetched ${workshopList.length} events');
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error fetching work shop events: $e');
-    } finally {
-      setState(ViewState.idle);
-    }
-  }
-
-  ///
-  ///. sports events
-  ///
-  Future<void> getSportsEvents() async {
-    setState(ViewState.busy);
-    try {
-      sportsList = await db.getSportsEvents(eventModel);
-      debugPrint('Successfully fetched ${sportsList.length} events');
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error fetching sports events: $e');
-    } finally {
-      setState(ViewState.idle);
-    }
-  }
-
-  ///
-  ///. art exhibitions events
-  ///
-  Future<void> getArtExhibitionsEvents() async {
-    setState(ViewState.busy);
-    try {
-      artExhibitionsList = await db.getArtExhibitionsEvents(eventModel);
-      debugPrint('Successfully fetched ${artExhibitionsList.length} events');
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error fetching art exhibitions events: $e');
-    } finally {
-      setState(ViewState.idle);
-    }
-  }
-
-  ///
   ///     tabs
   ///
   int selectedTabIndex = 0;
-  selectedTabFunction(index) {
+  selectedTabFunction(int index) {
     selectedTabIndex = index;
+
+    final selectedCategory = tabs[index]['text'];
+
+    getAllEvent(selectedCategory); // fetch events by category
+
     notifyListeners();
   }
 
@@ -287,11 +187,49 @@ class HomeViewModel extends BaseViewModel {
     }
   }
 
-  // Future<void> joinGroup(String groupId) async {
-  //   final userId = db.currentUserId;
-  //   final groupDoc = db.firestore.collection('groups').doc(groupId);
-  //   await groupDoc.set({
-  //     'members': FieldValue.arrayUnion([userId]),
-  //   }, SetOptions(merge: true));
-  // }
+  // Call this once when you load data (from API / Firebase)
+  void loadEvents(List<EventModel> events) {
+    allEventsList = events;
+    upcomingEventsList = List.from(allEventsList);
+    notifyListeners();
+  }
+
+  void searchEvents(String query) {
+    if (query.isEmpty) {
+      upcomingEventsList = List.from(allEventsList);
+    } else {
+      final lowerQuery = query.toLowerCase();
+      upcomingEventsList =
+          allEventsList.where((event) {
+            return (event.eventName?.toLowerCase().contains(lowerQuery) ??
+                    false) ||
+                (event.category?.toLowerCase().contains(lowerQuery) ?? false) ||
+                (event.location?.toLowerCase().contains(lowerQuery) ?? false);
+          }).toList();
+    }
+    notifyListeners();
+  }
+
+  void applyFilter({String? category, String? date, String? location}) {
+    upcomingEventsList =
+        allEventsList.where((event) {
+          final matchCategory = category == null || event.category == category;
+          final matchDate = date == null || event.date == date;
+          final matchLocation =
+              location == null || event.location!.contains(location);
+          return matchCategory && matchDate && matchLocation;
+        }).toList();
+    notifyListeners();
+  }
+
+  void resetFilters() {
+    upcomingEventsList = List.from(allEventsList);
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    resetFilters();
+    super.dispose();
+  }
 }

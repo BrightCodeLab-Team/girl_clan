@@ -1,9 +1,11 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/route_manager.dart';
-import 'package:girl_clan/core/constants/app_assets.dart' show AppAssets;
+import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/custom_widget/app_bar.dart';
 import 'package:girl_clan/ui/profile/edit_profile_screen.dart';
@@ -73,14 +75,37 @@ class MyProfileScreen extends StatelessWidget {
                     final phoneNumber =
                         data['phoneNumber'] ?? 'set phone number';
                     final location = data['location'] ?? 'set location';
+                    final imgUrl = data['imgUrl'] ?? 'set location';
                     // Default widget if none of the above conditions are met
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const SizedBox(height: 40),
-                        CircleAvatar(
-                          radius: 60,
-                          backgroundImage: AssetImage(AppAssets().appLogo),
+                        Center(
+                          child: CircleAvatar(
+                            radius: 70,
+                            backgroundColor: Colors.grey.shade200,
+                            backgroundImage:
+                                model.image != null
+                                    ? FileImage(model.image!)
+                                    : model.webImage != null
+                                    ? MemoryImage(model.webImage!)
+                                    : (data['imgUrl'] != null &&
+                                        data['imgUrl'].isNotEmpty)
+                                    ? NetworkImage(data['imgUrl'])
+                                    : null,
+
+                            child:
+                                model.image == null &&
+                                        model.webImage == null &&
+                                        data['imgUrl'] == null
+                                    ? Icon(
+                                      Icons.person,
+                                      size: 70,
+                                      color: blackColor,
+                                    )
+                                    : null,
+                          ),
                         ),
                         20.verticalSpace,
                         Container(
@@ -95,7 +120,7 @@ class MyProfileScreen extends StatelessWidget {
                             children: [
                               Text('Username', style: style12.copyWith()),
                               SizedBox(height: 4),
-                              Text('${firstName + surName}', style: style16B),
+                              Text('$firstName $surName', style: style16B),
                               SizedBox(height: 16),
 
                               Text('Email', style: style12.copyWith()),

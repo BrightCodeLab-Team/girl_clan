@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +9,8 @@ import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/ui/auth/login/login_screen.dart';
 
 class ProfileViewModel extends BaseViewModel {
+  File? image;
+  Uint8List? webImage; // for web
   ///
   ///. this is for editing profile screen
   ///

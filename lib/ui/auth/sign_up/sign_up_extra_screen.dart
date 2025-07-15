@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/app_assets.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/core/constants/strings.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
@@ -34,7 +35,7 @@ class SignUpExtraScreen extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 1,
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("assets/static_assets/loginImage.jpg"),
+                  image: AssetImage("$staticAssets/loginImage.jpg"),
                   fit: BoxFit.cover,
                 ),
               ),

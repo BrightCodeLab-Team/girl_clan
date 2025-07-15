@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/app_assets.dart';
+import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/ui/auth/welcome_screen.dart';
 import 'package:girl_clan/ui/root_screen/root_screen.dart'; // Update this import to match your file structure
 
@@ -37,11 +38,12 @@ class _SplashScreenState extends State<SplashScreen> {
       height: MediaQuery.sizeOf(context).height,
       width: MediaQuery.sizeOf(context).width,
       decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(AppAssets().splashScreenImage),
-          fit: BoxFit.cover,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          colors: [primaryColor, secondaryColor],
         ),
       ),
+      child: Image.asset(AppAssets().appLogo, scale: 4),
     );
   }
 }

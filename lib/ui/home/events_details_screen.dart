@@ -146,7 +146,10 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                               ),
 
                               Padding(
-                                padding: const EdgeInsets.all(16.0),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0,
+                                  vertical: 30,
+                                ),
                                 child: IconButton(
                                   onPressed: () {
                                     Get.back();

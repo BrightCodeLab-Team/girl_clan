@@ -4,6 +4,7 @@ import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/constants/app_assets.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/core/constants/strings.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
@@ -35,7 +36,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 width: MediaQuery.of(context).size.width * 1,
                 decoration: BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage("assets/static_assets/loginImage.jpg"),
+                    image: AssetImage("$staticAssets/loginImage.jpg"),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -162,10 +163,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           3.verticalSpace,
                           TextFormField(
-                            obscureText: true,
+                            obscureText: model.isPasswordVisible,
                             decoration: customAuthField3.copyWith(
                               hintText: "Enter Your Password",
+
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  model.isPasswordVisible
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Colors.grey,
+                                ),
+                                onPressed: () {
+                                  model.togglePasswordVisibility();
+                                },
+                              ),
                             ),
+
                             controller: model.passwordController,
                             validator: model.validatePassword,
                           ),

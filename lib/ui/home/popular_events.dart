@@ -94,294 +94,39 @@ class _PopularEventsScreenState extends State<PopularEventsScreen> {
                   ///
                   ///    top picks card
                   ///
-                  model.selectedTabIndex == 0
-                      ? Expanded(
-                        child:
-                            model.allEventsList.isEmpty
-                                ? Center(
-                                  child: Text(
-                                    'No Events found',
-                                    style: style18B.copyWith(),
-                                  ),
-                                )
-                                : ListView.builder(
-                                  itemCount: model.allEventsList.length,
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
-                                  itemBuilder: (
-                                    BuildContext context,
-                                    int index,
-                                  ) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 10.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Get.to(
-                                            EventsDetailsScreen(
-                                              eventModel:
-                                                  model.allEventsList[index],
-                                            ),
-                                          );
-                                        },
-                                        child: CustomHomeTopPickEventsCard(
+                  Expanded(
+                    child:
+                        model.allEventsList.isEmpty
+                            ? Center(
+                              child: Text(
+                                'No Events found',
+                                style: style18B.copyWith(),
+                              ),
+                            )
+                            : ListView.builder(
+                              itemCount: model.allEventsList.length,
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 10.0),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Get.to(
+                                        EventsDetailsScreen(
                                           eventModel:
                                               model.allEventsList[index],
                                         ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                      )
-                      ///
-                      /// . hiking tab
-                      ///
-                      : model.selectedTabIndex == 1
-                      ? Expanded(
-                        child:
-                            model.hikingList.isEmpty
-                                ? Center(
-                                  child: Text(
-                                    'No Hiking Events found',
-                                    style: style18B.copyWith(),
+                                      );
+                                    },
+                                    child: CustomHomeTopPickEventsCard(
+                                      eventModel: model.allEventsList[index],
+                                    ),
                                   ),
-                                )
-                                : ListView.builder(
-                                  itemCount: model.hikingList.length,
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
-                                  itemBuilder: (
-                                    BuildContext context,
-                                    int index,
-                                  ) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 10.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Get.to(
-                                            EventsDetailsScreen(
-                                              eventModel:
-                                                  model.hikingList[index],
-                                            ),
-                                          );
-                                        },
-                                        child: CustomHomeTopPickEventsCard(
-                                          eventModel: model.hikingList[index],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                      )
-                      ///
-                      ///. party tab
-                      ///
-                      : model.selectedTabIndex == 3
-                      ? Expanded(
-                        child:
-                            model.partyList.isEmpty
-                                ? Center(
-                                  child: Text(
-                                    'No Party Events found',
-                                    style: style18B.copyWith(),
-                                  ),
-                                )
-                                : ListView.builder(
-                                  itemCount: model.partyList.length,
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
-                                  itemBuilder: (
-                                    BuildContext context,
-                                    int index,
-                                  ) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 10.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Get.to(
-                                            EventsDetailsScreen(
-                                              eventModel:
-                                                  model.partyList[index],
-                                            ),
-                                          );
-                                        },
-                                        child: CustomHomeTopPickEventsCard(
-                                          eventModel: model.partyList[index],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                      )
-                      ///
-                      ///.  concert tab
-                      ///
-                      : model.selectedTabIndex == 2
-                      ? Expanded(
-                        child:
-                            model.concertList.isEmpty
-                                ? Center(
-                                  child: Text(
-                                    'No Concert Events found',
-                                    style: style18B.copyWith(),
-                                  ),
-                                )
-                                : ListView.builder(
-                                  itemCount: model.concertList.length,
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
-                                  itemBuilder: (
-                                    BuildContext context,
-                                    int index,
-                                  ) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 10.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Get.to(
-                                            EventsDetailsScreen(
-                                              eventModel:
-                                                  model.concertList[index],
-                                            ),
-                                          );
-                                        },
-                                        child: CustomHomeTopPickEventsCard(
-                                          eventModel: model.concertList[index],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                      )
-                      ///
-                      ///. workshop tab
-                      ///
-                      : model.selectedTabIndex == 4
-                      ? Expanded(
-                        child:
-                            model.workshopList.isEmpty
-                                ? Center(
-                                  child: Text(
-                                    'No Workshop Events found',
-                                    style: style18B.copyWith(),
-                                  ),
-                                )
-                                : ListView.builder(
-                                  itemCount: model.workshopList.length,
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
-                                  itemBuilder: (
-                                    BuildContext context,
-                                    int index,
-                                  ) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 10.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Get.to(
-                                            EventsDetailsScreen(
-                                              eventModel:
-                                                  model.workshopList[index],
-                                            ),
-                                          );
-                                        },
-                                        child: CustomHomeTopPickEventsCard(
-                                          eventModel: model.workshopList[index],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                      )
-                      ///
-                      ///. sports tab
-                      ///
-                      : model.selectedTabIndex == 5
-                      ? Expanded(
-                        child:
-                            model.sportsList.isEmpty
-                                ? Center(
-                                  child: Text(
-                                    'No Sports Events found',
-                                    style: style18B.copyWith(),
-                                  ),
-                                )
-                                : ListView.builder(
-                                  itemCount: model.sportsList.length,
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
-                                  itemBuilder: (
-                                    BuildContext context,
-                                    int index,
-                                  ) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 10.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Get.to(
-                                            EventsDetailsScreen(
-                                              eventModel:
-                                                  model.sportsList[index],
-                                            ),
-                                          );
-                                        },
-                                        child: CustomHomeTopPickEventsCard(
-                                          eventModel: model.sportsList[index],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                      )
-                      ///
-                      ///. art exhibitions tab
-                      ///
-                      : model.selectedTabIndex == 6
-                      ? Expanded(
-                        child:
-                            model.artExhibitionsList.isEmpty
-                                ? Center(
-                                  child: Text(
-                                    'No Art Exhibitions Events found',
-                                    style: style18B.copyWith(),
-                                  ),
-                                )
-                                : ListView.builder(
-                                  itemCount: model.artExhibitionsList.length,
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
-                                  itemBuilder: (
-                                    BuildContext context,
-                                    int index,
-                                  ) {
-                                    return Padding(
-                                      padding: const EdgeInsets.only(top: 10.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          Get.to(
-                                            EventsDetailsScreen(
-                                              eventModel:
-                                                  model
-                                                      .artExhibitionsList[index],
-                                            ),
-                                          );
-                                        },
-                                        child: CustomHomeTopPickEventsCard(
-                                          eventModel:
-                                              model.artExhibitionsList[index],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                      )
-                      : Expanded(
-                        child: Center(
-                          child: Text(
-                            'No data found',
-                            style: style18B.copyWith(),
-                          ),
-                        ),
-                      ),
+                                );
+                              },
+                            ),
+                  ),
                 ],
               ),
             ),

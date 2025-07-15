@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
-import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SignUpViewModel extends BaseViewModel {
@@ -17,6 +16,8 @@ class SignUpViewModel extends BaseViewModel {
   File? profileImage;
   String? uploadedImageUrl;
   List<String> selectedInterests = [];
+
+  bool isPasswordVisible = false;
 
   void setLoading(bool value) {
     isLoading = value;
@@ -42,6 +43,11 @@ class SignUpViewModel extends BaseViewModel {
 
   onclickTerms(newValue) {
     agreeToTerms = newValue ?? false;
+    notifyListeners();
+  }
+
+  void togglePasswordVisibility() {
+    isPasswordVisible = !isPasswordVisible;
     notifyListeners();
   }
 

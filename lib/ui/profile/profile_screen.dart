@@ -4,13 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:girl_clan/core/constants/app_assets.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:girl_clan/ui/interests/interest_screen.dart';
 import 'package:girl_clan/ui/notification_screen/notification_screen.dart';
-import 'package:girl_clan/ui/password/Change_Password_Screen.dart';
 import 'package:girl_clan/ui/password/privacy_policy_screen.dart';
 import 'package:girl_clan/ui/profile/my_profile_screen.dart';
 import 'package:girl_clan/ui/profile/profile_view_model.dart';
@@ -45,7 +43,7 @@ class ProfileScreen extends StatelessWidget {
                       final email = data['email'] ?? 'set email';
                       return Container(
                         width: 375.w,
-                        height: 234.h,
+                        height: 250.h,
 
                         decoration: BoxDecoration(
                           color: blackColor,
@@ -58,9 +56,31 @@ class ProfileScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             20.verticalSpace,
-                            CircleAvatar(
-                              radius: 60.r,
-                              child: Image.asset(AppAssets().appLogo),
+                            Center(
+                              child: CircleAvatar(
+                                radius: 70,
+                                backgroundColor: Colors.grey.shade200,
+                                backgroundImage:
+                                    profileModel.image != null
+                                        ? FileImage(profileModel.image!)
+                                        : profileModel.webImage != null
+                                        ? MemoryImage(profileModel.webImage!)
+                                        : (data['imgUrl'] != null &&
+                                            data['imgUrl'].isNotEmpty)
+                                        ? NetworkImage(data['imgUrl'])
+                                        : null,
+
+                                child:
+                                    profileModel.image == null &&
+                                            profileModel.webImage == null &&
+                                            data['imgUrl'] == null
+                                        ? Icon(
+                                          Icons.person,
+                                          size: 70,
+                                          color: blackColor,
+                                        )
+                                        : null,
+                              ),
                             ),
                             //
                             15.verticalSpace,
@@ -158,7 +178,7 @@ class ProfileScreen extends StatelessWidget {
                                 }),
 
                                 Padding(
-                                  padding: EdgeInsets.only(left: 15, top: 20),
+                                  padding: EdgeInsets.only(left: 15),
                                   child: Text(
                                     'Setting',
                                     style: style12.copyWith(
@@ -169,16 +189,16 @@ class ProfileScreen extends StatelessWidget {
                                   ),
                                 ),
 
-                                buildMenuItem('Change Password', () {
-                                  try {
-                                    Get.to(() => ChangePasswordScreen());
-                                  } catch (e, stackTrace) {
-                                    // ignore: avoid_print
-                                    print('Navigation failed: $e');
-                                    // ignore: avoid_print
-                                    print(stackTrace);
-                                  }
-                                }),
+                                // buildMenuItem('Change Password', () {
+                                //   try {
+                                //     Get.to(() => ChangePasswordScreen());
+                                //   } catch (e, stackTrace) {
+                                //     // ignore: avoid_print
+                                //     print('Navigation failed: $e');
+                                //     // ignore: avoid_print
+                                //     print(stackTrace);
+                                //   }
+                                // }),
                                 buildMenuItem('Privacy Policy', () {
                                   Get.to(PrivacyPolicyScreen());
                                 }),

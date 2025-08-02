@@ -50,19 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBEP0onQ6CmpYMQjCP0PXxumWF4WTMPDxs',
-    appId: '1:413553926888:android:d459ce168ca2ead9205f5d',
-    messagingSenderId: '413553926888',
-    projectId: 'event-app-d66c5',
-    storageBucket: 'event-app-d66c5.firebasestorage.app',
+    apiKey: 'AIzaSyCSmZok0kBeQbq_aMMiJWmk5EsUWjAU_eE',
+    appId: '1:941382120322:android:3a6306273bb70bff9f959b',
+    messagingSenderId: '941382120322',
+    projectId: 'girlclan-e22c0',
+    storageBucket: 'girlclan-e22c0.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBEP0onQ6CmpYMQjCP0PXxumWF4WTMPDxs',
-    appId: '1:413553926888:android:d459ce168ca2ead9205f5d',
-    messagingSenderId: '413553926888',
-    projectId: 'event-app-d66c5',
-    storageBucket: 'event-app-d66c5.firebasestorage.app',
+    apiKey: 'AIzaSyCSmZok0kBeQbq_aMMiJWmk5EsUWjAU_eE',
+    appId: '1:941382120322:android:3a6306273bb70bff9f959b',
+    messagingSenderId: '941382120322',
+    projectId: 'girlclan-e22c0',
+    storageBucket: 'girlclan-e22c0.firebasestorage.app',
     iosBundleId: 'com.example.girlClan',
   );
 }

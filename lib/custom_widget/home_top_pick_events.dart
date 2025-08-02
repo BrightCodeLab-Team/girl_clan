@@ -80,7 +80,7 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          "${eventModel.capacity}/${eventModel.joiningPeople} Joined",
+                          "${eventModel.joiningPeople}/${eventModel.capacity} Joined",
                           style: style14.copyWith(
                             fontSize: 13,
                             color: whiteColor,

@@ -161,14 +161,21 @@ class SignUpViewModel extends BaseViewModel {
   Future<void> uploadProfileImageToFirebase() async {
     if (profileImage == null) return;
 
-    final storageRef = FirebaseStorage.instance
-        .ref()
-        .child("profile_images")
-        .child("${DateTime.now().millisecondsSinceEpoch}.jpg");
+    try {
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child("profile_images")
+          .child("${DateTime.now().millisecondsSinceEpoch}.jpg");
 
-    UploadTask uploadTask = storageRef.putFile(profileImage!);
-    TaskSnapshot snapshot = await uploadTask;
-    uploadedImageUrl = await snapshot.ref.getDownloadURL();
+      UploadTask uploadTask = storageRef.putFile(profileImage!);
+      TaskSnapshot snapshot = await uploadTask;
+      uploadedImageUrl = await snapshot.ref.getDownloadURL();
+
+      print("Image uploaded successfully: $uploadedImageUrl");
+    } catch (e) {
+      print("Image upload failed: $e");
+      Get.snackbar("Upload Error", "Failed to upload image");
+    }
   }
 
   ///

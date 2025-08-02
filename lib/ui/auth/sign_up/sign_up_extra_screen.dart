@@ -5,7 +5,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:girl_clan/core/constants/app_assets.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/strings.dart';
@@ -229,6 +228,7 @@ class SignUpExtraScreen extends StatelessWidget {
                         if (_formKey.currentState!.validate() &&
                             model.agreeToTerms) {
                           await model.signInUser();
+                          await model.uploadProfileImageToFirebase();
                           await model.uploadUserDetailToFireStoreDatabase();
                           // Navigate to interest selection
                           Get.to(() => InterestSelectionScreen());

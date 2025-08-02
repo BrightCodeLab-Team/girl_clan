@@ -1,8 +1,9 @@
-// ignore_for_file: deprecated_member_use, body_might_complete_normally_nullable
+// ignore_for_file: deprecated_member_use, body_might_complete_normally_nullable, unused_local_variable
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,10 +11,8 @@ import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
-import 'package:girl_clan/custom_widget/app_bar.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
-import 'package:girl_clan/custom_widget/loaders/add_event_laoder.dart';
-import 'package:girl_clan/ui/add_event/add_event_view_model.dart';
+import 'package:girl_clan/ui/add_event/create_events.dart/create_event_view_model.dart';
 import 'package:girl_clan/ui/add_event/location_picker_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +28,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final _formKey = GlobalKey<FormState>();
   File? _pickedImageFile;
   Uint8List? _webImage; // for web
+
+  bool _categoryError = false;
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -49,6 +50,33 @@ class _AddEventScreenState extends State<AddEventScreen> {
           _webImage = null;
         });
       }
+    }
+  }
+
+  Future<String?> uploadImage() async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref();
+      final imageName = 'events/${DateTime.now().millisecondsSinceEpoch}';
+
+      final imageRef = storageRef.child(imageName);
+
+      UploadTask uploadTask;
+
+      if (kIsWeb && _webImage != null) {
+        final metadata = SettableMetadata(contentType: 'image/jpeg');
+        uploadTask = imageRef.putData(_webImage!, metadata);
+      } else if (_pickedImageFile != null) {
+        uploadTask = imageRef.putFile(_pickedImageFile!);
+      } else {
+        return null; // no image
+      }
+
+      final snapshot = await uploadTask;
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print('Image upload error: $e');
+      return null;
     }
   }
 
@@ -119,7 +147,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
     return Consumer<AddEventViewModel>(
       builder:
           (context, model, child) => Scaffold(
-            appBar: CustomAppBar(title: 'Add Events'),
             body: Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: SingleChildScrollView(
@@ -246,54 +273,77 @@ class _AddEventScreenState extends State<AddEventScreen> {
                         ),
                       ),
                       5.verticalSpace,
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white, // dropdown background
-                          borderRadius: BorderRadius.circular(99.r),
-                          border: Border.all(
-                            color: borderColor.withOpacity(0.4),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 12.w,
-                          ), // outer left-right padding
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              dropdownColor: whiteColor,
-                              borderRadius: BorderRadius.circular(10),
-                              isExpanded: true,
-                              hint: Text(
-                                'Select Category',
-                                style: style14.copyWith(fontSize: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(99.r),
+                              border: Border.all(
+                                color:
+                                    _categoryError
+                                        ? Colors.red
+                                        : borderColor.withOpacity(0.4),
                               ),
-                              value: _selectedCategory,
-                              icon: Icon(
-                                Icons.keyboard_arrow_down,
-                                color: Colors.grey.shade900,
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 12.w),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                                  dropdownColor: whiteColor,
+                                  borderRadius: BorderRadius.circular(10),
+                                  isExpanded: true,
+                                  hint: Text(
+                                    'Select Category',
+                                    style: style14.copyWith(fontSize: 12),
+                                  ),
+                                  value: _selectedCategory,
+                                  icon: Icon(
+                                    Icons.keyboard_arrow_down,
+                                    color: Colors.grey.shade900,
+                                  ),
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _selectedCategory = newValue;
+                                      _categoryError = false;
+                                    });
+                                    model.eventModel.category = newValue;
+                                  },
+                                  items:
+                                      _categories.map<DropdownMenuItem<String>>(
+                                        (String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(
+                                              value,
+                                              style: style14.copyWith(
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ).toList(),
+                                ),
                               ),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedCategory = newValue;
-                                });
-                                model.eventModel.category = newValue;
-                              },
-                              items:
-                                  _categories.map<DropdownMenuItem<String>>((
-                                    String value,
-                                  ) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(
-                                        value,
-                                        style: style14.copyWith(fontSize: 14),
-                                      ),
-                                    );
-                                  }).toList(),
                             ),
                           ),
-                        ),
+
+                          // Show error if needed
+                          if (_categoryError)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5, left: 12),
+                              child: Text(
+                                'Category is required',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
+
                       10.verticalSpace,
 
                       ///
@@ -474,11 +524,25 @@ class _AddEventScreenState extends State<AddEventScreen> {
                           final data = snapshot.data!.data()!;
                           final firstName = data['firstName'] ?? '';
                           final surName = data['surName'] ?? '';
-
+                          final imageUrl = data['imageUrl'] ?? '';
                           return CustomButton(
                             onTap: () async {
                               if (_formKey.currentState!.validate()) {
-                                // Assign dropdown and date
+                                // ✅ Show a loading dialog while uploading
+                                Get.dialog(
+                                  const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  barrierDismissible: false,
+                                );
+
+                                // ✅ Upload image
+                                final imageUrl = await uploadImage();
+                                if (imageUrl != null) {
+                                  model.eventModel.imageUrl = imageUrl;
+                                }
+
+                                // ✅ Other assignments
                                 if (_selectedCategory != null) {
                                   model.eventModel.category =
                                       _selectedCategory!;
@@ -487,54 +551,22 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                   model.eventModel.date = _dateController.text;
                                 }
 
-                                // ✅ Assign current user info
                                 final user = FirebaseAuth.instance.currentUser;
                                 if (user != null) {
                                   model.eventModel.hostUserId = user.uid;
-                                  model.eventModel.hostName =
-                                      user.displayName ?? '';
-                                  model.eventModel.hostImage =
-                                      user.photoURL ?? '';
+                                  model.eventModel.hostImage = imageUrl ?? '';
                                 } else {
                                   Get.snackbar('Error', 'User not logged in');
                                   return;
                                 }
 
-                                // 👇 Loader screen pe jaye aur wait kare
-                                Get.to(
-                                  () => AddEventLoader(
-                                    addEventCall:
-                                        () => model.addEvent(
-                                          "${firstName + surName}",
-                                        ),
-                                    eventName: "${model.eventModel.eventName}",
-                                    eventTime: "${model.eventModel.startTime}",
-                                  ),
+                                await model.addEventToDB(
+                                  model.eventModel,
+                                  firstName + surName,
                                 );
 
-                                // try {
-                                //   await model.addEvent(
-                                //     "${firstName + surName}",
-                                //   );
-                                //   // Success → go to success screen
-                                //   Get.off(
-                                //     () => SuccessScreen(
-                                //       eventName:
-                                //           "${model.eventModel.eventName}",
-                                //       eventTime:
-                                //           "${model.eventModel.startTime}",
-                                //     ),
-                                //   );
-                                // } catch (error) {
-                                //   // Failure → go to error screen
-                                //   Get.off(() => const ErrorScreen());
-                                //   Get.snackbar(
-                                //     'Error',
-                                //     'Failed to add event: $error',
-                                //     colorText: blackColor,
-                                //     backgroundColor: secondaryColor,
-                                //   );
-                                // }
+                                // OR: Call AddEventLoader etc
+                                // Get.to(() => AddEventLoader(...));
                               } else {
                                 Get.snackbar(
                                   'Validation Error',

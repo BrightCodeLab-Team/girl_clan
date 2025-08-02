@@ -47,7 +47,13 @@ class MyProfileScreen extends StatelessWidget {
               title: 'My Profile',
               showEdit: true,
               onEditTap: () {
-                Get.to(EditProfileScreen());
+                // In your navigation/routing:
+                Get.to(
+                  () => ChangeNotifierProvider(
+                    create: (context) => ProfileViewModel(),
+                    child: EditProfileScreen(),
+                  ),
+                );
               },
             ),
             body: SafeArea(

@@ -2,6 +2,7 @@
 
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/ui/root_screen/root_screen.dart';

@@ -11,13 +11,19 @@ import 'package:intl/intl.dart';
 class MainChatItem extends StatelessWidget {
   final UserModel chat;
   final VoidCallback onTap;
+  final VoidCallback onLongPress;
 
-  MainChatItem({required this.chat, required this.onTap});
+  MainChatItem({
+    required this.chat,
+    required this.onTap,
+    required this.onLongPress,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Row(

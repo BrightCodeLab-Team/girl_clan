@@ -9,9 +9,6 @@ import 'package:girl_clan/ui/profile/profile_screen.dart';
 class RootScreenViewModel extends BaseViewModel {
   int selectedScreen = 0;
 
-  ///
-  ///     bottom navigator bottom bar
-  ///
   List<String> tabTitlesList = ['Home', 'Chat', 'Profile'];
   List<String> tabIcons = [
     AppAssets().homeIcon,
@@ -21,16 +18,9 @@ class RootScreenViewModel extends BaseViewModel {
 
   List<Widget> allScreen = [HomeScreen(), MainChatScreen(), ProfileScreen()];
 
-  ///
-  /// Constructor
-  ///
-  // ignore: non_constant_identifier_names
-  RootViewModel(val) {
-    updatedScreen(val);
-    notifyListeners();
-  }
+  RootScreenViewModel({this.selectedScreen = 0});
 
-  updatedScreen(int index) {
+  void updatedScreen(int index) {
     setState(ViewState.busy);
     selectedScreen = index;
     setState(ViewState.idle);

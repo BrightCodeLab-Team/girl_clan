@@ -47,7 +47,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           backgroundColor: primaryColor,
           colorText: blackColor,
         );
-        Get.to(ProfileScreen());
+        Get.to(() => ProfileScreen());
       }
     } catch (e) {
       Get.snackbar(

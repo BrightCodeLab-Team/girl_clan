@@ -1,7 +1,7 @@
-// lib/ui/chat_screen/chat_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart';
 import 'package:girl_clan/ui/chat/new_chat/message_bubble.dart';
 import 'package:provider/provider.dart';
@@ -13,9 +13,9 @@ class ChatScreen extends StatefulWidget {
 
   const ChatScreen({
     Key? key,
-    required this.chatTitle, // Now required
-    required this.chatImageUrl, // Now required
-    required this.isGroupChat, // Now required
+    required this.chatTitle,
+    required this.chatImageUrl,
+    required this.isGroupChat,
   }) : super(key: key);
 
   @override
@@ -24,6 +24,14 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
+  late ChatViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = context.read<ChatViewModel>();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+  }
 
   @override
   void dispose() {
@@ -32,15 +40,13 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
-    });
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   @override
@@ -51,10 +57,8 @@ class _ChatScreenState extends State<ChatScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
         ),
         title: Row(
           children: [
@@ -63,41 +67,44 @@ class _ChatScreenState extends State<ChatScreen> {
               backgroundImage: NetworkImage(widget.chatImageUrl),
             ),
             10.horizontalSpace,
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.chatTitle,
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.chatTitle,
+                    style: style16B,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
-                ),
-                Row(
-                  children: [
-                    Container(
-                      width: 8.w,
-                      height: 8.h,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
+                  Row(
+                    children: [
+                      Container(
+                        width: 8.w,
+                        height: 8.h,
+                        decoration: const BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                    ),
-                    5.horizontalSpace,
-                    Text(
-                      'Online', // Always show online for one-to-one, or "02 Online" for group
-                      style: TextStyle(fontSize: 12.sp, color: Colors.black54),
-                    ),
-                  ],
-                ),
-              ],
+                      5.horizontalSpace,
+                      Text(
+                        widget.isGroupChat ? 'Group' : 'Online',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.more_vert, color: Colors.black),
+            icon: const Icon(Icons.more_vert, color: Colors.black),
             onPressed: () {
               // Handle more options
             },
@@ -106,7 +113,10 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: Consumer<ChatViewModel>(
         builder: (context, model, child) {
-          _scrollToBottom();
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) => _scrollToBottom(),
+          );
+
           return Column(
             children: [
               10.verticalSpace,
@@ -133,14 +143,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemCount: model.messages.length,
                   itemBuilder: (context, index) {
                     return MessageBubble(
+                      key: ValueKey(model.messages[index].timestamp),
                       message: model.messages[index],
-                      showProfilePic:
-                          widget.isGroupChat, // <-- THIS IS THE KEY!
+                      showProfilePic: widget.isGroupChat,
                     );
                   },
                 ),
               ),
-              // Message Input Field
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                 child: Row(
@@ -154,7 +163,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         child: TextField(
                           controller: model.messageController,
                           decoration: InputDecoration(
-                            hintText: 'Type your message ...',
+                            hintText: 'Type your message...',
                             hintStyle: TextStyle(
                               fontSize: 14.sp,
                               color: Colors.grey,
@@ -164,40 +173,23 @@ class _ChatScreenState extends State<ChatScreen> {
                               horizontal: 20.w,
                               vertical: 12.h,
                             ),
-                            // suffixIcon: Padding(
-                            //   padding: EdgeInsets.only(right: 10.w),
-                            //   child: Row(
-                            //     mainAxisSize: MainAxisSize.min,
-                            //     children: [
-                            //       Icon(Icons.mic_none, color: Colors.grey),
-                            //       10.horizontalSpace,
-                            //       Icon(
-                            //         Icons.camera_alt_outlined,
-                            //         color: Colors.grey,
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
                           ),
+                          onChanged: (text) {
+                            model.isTyping = text.trim().isNotEmpty;
+                          },
                           onSubmitted: (value) => model.sendMessage(),
                         ),
                       ),
                     ),
                     10.horizontalSpace,
                     GestureDetector(
-                      onTap: () {
-                        if (model.isTyping) {
-                          model.sendMessage();
-                        }
-                      },
+                      onTap: model.isTyping ? model.sendMessage : null,
                       child: CircleAvatar(
                         radius: 25.r,
-
                         backgroundColor:
                             model.isTyping
                                 ? primaryColor
                                 : primaryColor.withOpacity(0.20),
-
                         child: Icon(Icons.send, color: whiteColor, size: 20.r),
                       ),
                     ),

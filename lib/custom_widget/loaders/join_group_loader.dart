@@ -1,43 +1,31 @@
-// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api
+// ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, unused_local_variable
 
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/strings.dart';
-import 'package:girl_clan/core/model/event_model.dart';
-import 'package:girl_clan/custom_widget/error/sucess_join_event.dart';
+import 'package:girl_clan/core/model/groups_model.dart';
+import 'package:girl_clan/custom_widget/error/sucess_join_group.dart';
 import 'package:girl_clan/ui/add_event/error_screen.dart';
 
-class JoiningEventLoaderScreen extends StatefulWidget {
+class JoinGroupLoader extends StatefulWidget {
   // final Future<void> Function() onClose;
-  final EventModel eventModel; // ✅ ADD this
-
-  final Future<bool> Function()
-  processCall; // expects process to return true if success
+  final GroupsModel groupsModel;
+  final Future<bool> Function() processCall;
   final String eventName;
-  final String eventTime;
 
-  // 👇 Add these two required fields
-  final int bookedSeats;
-  final int totalSeats;
-
-  const JoiningEventLoaderScreen({
+  const JoinGroupLoader({
     required this.processCall,
     required this.eventName,
-    required this.eventTime,
-    required this.bookedSeats,
-    required this.totalSeats,
-    // required this.onClose, // add this
-    required this.eventModel, // ✅ ADD this
+    required this.groupsModel,
   });
 
   @override
-  State<JoiningEventLoaderScreen> createState() =>
-      _JoiningEventLoaderScreenState();
+  State<JoinGroupLoader> createState() => _JoinGroupLoaderState();
 }
 
-class _JoiningEventLoaderScreenState extends State<JoiningEventLoaderScreen>
+class _JoinGroupLoaderState extends State<JoinGroupLoader>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
@@ -59,30 +47,16 @@ class _JoiningEventLoaderScreenState extends State<JoiningEventLoaderScreen>
         widget.processCall(),
       ]);
 
-      final bool isSuccess = results[1] as bool;
-
-      if (!mounted) return; // ✅ check if still mounted
-
-      if (isSuccess) {
-        if (widget.bookedSeats >= widget.totalSeats) {
-          Get.off(() => const ErrorScreen());
-        } else {
-          Get.offAll(
-            () => SuccessJoinEventScreen(
-              image: '$staticAssets/success.png',
-              title: 'Congratulations!',
-              subtitle:
-                  'Successfully joined the event at ${widget.eventName} at ${widget.eventTime}',
-              // onClose: widget.onClose,
-              eventModel: widget.eventModel,
-            ),
-          );
-        }
-      } else {
-        Get.off(() => const ErrorScreen());
-      }
+      Get.offAll(
+        () => SucessJoinGroup(
+          image: '$staticAssets/success.png',
+          title: 'Congratulations!',
+          subtitle: 'Successfully joined the Group at ${widget.eventName}',
+          groupsModel: widget.groupsModel,
+        ),
+      );
     } catch (e) {
-      print("Error: $e");
+      print("Error join group : $e");
       if (mounted) {
         Get.off(() => const ErrorScreen());
       }
@@ -151,7 +125,7 @@ class _JoiningEventLoaderScreenState extends State<JoiningEventLoaderScreen>
               ),
               const SizedBox(height: 30),
               const Text(
-                'Joining your event',
+                'Joining your Group',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

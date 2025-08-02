@@ -1,8 +1,11 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:girl_clan/core/model/event_model.dart';
+import 'package:girl_clan/core/model/groups_model.dart';
 import 'package:girl_clan/core/model/user_model.dart';
 
 class DatabaseServices {
@@ -64,6 +67,22 @@ class DatabaseServices {
     }
   }
 
+  //  Future<List<EventModel>> getUpcomingEvents() async {
+  //     try {
+  //       final query = FirebaseFirestore.instance
+  //           .collection('events')
+  //           .where('status', isNotEqualTo: 'ended') // Only active events
+  //           .orderBy('date');
+
+  //       final snapshot = await query.get();
+  //       return snapshot.docs
+  //           .map((doc) => EventModel.fromJson(doc.data()))
+  //           .toList();
+  //     } catch (e) {
+  //       debugPrint('Error getting upcoming events: $e');
+  //       return [];
+  //     }
+  //   }
   Future<List<EventModel>> getUpcomingEvents() async {
     try {
       final snapshot = await _db.collection('events').orderBy('date').get();
@@ -162,45 +181,21 @@ class DatabaseServices {
     }
   }
 
-  ///
-  ///. get concert events from database
-  ///
-  // Future<List<EventModel>> getConcertEvents(EventModel eventModel) async {
-  //   try {
-  //     final snapshot =
-  //         await _db
-  //             .collection('events')
-  //             .where('category', whereIn: ['Concert', 'concert', 'CONCERT'])
-  //             .get();
+  Future<List<GroupsModel>> getGroupsData() async {
+    final response = await _db.collection("events_groups").get();
+    List<GroupsModel> groupList = [];
 
-  //     debugPrint('Found ${snapshot.docs.length} documents');
+    if (response.docs.isNotEmpty) {
+      for (var doc in response.docs) {
+        groupList.add(GroupsModel.fromJson(doc.data()));
+      }
+      print("events group data ==>>> $groupList");
+    } else {
+      print("No groups found.");
+    }
 
-  //     final events = <EventModel>[];
-
-  //     for (var doc in snapshot.docs) {
-  //       try {
-  //         final data = doc.data();
-  //         // Add document ID to the data
-  //         data['id'] = doc.id;
-
-  //         debugPrint(
-  //           'Processing event: ${data['eventName']} on ${data['date']}',
-  //         );
-
-  //         final event = EventModel.fromJson(data);
-  //         events.add(event);
-  //       } catch (e) {
-  //         debugPrint('Error processing document ${doc.id}: $e');
-  //       }
-  //     }
-
-  //     return events;
-  //   } catch (e, s) {
-  //     debugPrint('Error in getUpcomingEvents: $e');
-  //     debugPrint('Stack trace: $s');
-  //     return [];
-  //   }
-  // }
+    return groupList;
+  }
 
   ///
   ///. get party events from database
@@ -404,6 +399,8 @@ class DatabaseServices {
   Future<void> sendMessage({
     required String receiverId,
     required String text,
+    required String senderName, // Add this
+    required String senderImageUrl, // Add this
   }) async {
     try {
       final chatId = _getChatId(currentUserId, receiverId);
@@ -417,6 +414,8 @@ class DatabaseServices {
       final messageData = {
         'senderId': currentUserId,
         'receiverId': receiverId,
+        'senderName': senderName, // Include sender name
+        'senderImageUrl': senderImageUrl, // Include sender image
         'text': text,
         'timestamp': FieldValue.serverTimestamp(),
         'read': false,
@@ -434,11 +433,11 @@ class DatabaseServices {
         'lastMessageTime': FieldValue.serverTimestamp(),
         'participants': [currentUserId, receiverId],
         'participantNames': {
-          currentUserId: await _getUserName(currentUserId),
+          currentUserId: senderName, // Use passed senderName
           receiverId: await _getUserName(receiverId),
         },
         'participantAvatars': {
-          currentUserId: await _getUserAvatar(currentUserId),
+          currentUserId: senderImageUrl, // Use passed senderImageUrl
           receiverId: await _getUserAvatar(receiverId),
         },
       }, SetOptions(merge: true));
@@ -447,6 +446,30 @@ class DatabaseServices {
     } catch (e) {
       debugPrint('Error sending message: $e');
       rethrow;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getGroupMembers(String groupId) async {
+    try {
+      final doc = await _db.collection('groups').doc(groupId).get();
+      if (doc.exists) {
+        final members = List<String>.from(doc['members'] ?? []);
+        final membersData = <Map<String, dynamic>>[];
+
+        for (final memberId in members) {
+          final memberDoc =
+              await _db.collection('app-user').doc(memberId).get();
+          if (memberDoc.exists) {
+            membersData.add(memberDoc.data()!);
+          }
+        }
+
+        return membersData;
+      }
+      return [];
+    } catch (e) {
+      debugPrint('Error getting group members: $e');
+      return [];
     }
   }
 
@@ -461,46 +484,18 @@ class DatabaseServices {
         .snapshots();
   }
 
-  // Get all users for chat list
-  // Future<List<UserModel>> getChatUsersForCurrentUser() async {
-  //   try {
-  //     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-  //     if (currentUserId == null) return [];
-
-  //     final snapshot =
-  //         await FirebaseFirestore.instance
-  //             .collection('chats')
-  //             .where('participants', arrayContains: currentUserId)
-  //             .get();
-
-  //     final List<UserModel> userModels = [];
-
-  //     for (var doc in snapshot.docs) {
-  //       final participants = doc['participants'] as List<dynamic>;
-  //       final otherUserId = participants.firstWhere(
-  //         (id) => id != currentUserId,
-  //         orElse: () => null,
-  //       );
-
-  //       if (otherUserId != null) {
-  //         final userDoc =
-  //             await FirebaseFirestore.instance
-  //                 .collection('app-user')
-  //                 .doc(otherUserId)
-  //                 .get();
-
-  //         if (userDoc.exists) {
-  //           userModels.add(UserModel.fromJson(userDoc.data()!));
-  //         }
-  //       }
-  //     }
-
-  //     return userModels;
-  //   } catch (e) {
-  //     debugPrint('Error loading chat users: $e');
-  //     return [];
-  //   }
-  // }
+  Future<Map<String, dynamic>> getCurrentUserData() async {
+    try {
+      final doc = await _db.collection('app-user').doc(currentUserId).get();
+      if (doc.exists) {
+        return doc.data() ?? {};
+      }
+      return {};
+    } catch (e) {
+      debugPrint('Error getting current user data: $e');
+      return {};
+    }
+  }
 
   Future<List<UserModel>> getAllChatUsers() async {
     try {
@@ -549,6 +544,62 @@ class DatabaseServices {
     } catch (e) {
       debugPrint('Error fetching chat users: $e');
       return [];
+    }
+  }
+
+  // Add this helper method to DatabaseServices
+  Future<GroupsModel?> getGroupById(String groupId) async {
+    try {
+      final doc = await _db.collection("events_groups").doc(groupId).get();
+      if (doc.exists) {
+        return GroupsModel.fromJson(doc.data()!);
+      }
+      return null;
+    } catch (e) {
+      debugPrint('Error getting group by ID: $e');
+      return null;
+    }
+  }
+
+  Future<void> deleteGroup(String groupId) async {
+    try {
+      // Delete the group document
+      await _db.collection("events_groups").doc(groupId).delete();
+
+      // Optional: Delete any related data (like chat messages, members, etc.)
+      // await _db.collection("group_chats").doc(groupId).delete();
+
+      print("Group deleted successfully: $groupId");
+    } catch (e) {
+      print("Error deleting group: $e");
+      throw Exception("Failed to delete group: $e");
+    }
+  }
+
+  Future<void> endEvent(String eventId) async {
+    try {
+      // Update the event status or mark as ended
+      await FirebaseFirestore.instance
+          .collection('events')
+          .doc(eventId)
+          .delete();
+    } catch (e) {
+      debugPrint('Error ending event in DB: $e');
+      rethrow;
+    }
+  }
+
+  Future<EventModel?> getEventById(String eventId) async {
+    try {
+      final doc =
+          await FirebaseFirestore.instance
+              .collection('events')
+              .doc(eventId)
+              .get();
+      return doc.exists ? EventModel.fromJson(doc.data()!) : null;
+    } catch (e) {
+      debugPrint('Error getting event by ID: $e');
+      return null;
     }
   }
 
@@ -691,35 +742,63 @@ class DatabaseServices {
     }
   }
 
+  Future<bool> isUserJoinedGroup(String groupId, String userId) async {
+    try {
+      final doc = await _db.collection('groups').doc(groupId).get();
+      if (!doc.exists) {
+        debugPrint("Group with ID $groupId does not exist in Firestore.");
+        return false;
+      }
+      final members = List<String>.from(doc['members'] ?? []);
+      return members.contains(userId);
+    } catch (e) {
+      debugPrint('Error in isUserJoinedGroup: $e');
+      return false;
+    }
+  }
+
+  // Make sure sendGroupMessage includes proper sender info
   Future<void> sendGroupMessage({
     required String groupId,
     required String text,
+    required String senderName,
+    required String senderImageUrl,
   }) async {
     try {
-      final messageRef =
-          _db.collection('groups').doc(groupId).collection('messages').doc();
+      // Create a batch to perform atomic operations
+      final batch = FirebaseFirestore.instance.batch();
 
-      final messageData = {
+      // Reference to the new message
+      final messageRef =
+          FirebaseFirestore.instance
+              .collection('groups')
+              .doc(groupId)
+              .collection('messages')
+              .doc();
+
+      // Add the message data
+      batch.set(messageRef, {
         'senderId': currentUserId,
+        'senderName': senderName,
+        'senderImageUrl': senderImageUrl,
         'text': text,
         'timestamp': FieldValue.serverTimestamp(),
-      };
+      });
 
-      // Batch write
-      final batch = _db.batch();
-
-      batch.set(messageRef, messageData);
-
-      // update last message in group doc
-      final groupRef = _db.collection('groups').doc(groupId);
+      // Update the group's last message info
+      final groupRef = FirebaseFirestore.instance
+          .collection('groups')
+          .doc(groupId);
       batch.update(groupRef, {
         'lastMessage': text,
+        'lastMessageSenderName': senderName,
         'lastMessageTime': FieldValue.serverTimestamp(),
       });
 
+      // Commit the batch
       await batch.commit();
     } catch (e) {
-      debugPrint('Error in sendGroupMessage: $e');
+      debugPrint('Error sending group message: $e');
       rethrow;
     }
   }
@@ -736,14 +815,24 @@ class DatabaseServices {
   Future<List<Map<String, dynamic>>> getUserGroups() async {
     try {
       final snapshot =
-          await _db
+          await FirebaseFirestore.instance
               .collection('groups')
               .where('members', arrayContains: currentUserId)
               .get();
 
-      return snapshot.docs.map((doc) => doc.data()).toList();
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'id': doc.id,
+          'name': data['name'] ?? 'No Name',
+          'imageUrl': data['imageUrl'] ?? '',
+          'lastMessage': data['lastMessage'] ?? 'No messages yet',
+          'lastMessageTime': data['lastMessageTime'],
+          'lastMessageSenderName': data['lastMessageSenderName'] ?? '',
+        };
+      }).toList();
     } catch (e) {
-      debugPrint('Error in getUserGroups: $e');
+      debugPrint('Error getting user groups: $e');
       return [];
     }
   }
@@ -770,6 +859,43 @@ class DatabaseServices {
           'id': groupId,
           'name': eventModel.eventName ?? '',
           'imageUrl': eventModel.imageUrl ?? '',
+          'createdBy': currentUserId,
+          'createdAt': FieldValue.serverTimestamp(),
+          'members': [currentUserId],
+          'lastMessage': '',
+          'lastMessageTime': FieldValue.serverTimestamp(),
+        };
+        await groupRef.set(groupData);
+        return groupId;
+      }
+    } catch (e) {
+      debugPrint('Error in createOrGetGroupForEvent: $e');
+      rethrow;
+    }
+  }
+
+  Future<String?> createOrGetGroup(GroupsModel groupModel) async {
+    try {
+      final groupId = groupModel.id; // Using event id as group id
+
+      final groupRef = _db.collection('groups').doc(groupId);
+      final groupDoc = await groupRef.get();
+
+      if (groupDoc.exists) {
+        // Group already exists, just join if not already member
+        final members = List<String>.from(groupDoc['members'] ?? []);
+        if (!members.contains(currentUserId)) {
+          await groupRef.update({
+            'members': FieldValue.arrayUnion([currentUserId]),
+          });
+        }
+        return groupId;
+      } else {
+        // Group doesn’t exist, create it
+        final groupData = {
+          'id': groupId,
+          'name': groupModel.title ?? '',
+          'imageUrl': groupModel.imageUrl ?? '',
           'createdBy': currentUserId,
           'createdAt': FieldValue.serverTimestamp(),
           'members': [currentUserId],

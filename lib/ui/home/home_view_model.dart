@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/model/event_model.dart';
+import 'package:girl_clan/core/model/groups_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
 import 'package:girl_clan/locator.dart';
@@ -30,6 +31,8 @@ class HomeViewModel extends BaseViewModel {
   List<EventModel> allEventsList = [];
   List<EventModel> currentUserEventsList = [];
 
+  List<GroupsModel> groupsList = [];
+
   ///
   ///. constructor if not use then no data fetching
   ///
@@ -37,6 +40,7 @@ class HomeViewModel extends BaseViewModel {
     upComingEvents();
     getAllEvent(tabs[selectedTabIndex]['text']); // Pass "All"
     getCurrentUserEvents();
+    groupsData();
   }
 
   ///
@@ -46,6 +50,7 @@ class HomeViewModel extends BaseViewModel {
     await upComingEvents();
     await getAllEvent("$selectedTabIndex");
     await getCurrentUserEvents();
+    await groupsData();
     notifyListeners();
   }
 
@@ -69,6 +74,35 @@ class HomeViewModel extends BaseViewModel {
     } finally {
       setState(ViewState.idle);
     }
+  }
+
+  Future<void> deleteGroup(String groupId) async {
+    setState(ViewState.busy);
+    try {
+      // First verify the current user is the host of this group
+      final group = await db.getGroupById(groupId);
+      if (group?.hostUserId == currentUser.currentUser?.uid) {
+        await db.deleteGroup(groupId);
+        await refreshAllData(); // Refresh the groups list
+        debugPrint('Group $groupId deleted successfully');
+      } else {
+        debugPrint('User is not the host of this group');
+        throw Exception('Only the group host can delete this group');
+      }
+    } catch (e) {
+      debugPrint('Error deleting group: $e');
+      rethrow; // Re-throw to show error in UI
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  Future<void> refreshAllData() async {
+    await upComingEvents();
+    await getAllEvent(tabs[selectedTabIndex]['text']);
+    await getCurrentUserEvents();
+    await groupsData();
+    notifyListeners();
   }
 
   ///
@@ -147,6 +181,27 @@ class HomeViewModel extends BaseViewModel {
     }
   }
 
+  Future<void> endEvent(String eventId) async {
+    setState(ViewState.busy);
+    try {
+      // First verify the current user is the host of this event
+      final event = await db.getEventById(eventId);
+      if (event?.hostUserId == currentUser.currentUser?.uid) {
+        await db.endEvent(eventId);
+        await refreshAllEvents(); // Refresh the event lists
+        debugPrint('Event $eventId ended successfully');
+      } else {
+        debugPrint('User is not the host of this event');
+        throw Exception('Only the event host can end this event');
+      }
+    } catch (e) {
+      debugPrint('Error ending event: $e');
+      rethrow; // Re-throw to show error in UI
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
   Future<void> leaveEvent(String eventId) async {
     setState(ViewState.busy);
     try {
@@ -169,6 +224,24 @@ class HomeViewModel extends BaseViewModel {
     }
   }
 
+  Future<void> groupsData() async {
+    setState(ViewState.busy);
+    try {
+      groupsList = await db.getGroupsData();
+      if (groupsList.isNotEmpty) {
+        debugPrint(
+          "Groups data fetched successfully: ${groupsList.length} items",
+        );
+      } else {
+        debugPrint("No group data found.");
+      }
+    } catch (e) {
+      debugPrint("Error in groupsData(): $e");
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
   /// Update the seat count in Firestore via DatabaseServices
   Future<void> updateSeatCount(String eventId, int newCount) async {
     try {
@@ -184,6 +257,46 @@ class HomeViewModel extends BaseViewModel {
     } catch (e) {
       debugPrint("Error checking joined status: $e");
       return false;
+    }
+  }
+
+  Future<bool> hasUserJoinedGroup(String groupId) async {
+    try {
+      return await db.isUserJoinedGroup(groupId, currentUser.currentUser!.uid);
+    } catch (e) {
+      debugPrint("Error checking joined group status: $e");
+      return false;
+    }
+  }
+
+  Future<void> joinGroup(String groupId) async {
+    setState(ViewState.busy);
+    try {
+      final isAlreadyJoined = await db.isUserJoinedGroup(
+        groupId,
+        currentUser.currentUser!.uid,
+      );
+
+      if (!isAlreadyJoined) {
+        await db.joinGroup(groupId);
+        await refreshAllEvents();
+      }
+    } catch (e) {
+      debugPrint("Error joining group: $e");
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  Future<void> leaveGroup(String groupId) async {
+    setState(ViewState.busy);
+    try {
+      await db.leaveGroup(groupId);
+      await groupsData();
+    } catch (e) {
+      debugPrint("Error leaving group: $e");
+    } finally {
+      setState(ViewState.idle);
     }
   }
 

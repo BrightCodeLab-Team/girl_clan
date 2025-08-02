@@ -9,18 +9,20 @@ import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
+import 'package:girl_clan/custom_widget/custom_groups_cards.dart';
 import 'package:girl_clan/custom_widget/home_top_pick_events.dart';
 import 'package:girl_clan/custom_widget/home_up_coming_events.dart';
 import 'package:girl_clan/custom_widget/shimmer/all_events_shimmer.dart';
 import 'package:girl_clan/custom_widget/shimmer/up_coming_events.dart';
-import 'package:girl_clan/ui/add_event/add_event_screen.dart';
+import 'package:girl_clan/ui/add_event/create_tab_screen.dart';
 import 'package:girl_clan/ui/home/events_details_screen.dart';
+import 'package:girl_clan/ui/home/group_details_screen.dart';
+import 'package:girl_clan/ui/home/group_screen.dart/group_screen.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:girl_clan/ui/home/popular_events.dart';
 import 'package:girl_clan/ui/home/search_result_screen.dart' as search_result;
 import 'package:girl_clan/ui/home/up_coming_events.dart';
-import 'package:girl_clan/ui/notification_screen/notification_screen.dart';
-import 'package:girl_clan/ui/profile/profile_screen.dart';
+import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -33,8 +35,8 @@ class HomeScreen extends StatelessWidget {
               await model.upComingEvents();
               await model.getAllEvent(
                 model.tabs[model.selectedTabIndex]['text'],
-              ); // Pass "All"
-
+              );
+              await model.groupsData();
               await model.getCurrentUserEvents();
             },
 
@@ -145,7 +147,10 @@ class HomeScreen extends StatelessWidget {
                                 shrinkWrap: true,
                                 physics: AlwaysScrollableScrollPhysics(),
                                 // itemCount: model.UpComingEventsList.length,
-                                itemCount: model.upcomingEventsList.length,
+                                itemCount:
+                                    model.upcomingEventsList.length > 6
+                                        ? 6
+                                        : model.upcomingEventsList.length,
                                 scrollDirection: Axis.horizontal,
                                 itemBuilder: (BuildContext context, int index) {
                                   return Padding(
@@ -162,6 +167,80 @@ class HomeScreen extends StatelessWidget {
                                       child: CustomUpComingEventsCard(
                                         eventModel:
                                             model.upcomingEventsList[index],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                    ),
+                    10.verticalSpace,
+
+                    20.verticalSpace,
+                    Row(
+                      children: [
+                        Text('Groups', style: style14B),
+                        Spacer(),
+                        TextButton(
+                          onPressed: () async {
+                            Get.to(() => GroupScreen());
+                          },
+                          child: Text(
+                            'View All',
+                            style: style14.copyWith(
+                              fontSize: 13,
+                              color: primaryColor,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward,
+                          color: primaryColor,
+                          size: 15,
+                        ),
+                      ],
+                    ),
+                    10.verticalSpace,
+
+                    ///
+                    ///     up coming events
+                    ///
+                    SizedBox(
+                      height: 88.h,
+                      child:
+                          model.state == ViewState.busy
+                              ? UpcomingEventsShimmer()
+                              : model.groupsList.isEmpty &&
+                                  model.groupsList == null
+                              ? Center(child: Text('No Groups'))
+                              : ListView.builder(
+                                shrinkWrap: true,
+                                physics: AlwaysScrollableScrollPhysics(),
+                                // itemCount: model.UpComingEventsList.length,
+                                itemCount:
+                                    model.groupsList.length > 6
+                                        ? 6
+                                        : model.groupsList.length,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return Padding(
+                                    padding: EdgeInsets.only(right: 5.w),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Get.to(
+                                          GroupDetailsScreen(
+                                            groupsModel:
+                                                model.groupsList[index],
+                                          ),
+                                        );
+                                        print(
+                                          "GroupModel: ${model.groupsList[index]}",
+                                        );
+                                        print(
+                                          "GroupModel ID: ${model.groupsList[index].id}",
+                                        );
+                                      },
+                                      child: CustomGroupsCards(
+                                        groupsModal: model.groupsList[index],
                                       ),
                                     ),
                                   );
@@ -240,7 +319,10 @@ class HomeScreen extends StatelessWidget {
                         )
                         : ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
-                          itemCount: model.allEventsList.length,
+                          itemCount:
+                              model.allEventsList.length > 6
+                                  ? 6
+                                  : model.allEventsList.length,
                           shrinkWrap: true,
                           scrollDirection: Axis.vertical,
                           itemBuilder: (BuildContext context, int index) {
@@ -271,7 +353,7 @@ class HomeScreen extends StatelessWidget {
               floatingActionButton: FloatingActionButton(
                 backgroundColor: primaryColor,
                 onPressed: () async {
-                  final result = await Get.to(() => const AddEventScreen());
+                  final result = await Get.to(() => CreateTabScreen());
                   if (result == true) {
                     // Refresh all event data
                     Provider.of<HomeViewModel>(
@@ -349,7 +431,7 @@ _appBar(HomeViewModel model) {
   return AppBar(
     leading: GestureDetector(
       onTap: () {
-        Get.to(() => ProfileScreen());
+        Get.offAll(() => RootScreen(selectedScreen: 2));
       },
       child: Padding(
         padding: const EdgeInsets.only(left: 15.0),
@@ -442,20 +524,20 @@ _appBar(HomeViewModel model) {
         ),
       ],
     ),
-    actions: [
-      GestureDetector(
-        onTap: () {
-          Get.to(() => NotificationScreen());
-        },
-        child: Padding(
-          padding: const EdgeInsets.only(right: 15.0),
-          child: CircleAvatar(
-            radius: 20,
-            backgroundColor: primaryColor,
-            child: Icon(Icons.notifications, color: whiteColor),
-          ),
-        ),
-      ),
-    ],
+    // actions: [
+    //   GestureDetector(
+    //     onTap: () {
+    //       Get.to(() => NotificationScreen());
+    //     },
+    //     child: Padding(
+    //       padding: const EdgeInsets.only(right: 15.0),
+    //       child: CircleAvatar(
+    //         radius: 20,
+    //         backgroundColor: primaryColor,
+    //         child: Icon(Icons.notifications, color: whiteColor),
+    //       ),
+    //     ),
+    //   ),
+    // ],
   );
 }

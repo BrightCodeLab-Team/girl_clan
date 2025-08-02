@@ -1,5 +1,3 @@
-// ignore_for_file: use_key_in_widget_constructors
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
@@ -7,127 +5,150 @@ import 'package:girl_clan/core/model/message_model.dart';
 
 class MessageBubble extends StatelessWidget {
   final MessageModel message;
-  final bool showProfilePic; // Re-added this crucial property
+  final bool showProfilePic;
 
   const MessageBubble({
+    Key? key,
     required this.message,
-    this.showProfilePic = true, // Default to true for group chat behavior
-  });
+    this.showProfilePic = true,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     if (message.isTypingIndicator) {
-      return Align(
-        alignment: Alignment.centerLeft,
-        child: Padding(
-          padding: EdgeInsets.only(left: 16.w, top: 8.h, bottom: 8.h),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Only show profile pic for typing indicator if showProfilePic is true
-                if (showProfilePic) ...[
-                  CircleAvatar(
-                    radius: 15.r,
-                    backgroundImage: AssetImage(message.senderImageUrl),
-                  ),
-                  10.horizontalSpace,
-                ],
-                Text(
-                  message.content,
-                  style: TextStyle(fontSize: 16.sp, color: Colors.black),
+      return _buildTypingIndicator();
+    }
+    return _buildMessageBubble();
+  }
+
+  Widget _buildTypingIndicator() {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: EdgeInsets.only(left: 16.w, top: 8.h, bottom: 8.h),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade200,
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (showProfilePic) ...[
+                CircleAvatar(
+                  radius: 15.r,
+                  backgroundImage: NetworkImage(message.senderImageUrl),
                 ),
+                10.horizontalSpace,
               ],
-            ),
+              Text(
+                message.content,
+                style: TextStyle(fontSize: 16.sp, color: Colors.black),
+              ),
+            ],
           ),
         ),
-      );
-    }
+      ),
+    );
+  }
 
-    // For regular messages
+  Widget _buildMessageBubble() {
     return Align(
       alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         child: Row(
-          crossAxisAlignment:
-              CrossAxisAlignment
-                  .start, // Changed back to end for proper alignment
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Profile picture for incoming messages (left side)
-            // Show only if not 'isMe' and showProfilePic is true
-            if (!message.isMe && showProfilePic) ...[
-              CircleAvatar(
-                radius: 18.r,
-                backgroundImage: AssetImage(message.senderImageUrl),
-              ),
-              10.horizontalSpace,
-            ],
-            Flexible(
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-                decoration: BoxDecoration(
-                  color: message.isMe ? primaryColor : Colors.grey.shade200,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(message.isMe ? 20.r : 0),
-                    topRight: Radius.circular(message.isMe ? 0 : 20.r),
-                    bottomLeft: Radius.circular(20.r),
-                    bottomRight: Radius.circular(20.r),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment:
-                      message.isMe
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                  children: [
-                    // Sender name only for incoming messages AND if profile pic is NOT shown (one-to-one)
-                    if (!message.isMe && !showProfilePic)
-                      Text(
-                        message.senderName,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black54,
-                        ),
-                      ),
-                    if (!message.isMe && !showProfilePic)
-                      5.verticalSpace, // Add space if name is shown
-                    Text(
-                      message.content,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        color: message.isMe ? Colors.white : Colors.black,
-                      ),
-                    ),
-                    5.verticalSpace,
-                    Text(
-                      message.timestamp,
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        color: message.isMe ? Colors.white70 : Colors.black45,
-                      ),
-                    ),
-                  ],
+            if (!message.isMe && showProfilePic) _buildSenderAvatar(),
+            _buildMessageContent(),
+            if (message.isMe && showProfilePic) _buildUserAvatar(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSenderAvatar() {
+    return Padding(
+      padding: EdgeInsets.only(right: 10.w),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 18.r,
+            backgroundImage: NetworkImage(message.senderImageUrl),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUserAvatar() {
+    return Padding(
+      padding: EdgeInsets.only(left: 10.w),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 18.r,
+            backgroundImage: NetworkImage(message.senderImageUrl),
+          ),
+          5.verticalSpace,
+          const Text(
+            'You',
+            style: TextStyle(fontSize: 10, color: Colors.black45),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMessageContent() {
+    return Flexible(
+      child: Column(
+        crossAxisAlignment:
+            message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          if (showProfilePic && !message.isMe)
+            Padding(
+              padding: EdgeInsets.only(bottom: 4.h),
+              child: Text(
+                message.senderName,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
                 ),
               ),
             ),
-            // Profile picture for outgoing messages (right side)
-            // Show only if 'isMe' and showProfilePic is true
-            if (message.isMe && showProfilePic) ...[
-              10.horizontalSpace,
-              CircleAvatar(
-                radius: 18.r,
-                backgroundImage: AssetImage(message.senderImageUrl),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+            decoration: BoxDecoration(
+              color: message.isMe ? primaryColor : Colors.grey.shade200,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(message.isMe ? 20.r : 0),
+                topRight: Radius.circular(message.isMe ? 0 : 20.r),
+                bottomLeft: const Radius.circular(20),
+                bottomRight: const Radius.circular(20),
               ),
-            ],
-          ],
-        ),
+            ),
+            child: Text(
+              message.content,
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: message.isMe ? Colors.white : Colors.black,
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 4.h),
+            child: Text(
+              message.timestamp,
+              style: TextStyle(fontSize: 10.sp, color: Colors.black45),
+            ),
+          ),
+        ],
       ),
     );
   }

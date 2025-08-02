@@ -151,7 +151,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           3.verticalSpace,
                           TextFormField(
                             decoration: customAuthField3.copyWith(
-                              hintText: "Emial Address",
+                              hintText: "Email Address",
                             ),
                             controller: model.emailController,
                             validator: model.validateEmail,

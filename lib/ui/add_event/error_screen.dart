@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/colors.dart';
-import 'package:girl_clan/ui/add_event/add_event_screen.dart';
+import 'package:girl_clan/ui/root_screen/root_screen.dart';
 
 class ErrorScreen extends StatelessWidget {
   const ErrorScreen({super.key});
@@ -32,10 +32,11 @@ class ErrorScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               const Text(
-                "Sorry, you didn't join the event\nplease try again after some time.",
+                "Oops! All seats for this event are already booked.\nPlease try joining another event or check back later.",
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16, color: blackColor),
               ),
+
               const SizedBox(height: 40),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -49,8 +50,8 @@ class ErrorScreen extends StatelessWidget {
                     vertical: 12,
                   ),
                 ),
-                onPressed: () {
-                  Get.offAll(AddEventScreen());
+                onPressed: () async {
+                  await Get.offAll(() => RootScreen());
                 },
                 child: const Text('Retry'),
               ),

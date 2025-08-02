@@ -52,24 +52,17 @@ class ChatViewModel extends BaseViewModel {
     }
   }
 
-  /// Initializes Firestore message stream
-  // initMessagesStream() {
-  //   _messagesSubscription = _db.getMessagesStream(receiverId ?? "").listen((
-  //     snapshot,
-  //   ) {
-  //     _messages.clear();
-  //     _messages.addAll(
-  //       snapshot.docs.map((doc) {
-  //         final data = doc.data() as Map<String, dynamic>;
-  //         return _parseMessage(data);
-  //       }),
-  //     );
-  //     messageController.addListener(() {
-  //       notifyListeners(); // tell UI to update send button
-  //     });
-  //     notifyListeners();
-  //   });
-  // }
+  String _getLastMessagePreview(Map<String, dynamic> group) {
+    final lastMessage = group['lastMessage'];
+    final senderName = group['lastMessageSenderName'] ?? '';
+
+    if (lastMessage == null || lastMessage.isEmpty) {
+      return 'No messages yet';
+    }
+
+    // For groups, show "Sender: Message" format
+    return senderName.isNotEmpty ? '$senderName: $lastMessage' : lastMessage;
+  }
 
   initMessagesStream() {
     if (isGroupChat == true && groupId != null) {
@@ -103,16 +96,14 @@ class ChatViewModel extends BaseViewModel {
     }
   }
 
+  // Update _parseGroupMessage to ensure proper name handling
   MessageModel _parseGroupMessage(Map<String, dynamic> data) {
     final isMe = data['senderId'] == _db.currentUserId;
     return MessageModel(
       senderId: data['senderId'],
       receiverId: groupId ?? "",
-      senderName: isMe ? 'You' : (data['senderName'] ?? chatTitle ?? ""),
-      senderImageUrl:
-          isMe
-              ? 'assets/images/current_user_profile.png'
-              : (chatImageUrl ?? ""),
+      senderName: isMe ? 'You' : (data['senderName'] ?? 'Unknown User'),
+      senderImageUrl: data['senderImageUrl'] ?? '',
       content: data['text'] ?? '',
       timestamp: _formatTimestamp(data['timestamp']),
       isMe: isMe,
@@ -126,8 +117,7 @@ class ChatViewModel extends BaseViewModel {
       senderId: data['senderId'],
       receiverId: data['receiverId'],
       senderName: isMe ? 'You' : chatTitle ?? "",
-      senderImageUrl:
-          isMe ? 'assets/images/current_user_profile.png' : chatImageUrl ?? "",
+      senderImageUrl: isMe ? '' : chatImageUrl ?? "",
       content: data['text'] ?? '',
       timestamp: _formatTimestamp(data['timestamp']),
       isMe: isMe,
@@ -171,7 +161,13 @@ class ChatViewModel extends BaseViewModel {
       notifyListeners();
 
       groupsList = await _db.getUserGroups();
-      debugPrint("Loaded groups: ${groupsList.length}");
+
+      // Debug print to verify last messages are being loaded
+      for (var group in groupsList) {
+        print('Group: ${group['name']}');
+        print('Last message: ${group['lastMessage']}');
+        print('Last message time: ${group['lastMessageTime']}');
+      }
     } catch (e) {
       debugPrint('Error loading groups: $e');
     } finally {
@@ -187,30 +183,47 @@ class ChatViewModel extends BaseViewModel {
     if (text.isEmpty) return;
 
     try {
+      // Get current user data first
+      final currentUser = await _db.getCurrentUserData();
+      final currentUserName = currentUser['firstName'] ?? 'You';
+      final currentUserImageUrl = currentUser['imgUrl'] ?? '';
+
+      // Create local message with actual user data
       final localMessage = MessageModel(
         senderId: _db.currentUserId,
         receiverId: isGroupChat == true ? (groupId ?? '') : (receiverId ?? ''),
-        senderName: 'You',
-        senderImageUrl: 'assets/images/current_user_profile.png',
+        senderName: currentUserName,
+        senderImageUrl: currentUserImageUrl,
         content: text,
-        timestamp: DateFormat('h:mm a').format(DateTime.now()),
+        timestamp: _formatTimestamp(Timestamp.now()),
         isMe: true,
       );
 
+      // Update UI immediately
       _messages.add(localMessage);
-      notifyListeners();
-
       messageController.clear();
       isTyping = false;
       notifyListeners();
 
+      // Send to backend
       if (isGroupChat == true && groupId != null) {
-        await _db.sendGroupMessage(groupId: groupId!, text: text);
+        await _db.sendGroupMessage(
+          groupId: groupId!,
+          text: text,
+          senderName: currentUserName,
+          senderImageUrl: currentUserImageUrl,
+        );
       } else if (receiverId != null) {
-        await _db.sendMessage(receiverId: receiverId!, text: text);
+        await _db.sendMessage(
+          receiverId: receiverId!,
+          text: text,
+          senderName: currentUserName,
+          senderImageUrl: currentUserImageUrl,
+        );
       }
     } catch (e) {
       debugPrint('Error sending message: $e');
+      // Consider showing error to user
     }
   }
 
@@ -219,5 +232,62 @@ class ChatViewModel extends BaseViewModel {
     messageController.dispose();
     _messagesSubscription?.cancel();
     super.dispose();
+  }
+
+  ///
+  /// Delete chats and groups individual
+  ///
+
+  // For individual chats
+  Future<void> deleteIndividualChat(String chatId) async {
+    setState(ViewState.busy);
+    try {
+      print('Deleting chat with ID: $chatId');
+
+      // Get references to both sides of the chat
+      final currentUserId = _db.currentUserId;
+      final chatDocRef = FirebaseFirestore.instance
+          .collection('chats')
+          .doc('${currentUserId}_$chatId');
+
+      final otherUserChatDocRef = FirebaseFirestore.instance
+          .collection('chats')
+          .doc('${chatId}_$currentUserId');
+
+      // Delete both documents in a batch
+      final batch = FirebaseFirestore.instance.batch();
+      batch.delete(chatDocRef);
+      batch.delete(otherUserChatDocRef);
+      await batch.commit();
+
+      // Update local state
+      chatsList.removeWhere((user) => user.id == chatId);
+      notifyListeners();
+    } catch (e) {
+      print('Error deleting chat: $e');
+      rethrow; // Let the caller handle the error
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  // For group chats
+  Future<void> deleteGroupChat(String groupId) async {
+    setState(ViewState.busy);
+    try {
+      // Delete the group from Firestore
+      await FirebaseFirestore.instance
+          .collection('groups')
+          .doc(groupId)
+          .delete();
+
+      // Remove from local list
+      groupsList.removeWhere((group) => group['id'] == groupId);
+      notifyListeners();
+    } catch (e) {
+      print('Error deleting group: $e');
+      // You might want to show an error message to the user
+    }
+    setState(ViewState.idle);
   }
 }

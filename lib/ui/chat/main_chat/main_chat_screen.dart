@@ -58,43 +58,53 @@ class MainChatScreen extends StatelessWidget {
                               RefreshIndicator(
                                 onRefresh: () async {
                                   model.loadUsers();
-
                                   model.initMessagesStream();
                                 },
-                                child: ListView.builder(
-                                  itemCount: model.chatsList.length,
-                                  itemBuilder: (context, index) {
-                                    final user = model.chatsList[index];
-                                    return MainChatItem(
-                                      chat: user,
-                                      onTap: () {
-                                        Get.to(
-                                          ChangeNotifierProvider(
-                                            create:
-                                                (ctx) => ChatViewModel(
-                                                  chatTitle: user.name,
-                                                  chatImageUrl: user.imageUrl,
-                                                  receiverId: user.id!,
-                                                  isGroupChat:
-                                                      false, // Now passing the actual user ID
+                                child: Consumer<ChatViewModel>(
+                                  builder: (context, model, child) {
+                                    return ListView.builder(
+                                      itemCount: model.chatsList.length,
+                                      itemBuilder: (context, index) {
+                                        final user = model.chatsList[index];
+                                        return MainChatItem(
+                                          chat: user,
+                                          onLongPress: () {
+                                            _showDeleteDialog(
+                                              context: context,
+                                              model: model,
+                                              chatId: user.id!,
+                                              isGroup: false,
+                                            );
+                                          },
+                                          onTap: () {
+                                            Get.to(
+                                              ChangeNotifierProvider(
+                                                create:
+                                                    (ctx) => ChatViewModel(
+                                                      chatTitle: user.name,
+                                                      chatImageUrl:
+                                                          user.imageUrl,
+                                                      receiverId: user.id!,
+                                                      isGroupChat: false,
+                                                    ),
+                                                child: ChatScreen(
+                                                  chatTitle: user.name ?? "",
+                                                  chatImageUrl:
+                                                      user.imageUrl ?? "",
+                                                  isGroupChat: false,
                                                 ),
-                                            child: ChatScreen(
-                                              chatTitle: user.name ?? "",
-                                              chatImageUrl: user.imageUrl ?? "",
-                                              isGroupChat: false,
-                                            ),
-                                          ),
+                                              ),
+                                            );
+                                            print("user name: ${user.name}");
+                                            print("user name. ${user.id}");
+                                          },
                                         );
-                                        print("user name: ${user.name}");
-
-                                        print("user name. ${user.id}");
                                       },
                                     );
                                   },
                                 ),
                               ),
                           // Groups Tab
-                          // Update your ListView.builder in the People tab:
                           model.isLoading
                               ? const ChatShimmerLoader()
                               : RefreshIndicator(
@@ -106,18 +116,35 @@ class MainChatScreen extends StatelessWidget {
                                   itemCount: model.groupsList.length,
                                   itemBuilder: (context, index) {
                                     final group = model.groupsList[index];
+
+                                    // Get last message info
+                                    final lastMessage =
+                                        group['lastMessage']?.toString() ??
+                                        "No messages yet";
+                                    final senderName =
+                                        group['lastMessageSenderName']
+                                            ?.toString() ??
+                                        "";
+                                    final lastMessageTime =
+                                        (group['lastMessageTime'] as Timestamp?)
+                                            ?.toDate();
+
+                                    // Format the message preview
+                                    String messagePreview;
+                                    if (senderName.isNotEmpty) {
+                                      messagePreview =
+                                          '$senderName: $lastMessage';
+                                    } else {
+                                      messagePreview = lastMessage;
+                                    }
+
                                     return MainChatItem(
                                       chat: UserModel(
                                         id: group['id'],
                                         name: group['name'],
                                         imageUrl: group['imageUrl'],
-                                        message: group['lastMessage'] ?? "",
-                                        time:
-                                            (group['lastMessageTime']
-                                                    as Timestamp?)
-                                                ?.toDate(),
-
-                                        // Optionally add message and time if you want
+                                        message: messagePreview,
+                                        time: lastMessageTime,
                                       ),
                                       onTap: () {
                                         Get.to(
@@ -140,6 +167,14 @@ class MainChatScreen extends StatelessWidget {
                                         print("Group name: ${group['name']}");
                                         print("Group id: ${group['id']}");
                                       },
+                                      onLongPress: () {
+                                        _showDeleteDialog(
+                                          context: context,
+                                          model: model,
+                                          chatId: group['id'],
+                                          isGroup: true,
+                                        );
+                                      },
                                     );
                                   },
                                 ),
@@ -152,6 +187,43 @@ class MainChatScreen extends StatelessWidget {
               ),
             ),
       ),
+    );
+  }
+
+  // Moved inside the MainChatScreen class
+  void _showDeleteDialog({
+    required BuildContext context,
+    required ChatViewModel model,
+    required String chatId,
+    required bool isGroup,
+  }) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text('Delete Chat'),
+            content: Text('Are you sure you want to delete this chat?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  print("both working");
+                  Navigator.pop(context);
+                  if (isGroup) {
+                    await model.deleteGroupChat(chatId);
+                    print("working deleteGroupChat");
+                  } else {
+                    print("working deleteIndividualChat");
+                    await model.deleteIndividualChat(chatId);
+                  }
+                },
+                child: Text('Delete', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
     );
   }
 }

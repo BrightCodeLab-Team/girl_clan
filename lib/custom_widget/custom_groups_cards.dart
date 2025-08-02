@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
-import 'package:girl_clan/core/model/event_model.dart';
+import 'package:girl_clan/core/model/groups_model.dart';
 
-class CustomUpComingEventsCard extends StatelessWidget {
-  //final UpComingEventsCardModel eventMOdel;
-  final EventModel eventModel;
-  const CustomUpComingEventsCard({super.key, required this.eventModel});
+class CustomGroupsCards extends StatelessWidget {
+  //final UpComingEventsCardModel groupsModal;
+  final GroupsModel groupsModal;
+  const CustomGroupsCards({required this.groupsModal});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class CustomUpComingEventsCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                image: NetworkImage("${eventModel.imageUrl}"),
+                image: NetworkImage("${groupsModal.imageUrl}"),
                 fit: BoxFit.cover,
               ),
             ),
@@ -37,34 +37,15 @@ class CustomUpComingEventsCard extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      eventModel.eventName ?? '',
-                      style: style16B,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      "${eventModel.availablePeople}/${eventModel.joiningPeople}",
-                      style: style14B.copyWith(
-                        color: primaryColor,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ],
-                ),
-                4.verticalSpace,
-
                 Text(
-                  eventModel.date ?? '',
-                  style: style14B.copyWith(fontSize: 10),
+                  groupsModal.title ?? '',
+                  style: style16B,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 4.verticalSpace,
-
                 Row(
                   children: [
                     Icon(
@@ -76,7 +57,7 @@ class CustomUpComingEventsCard extends StatelessWidget {
                     Expanded(
                       // or Flexible
                       child: Text(
-                        eventModel.location ?? '',
+                        groupsModal.location ?? '',
                         style: style14B.copyWith(fontSize: 10),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/core/constants/strings.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/model/event_model.dart';
 
@@ -28,11 +29,18 @@ class CustomUpComingEventsCard extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                image: NetworkImage("${eventModel.imageUrl}"),
+                image:
+                    (eventModel.imageUrl != null &&
+                            eventModel.imageUrl!.isNotEmpty)
+                        ? NetworkImage(eventModel.imageUrl!)
+                        : const AssetImage(
+                          "$staticAssets/SplashScreenImage.png",
+                        ),
                 fit: BoxFit.cover,
               ),
             ),
           ),
+
           7.horizontalSpace,
           Expanded(
             child: Column(

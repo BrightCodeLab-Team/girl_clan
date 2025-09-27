@@ -11,7 +11,7 @@ class LoginViewModel extends BaseViewModel {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  bool isPasswordVisible = false;
+  bool isPasswordVisible = true;
 
   void togglePasswordVisibility() {
     isPasswordVisible = !isPasswordVisible;
@@ -22,46 +22,7 @@ class LoginViewModel extends BaseViewModel {
   ///. login user if user is already  signUp
   ///
   final auth = FirebaseAuth.instance;
-
-  // Future<void> LoginUser() async {
-  //   loading = true;
-  //   notifyListeners();
-
-  //   try {
-  //     await auth.signInWithEmailAndPassword(
-  //       email: emailController.text.trim(),
-  //       password: passwordController.text.trim(),
-  //     );
-
-  //     loading = false;
-  //     notifyListeners();
-
-  //     Get.snackbar("Login Successful", "User verified");
-  //     Get.offAll(() => RootScreen());
-  //   } on FirebaseAuthException catch (e) {
-  //     loading = false;
-  //     // notifyListeners();
-
-  //     String message = "Login failed";
-
-  //     if (e.code == 'user-not-found') {
-  //       message = "No user found for that email.";
-  //     } else if (e.code == 'wrong-password') {
-  //       message = "Wrong password provided.";
-  //     } else if (e.code == 'invalid-email') {
-  //       message = "Invalid email format.";
-  //     }
-
-  //     debugPrint("FirebaseAuthException: ${e.code}");
-  //     Get.snackbar("Error", message);
-  //   } catch (e) {
-  //     loading = false;
-  //     notifyListeners();
-
-  //     debugPrint("Unknown error: $e");
-  //     Get.snackbar("Error", "Something went wrong. Please try again.");
-  //   }
-  // }
+  String message = "Login failed";
 
   Future<void> LoginUser() async {
     setState(ViewState.busy);
@@ -72,24 +33,47 @@ class LoginViewModel extends BaseViewModel {
             password: passwordController.text.trim(),
           )
           .then((onValue) {
-            Get.offAll((RootScreen()));
+            Get.offAll(RootScreen());
 
             Get.snackbar(
               "Success",
               "Login successfully",
-              backgroundColor: primaryColor,
-              snackPosition: SnackPosition.TOP,
-            );
-          })
-          // ignore: avoid_types_as_parameter_names
-          .onError((error, StackTrace) {
-            loading = false;
-            Get.snackbar(
-              "Error",
-              "Login failed: ${error.toString()}",
+              colorText: whiteColor,
               backgroundColor: secondaryColor,
               snackPosition: SnackPosition.TOP,
+              duration: const Duration(seconds: 4),
             );
+          })
+          .catchError((error) {
+            if (error is FirebaseAuthException) {
+              String message = "Login failed";
+
+              if (error.code == 'user-not-found') {
+                message = "This email is not registered. Please sign up first.";
+              } else if (error.code == 'wrong-password') {
+                message = "The password you entered is incorrect.";
+              } else if (error.code == 'invalid-email') {
+                message = "Please enter a valid email address.";
+              }
+
+              Get.snackbar(
+                "Error",
+                message,
+                backgroundColor: secondaryColor,
+                colorText: whiteColor,
+                snackPosition: SnackPosition.TOP,
+                duration: const Duration(seconds: 5),
+              );
+            } else {
+              Get.snackbar(
+                "Error",
+                "Something went wrong. Please try again.",
+                backgroundColor: secondaryColor,
+                colorText: whiteColor,
+                snackPosition: SnackPosition.TOP,
+                duration: const Duration(seconds: 4),
+              );
+            }
             notifyListeners();
           });
     } catch (e) {

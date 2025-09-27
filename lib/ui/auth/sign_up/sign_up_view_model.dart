@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,7 +18,7 @@ class SignUpViewModel extends BaseViewModel {
   String? uploadedImageUrl;
   List<String> selectedInterests = [];
 
-  bool isPasswordVisible = false;
+  bool isPasswordVisible = true;
 
   void setLoading(bool value) {
     isLoading = value;
@@ -170,7 +171,13 @@ class SignUpViewModel extends BaseViewModel {
       UploadTask uploadTask = storageRef.putFile(profileImage!);
       TaskSnapshot snapshot = await uploadTask;
       uploadedImageUrl = await snapshot.ref.getDownloadURL();
-
+      Get.snackbar(
+        "Sucessfully",
+        "Image uploaded successfully:",
+        backgroundColor: secondaryColor,
+        colorText: Colors.white,
+        duration: Duration(seconds: 4),
+      );
       print("Image uploaded successfully: $uploadedImageUrl");
     } catch (e) {
       print("Image upload failed: $e");
@@ -182,18 +189,35 @@ class SignUpViewModel extends BaseViewModel {
   ///. signIn user
   ///
 
-  Future<void> signInUser() async {
+  Future<bool> signInUser() async {
     setState(ViewState.busy);
     try {
       await auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+      setState(ViewState.idle);
+      return true; // ✅ registration successful
     } on FirebaseAuthException catch (e) {
-      print("signIN failed $e");
-      Get.snackbar("Error", e.message ?? "Registration failed");
+      setState(ViewState.idle);
+
+      if (e.code == 'email-already-in-use') {
+        Get.snackbar(
+          "Error",
+          "This email is already registered. Please use another email.",
+          backgroundColor: secondaryColor,
+          colorText: Colors.white,
+        );
+      } else {
+        Get.snackbar("Error", e.message ?? "Registration failed");
+      }
+
+      return false; // ❌ registration failed
+    } catch (e) {
+      setState(ViewState.idle);
+      Get.snackbar("Error", "Unexpected error: $e");
+      return false;
     }
-    setState(ViewState.idle);
   }
 
   ///
@@ -227,6 +251,13 @@ class SignUpViewModel extends BaseViewModel {
             'imgUrl': uploadedImageUrl ?? "",
             'interests': selectedInterests, // ✅ yahan interests bhi save ho gai
           });
+      Get.snackbar(
+        "Sucessfully",
+        "Your Account is Registered Sucessfully",
+        backgroundColor: secondaryColor,
+        colorText: Colors.white,
+        duration: Duration(seconds: 4),
+      );
 
       return true;
     } catch (e) {

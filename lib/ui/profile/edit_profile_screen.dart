@@ -15,7 +15,6 @@ import 'package:girl_clan/custom_widget/app_bar.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/ui/auth/sign_up/location_screen.dart';
 import 'package:girl_clan/ui/profile/profile_view_model.dart';
-import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';

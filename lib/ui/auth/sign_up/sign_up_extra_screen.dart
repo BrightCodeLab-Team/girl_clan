@@ -28,15 +28,16 @@ class SignUpExtraScreen extends StatelessWidget {
         return ModalProgressHUD(
           inAsyncCall: model.state == ViewState.busy,
           child: Scaffold(
+            backgroundColor: whiteColor,
             body: Container(
               padding: const EdgeInsets.all(16.0),
               height: MediaQuery.of(context).size.height * 1,
               width: MediaQuery.of(context).size.width * 1,
               decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("$staticAssets/loginImage.jpg"),
-                  fit: BoxFit.cover,
-                ),
+                // image: DecorationImage(
+                //   image: AssetImage("$staticAssets/loginImage.jpg"),
+                //   fit: BoxFit.cover,
+                // ),
               ),
               child: Form(
                 key: _formKey,
@@ -57,7 +58,7 @@ class SignUpExtraScreen extends StatelessWidget {
                         ),
                         Text(
                           "Finish Signing Up",
-                          style: style18B.copyWith(color: primaryColor),
+                          style: style18B.copyWith(color: blackColor),
                         ),
                       ],
                     ),
@@ -65,12 +66,12 @@ class SignUpExtraScreen extends StatelessWidget {
 
                     Text(
                       "Please fill this details",
-                      style: style18B.copyWith(color: whiteColor),
+                      style: style18B.copyWith(color: blackColor),
                     ),
                     20.verticalSpace,
                     Text(
                       "Country / Region",
-                      style: style16.copyWith(color: whiteColor),
+                      style: style16B.copyWith(color: blackColor),
                     ),
                     3.verticalSpace,
                     GestureDetector(
@@ -97,7 +98,7 @@ class SignUpExtraScreen extends StatelessWidget {
                     16.verticalSpace,
                     Text(
                       "Date of Birth",
-                      style: style16.copyWith(color: whiteColor),
+                      style: style16B.copyWith(color: blackColor),
                     ),
                     3.verticalSpace,
                     TextFormField(
@@ -149,7 +150,7 @@ class SignUpExtraScreen extends StatelessWidget {
                     16.verticalSpace,
                     Text(
                       "Nationality",
-                      style: style16.copyWith(color: whiteColor),
+                      style: style16B.copyWith(color: blackColor),
                     ),
                     3.verticalSpace,
                     TextFormField(
@@ -163,7 +164,7 @@ class SignUpExtraScreen extends StatelessWidget {
                     16.verticalSpace,
                     Text(
                       "Location",
-                      style: style16.copyWith(color: whiteColor),
+                      style: style16B.copyWith(color: blackColor),
                     ),
                     3.verticalSpace,
                     GestureDetector(
@@ -195,7 +196,7 @@ class SignUpExtraScreen extends StatelessWidget {
                     16.verticalSpace,
                     Text(
                       "Phone Number",
-                      style: style16.copyWith(color: whiteColor),
+                      style: style16B.copyWith(color: blackColor),
                     ),
                     3.verticalSpace,
                     TextFormField(
@@ -215,6 +216,7 @@ class SignUpExtraScreen extends StatelessWidget {
                           onChanged: (bool? newValue) {
                             model.onclickTerms(newValue);
                           },
+                          side: BorderSide(color: secondaryColor),
                           activeColor: secondaryColor,
                           checkColor: whiteColor,
                         ),
@@ -227,7 +229,6 @@ class SignUpExtraScreen extends StatelessWidget {
                       onTap: () async {
                         if (_formKey.currentState!.validate() &&
                             model.agreeToTerms) {
-                          await model.signInUser();
                           await model.uploadProfileImageToFirebase();
                           await model.uploadUserDetailToFireStoreDatabase();
                           // Navigate to interest selection

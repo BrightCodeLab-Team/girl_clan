@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/core/constants/strings.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/model/groups_model.dart';
 
@@ -28,7 +29,14 @@ class CustomGroupsCards extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                image: NetworkImage("${groupsModal.imageUrl}"),
+                image:
+                    (groupsModal.imageUrl != null &&
+                            groupsModal.imageUrl!.isNotEmpty)
+                        ? NetworkImage(groupsModal.imageUrl!)
+                        : const AssetImage(
+                          "$staticAssets/SplashScreenImage.png",
+                        ),
+
                 fit: BoxFit.cover,
               ),
             ),

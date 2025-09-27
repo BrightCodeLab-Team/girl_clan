@@ -254,7 +254,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       TextFormField(
                         keyboardType: TextInputType.number,
                         decoration: EditProfileFieldDecoration.copyWith(
-                          hintText: 'e.g 20 People',
+                          hintText: 'People',
                         ),
                         onChanged: (value) {
                           model.eventModel.capacity = value;

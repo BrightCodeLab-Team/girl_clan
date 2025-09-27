@@ -58,11 +58,11 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCSmZok0kBeQbq_aMMiJWmk5EsUWjAU_eE',
-    appId: '1:941382120322:android:3a6306273bb70bff9f959b',
+    apiKey: 'AIzaSyD7duCSSb3c4katFT6FZ6tTmH2hyi0Onbw',
+    appId: '1:941382120322:ios:3a1ad00b3cb2ff799f959b',
     messagingSenderId: '941382120322',
     projectId: 'girlclan-e22c0',
     storageBucket: 'girlclan-e22c0.firebasestorage.app',
-    iosBundleId: 'com.example.girlClan',
+    iosBundleId: 'com.example.girl-clan',
   );
 }

@@ -2,7 +2,7 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart'; // Keep this for GetMaterialApp and Get.to()
+import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/firebase_options.dart';
@@ -10,7 +10,7 @@ import 'package:girl_clan/locator.dart';
 import 'package:girl_clan/ui/add_event/create_events.dart/create_event_view_model.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_view_model.dart';
 import 'package:girl_clan/ui/auth/splash_screen.dart';
-import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart'; // This is correct
+import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:girl_clan/ui/password/password_view_model.dart';
 import 'package:girl_clan/ui/profile/profile_view_model.dart';
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
               useMaterial3: true,
             ),
-            home: SplashScreen(), // Your main chat list screen
+            home: SplashScreen(),
           ),
         );
       },

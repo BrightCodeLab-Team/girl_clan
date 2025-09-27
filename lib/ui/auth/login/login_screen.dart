@@ -27,18 +27,19 @@ class LoginScreen extends StatelessWidget {
           return ModalProgressHUD(
             inAsyncCall: model.state == ViewState.busy,
             child: Scaffold(
+              backgroundColor: whiteColor,
               body: Container(
                 height: MediaQuery.of(context).size.height * 1,
                 width: MediaQuery.of(context).size.width * 1,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("$staticAssets/loginImage.jpg"),
-                    fit: BoxFit.cover,
-                  ),
-                ),
 
+                // decoration: BoxDecoration(
+                //   image: DecorationImage(
+                //     image: AssetImage("$staticAssets/loginImage.jpg"),
+                //     fit: BoxFit.cover,
+                //   ),
+                // ),
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5.w),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
                   child: Form(
                     key: _formKey,
                     child: SingleChildScrollView(
@@ -55,22 +56,20 @@ class LoginScreen extends StatelessWidget {
                             ),
                           ),
 
-                          15.verticalSpace,
-                          Center(
-                            child: Text(
-                              "Login",
-                              style: style25B.copyWith(
-                                fontSize: 24,
-                                color: whiteColor,
-                              ),
+                          40.verticalSpace,
+                          Text(
+                            "Login Account",
+                            style: style25B.copyWith(
+                              fontSize: 24,
+                              color: blackColor,
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          20.verticalSpace,
                           Text(
                             "Email Address",
-                            style: style16.copyWith(color: whiteColor),
+                            style: style16B.copyWith(color: blackColor),
                           ),
-                          1.verticalSpace,
+                          6.verticalSpace,
                           TextFormField(
                             keyboardType: TextInputType.emailAddress,
                             decoration: customAuthField3.copyWith(
@@ -79,10 +78,10 @@ class LoginScreen extends StatelessWidget {
                             controller: model.emailController,
                             validator: model.validateEmail,
                           ),
-                          10.verticalSpace,
+                          6.verticalSpace,
                           Text(
                             "Password",
-                            style: style16.copyWith(color: whiteColor),
+                            style: style16B.copyWith(color: blackColor),
                           ),
                           1.verticalSpace,
                           TextFormField(
@@ -109,17 +108,13 @@ class LoginScreen extends StatelessWidget {
                           10.verticalSpace,
                           Align(
                             alignment: Alignment.topRight,
-
                             child: GestureDetector(
                               onTap: () {
                                 Get.to(ForgotPasswordScreen());
                               },
                               child: Text(
                                 "Forgot Password?",
-                                style: style16.copyWith(
-                                  color: whiteColor,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: style16B.copyWith(color: blackColor),
                               ),
                             ),
                           ),
@@ -132,7 +127,14 @@ class LoginScreen extends StatelessWidget {
                                   model.LoginUser();
                                   //Get.offAll(RootScreen());
                                 } else {
-                                  Get.snackbar("Error", "Login Failed");
+                                  Get.snackbar(
+                                    "Validation",
+                                    "Please enter your email and passwords",
+                                    backgroundColor: secondaryColor,
+                                    colorText: whiteColor,
+                                    snackPosition: SnackPosition.TOP,
+                                    duration: const Duration(seconds: 4),
+                                  );
                                 }
                               },
                               text: 'Login',
@@ -146,7 +148,7 @@ class LoginScreen extends StatelessWidget {
                             children: [
                               Text(
                                 "Don’t have an account? ",
-                                style: style16.copyWith(color: whiteColor),
+                                style: style16.copyWith(color: blackColor),
                               ),
                               GestureDetector(
                                 onTap: () {

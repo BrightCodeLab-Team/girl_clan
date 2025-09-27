@@ -52,18 +52,6 @@ class ChatViewModel extends BaseViewModel {
     }
   }
 
-  String _getLastMessagePreview(Map<String, dynamic> group) {
-    final lastMessage = group['lastMessage'];
-    final senderName = group['lastMessageSenderName'] ?? '';
-
-    if (lastMessage == null || lastMessage.isEmpty) {
-      return 'No messages yet';
-    }
-
-    // For groups, show "Sender: Message" format
-    return senderName.isNotEmpty ? '$senderName: $lastMessage' : lastMessage;
-  }
-
   initMessagesStream() {
     if (isGroupChat == true && groupId != null) {
       // group chat stream

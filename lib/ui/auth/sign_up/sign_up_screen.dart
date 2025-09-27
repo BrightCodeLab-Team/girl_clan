@@ -31,15 +31,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
           (context, model, child) => ModalProgressHUD(
             inAsyncCall: model.state == ViewState.busy,
             child: Scaffold(
+              backgroundColor: whiteColor,
               body: Container(
                 height: MediaQuery.of(context).size.height * 1,
                 width: MediaQuery.of(context).size.width * 1,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("$staticAssets/loginImage.jpg"),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                // decoration: BoxDecoration(
+                //   image: DecorationImage(
+                //     image: AssetImage("$staticAssets/loginImage.jpg"),
+                //     fit: BoxFit.cover,
+                //   ),
+                // ),
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15.w),
                   child: SingleChildScrollView(
@@ -85,23 +86,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 children: [
                                   CircleAvatar(
                                     radius: 56,
-                                    backgroundColor: Colors.white,
-                                    backgroundImage:
+                                    backgroundColor: blackColor,
+                                    child:
                                         model.profileImage != null
-                                            ? FileImage(model.profileImage!)
-                                            : AssetImage(
-                                                  AppAssets().profileIcon,
-                                                )
-                                                as ImageProvider,
+                                            ? Image.file(
+                                              model.profileImage!,
+                                              fit: BoxFit.cover,
+                                            )
+                                            : Image.asset(
+                                              AppAssets().profileIcon,
+                                              fit: BoxFit.cover,
+                                              color: whiteColor,
+                                            ),
                                   ),
 
                                   CircleAvatar(
                                     backgroundColor: whiteColor,
-                                    radius: 15,
+                                    radius: 17,
                                     child: Icon(
                                       Icons.camera_alt,
                                       color: blackColor,
-                                      size: 16,
+                                      size: 19,
                                     ),
                                   ),
                                 ],
@@ -110,19 +115,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
 
                           15.verticalSpace,
-                          Center(
-                            child: Text(
-                              "SignUp",
-                              style: style25B.copyWith(color: whiteColor),
-                            ),
+                          Text(
+                            "Create An Account",
+                            style: style25B.copyWith(color: blackColor),
                           ),
-                          const SizedBox(height: 10),
+                          10.verticalSpace,
 
                           Text(
                             "First Name",
-                            style: style16.copyWith(color: whiteColor),
+                            style: style16B.copyWith(color: blackColor),
                           ),
-                          3.verticalSpace,
+                          6.verticalSpace,
                           TextFormField(
                             decoration: customAuthField3.copyWith(
                               hintText: "First Name",
@@ -130,12 +133,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             controller: model.firstNameController,
                             validator: model.validateFirstName,
                           ),
-                          10.verticalSpace,
+                          20.verticalSpace,
                           Text(
                             "Surname",
-                            style: style16.copyWith(color: whiteColor),
+                            style: style16B.copyWith(color: blackColor),
                           ),
-                          3.verticalSpace,
+                          6.verticalSpace,
                           TextFormField(
                             decoration: customAuthField3.copyWith(
                               hintText: "Surname",
@@ -143,12 +146,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             controller: model.surNameController,
                             validator: model.validateSurName,
                           ),
-
+                          20.verticalSpace,
                           Text(
                             "Email Address",
-                            style: style16.copyWith(color: whiteColor),
+                            style: style16B.copyWith(color: blackColor),
                           ),
-                          3.verticalSpace,
+                          6.verticalSpace,
                           TextFormField(
                             decoration: customAuthField3.copyWith(
                               hintText: "Email Address",
@@ -156,12 +159,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             controller: model.emailController,
                             validator: model.validateEmail,
                           ),
-                          10.verticalSpace,
+                          20.verticalSpace,
                           Text(
                             "Password",
-                            style: style16.copyWith(color: whiteColor),
+                            style: style16B.copyWith(color: blackColor),
                           ),
-                          3.verticalSpace,
+                          6.verticalSpace,
                           TextFormField(
                             obscureText: model.isPasswordVisible,
                             decoration: customAuthField3.copyWith(
@@ -183,22 +186,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             controller: model.passwordController,
                             validator: model.validatePassword,
                           ),
-                          3.verticalSpace,
+                          6.verticalSpace,
                           Row(
                             children: [
                               Checkbox(
                                 value: _isChecked,
+                                side: const BorderSide(
+                                  color: primaryColor,
+                                  width: 2,
+                                ),
+                                activeColor:
+                                    Colors.pink, // tick ka background color
+                                checkColor: Colors.white, // tick ka color
                                 onChanged: (bool? newValue) {
                                   setState(() {
                                     _isChecked = newValue ?? false;
                                   });
                                 },
-                                activeColor: primaryColor,
                               ),
-
                               Text(
                                 'Check if you are female.',
-                                style: style16.copyWith(color: whiteColor),
+                                style: style16.copyWith(color: blackColor),
                               ),
                             ],
                           ),
@@ -221,12 +229,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           Get.snackbar(
                                             "Notice",
                                             "Please confirm that you are female by checking the box.",
-                                            backgroundColor: Colors.red,
+                                            backgroundColor: secondaryColor,
                                             colorText: Colors.white,
                                           );
                                         } else if (_formKey.currentState!
                                             .validate()) {
-                                          Get.to(() => SignUpExtraScreen());
+                                          bool success =
+                                              await model.signInUser();
+                                          if (success) {
+                                            // ✅ sirf tabhi agle screen pe jao jab email already registered na ho
+                                            Get.to(() => SignUpExtraScreen());
+                                          }
                                         } else {
                                           print("Form is not valid");
                                         }
@@ -240,7 +253,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             children: [
                               Text(
                                 "Don’t have an account? ",
-                                style: style16.copyWith(color: whiteColor),
+                                style: style16.copyWith(color: blackColor),
                               ),
                               GestureDetector(
                                 onTap: () {

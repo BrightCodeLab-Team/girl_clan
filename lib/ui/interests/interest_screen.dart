@@ -17,6 +17,21 @@ class InterestSelectionScreen extends StatefulWidget {
 
 class _InterestSelectionScreenState extends State<InterestSelectionScreen> {
   final List<String> interests = [
+    "Coffee & Chats",
+    "Dinner & Drinks",
+    "Run",
+    "Water sports",
+    "Book Club",
+    "Games",
+    "Mommy & Baby",
+    "Sport",
+    "Fun",
+    "Aet & Cultural",
+    "Health & Wellbeing",
+    "Career & Business",
+    "Hobbies & Passions",
+    "Dance",
+    "Ideas",
     'Party',
     'Concert',
     'Travel',

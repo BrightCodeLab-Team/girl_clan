@@ -4,7 +4,7 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 
 final InputDecoration customAuthField3 = InputDecoration(
-  contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+  contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 7),
   border: OutlineInputBorder(
     borderRadius: BorderRadius.circular(8),
     borderSide: BorderSide(color: ternaryColor),

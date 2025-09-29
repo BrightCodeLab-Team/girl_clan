@@ -25,6 +25,15 @@ class SignUpViewModel extends BaseViewModel {
     notifyListeners(); // or update() if using GetX
   }
 
+  bool agreeToTerms = false;
+  bool showTermsError = false;
+
+  void onclickTerms(bool? value) {
+    agreeToTerms = value ?? false;
+    if (agreeToTerms) showTermsError = false; // ✅ hide error jab user tick kare
+    notifyListeners();
+  }
+
   ///
   ///  controllers
   ///
@@ -39,13 +48,6 @@ class SignUpViewModel extends BaseViewModel {
   TextEditingController dobController =
       TextEditingController(); // or store DateTime
   TextEditingController nationalityController = TextEditingController();
-
-  bool agreeToTerms = false;
-
-  onclickTerms(newValue) {
-    agreeToTerms = newValue ?? false;
-    notifyListeners();
-  }
 
   void togglePasswordVisibility() {
     isPasswordVisible = !isPasswordVisible;
@@ -127,7 +129,7 @@ class SignUpViewModel extends BaseViewModel {
   }
 
   String? validateCountry(String? value) {
-    if (value!.trim().isEmpty) return 'Please select your country/region';
+    if (value!.trim().isEmpty) return 'Please select your country';
     return null;
   }
 
@@ -186,18 +188,28 @@ class SignUpViewModel extends BaseViewModel {
   }
 
   ///
-  ///. signIn user
+  ///. signUp user
   ///
-
-  Future<bool> signInUser() async {
+  Future<bool> signUpUser() async {
     setState(ViewState.busy);
     try {
-      await auth.createUserWithEmailAndPassword(
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+
+      // ✅ Send verification email
+      await userCredential.user?.sendEmailVerification();
+
       setState(ViewState.idle);
-      return true; // ✅ registration successful
+      Get.snackbar(
+        "Verification Email Sent",
+        "Please check your inbox and verify your email before logging in.",
+        backgroundColor: secondaryColor,
+        colorText: Colors.white,
+      );
+
+      return true;
     } on FirebaseAuthException catch (e) {
       setState(ViewState.idle);
 
@@ -212,7 +224,7 @@ class SignUpViewModel extends BaseViewModel {
         Get.snackbar("Error", e.message ?? "Registration failed");
       }
 
-      return false; // ❌ registration failed
+      return false;
     } catch (e) {
       setState(ViewState.idle);
       Get.snackbar("Error", "Unexpected error: $e");

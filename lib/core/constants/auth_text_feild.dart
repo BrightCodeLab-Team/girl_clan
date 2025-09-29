@@ -92,15 +92,15 @@ final InputDecoration customHomeAuthField = InputDecoration(
 final InputDecoration EditProfileFieldDecoration = InputDecoration(
   contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
   border: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(50.0),
+    borderRadius: BorderRadius.circular(30.0),
     borderSide: BorderSide(color: greyBorderColor.withOpacity(0.1), width: 1.0),
   ),
   focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(50.0),
+    borderRadius: BorderRadius.circular(30.0),
     borderSide: BorderSide(color: greyBorderColor, width: 1.0),
   ),
   enabledBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(50.0),
+    borderRadius: BorderRadius.circular(30.0),
     borderSide: BorderSide(color: borderColor.withOpacity(0.4)),
   ),
   filled: true,

@@ -7,7 +7,6 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/model/event_model.dart';
-import 'package:girl_clan/core/services/data_base_services.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/custom_widget/loaders/join_event_loader.dart';
 import 'package:girl_clan/custom_widget/loaders/leave_event_loader.dart';

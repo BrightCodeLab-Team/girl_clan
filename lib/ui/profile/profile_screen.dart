@@ -43,7 +43,8 @@ class ProfileScreen extends StatelessWidget {
                       final email = data['email'] ?? 'set email';
                       return Container(
                         width: 375.w,
-                        height: 250.h,
+                        height: 260.h,
+                        padding: EdgeInsets.all(10),
 
                         decoration: BoxDecoration(
                           color: blackColor,
@@ -55,7 +56,7 @@ class ProfileScreen extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            20.verticalSpace,
+                            40.verticalSpace,
                             Center(
                               child: CircleAvatar(
                                 radius: 70,

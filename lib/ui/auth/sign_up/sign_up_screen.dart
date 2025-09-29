@@ -4,11 +4,11 @@ import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/constants/app_assets.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
-import 'package:girl_clan/core/constants/strings.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/ui/auth/login/login_screen.dart';
+import 'package:girl_clan/ui/auth/sign_up/email_verification_screen.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_view_model.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_extra_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -116,7 +116,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                           15.verticalSpace,
                           Text(
-                            "Create An Account",
+                            "Register Your Account",
                             style: style25B.copyWith(color: blackColor),
                           ),
                           10.verticalSpace,
@@ -157,8 +157,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               hintText: "Email Address",
                             ),
                             controller: model.emailController,
-                            validator: model.validateEmail,
+                            keyboardType: TextInputType.emailAddress,
+                            autovalidateMode:
+                                AutovalidateMode
+                                    .onUserInteraction, // ✅ turant validation
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Email is required";
+                              }
+                              // ✅ simple regex for valid email
+                              final emailRegex = RegExp(
+                                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                              );
+                              if (!emailRegex.hasMatch(value)) {
+                                return "Please enter a valid email address";
+                              }
+                              return null;
+                            },
                           ),
+
                           20.verticalSpace,
                           Text(
                             "Password",
@@ -190,27 +207,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           Row(
                             children: [
                               Checkbox(
-                                value: _isChecked,
-                                side: const BorderSide(
-                                  color: primaryColor,
+                                side: BorderSide(
+                                  color: secondaryColor,
                                   width: 2,
                                 ),
-                                activeColor:
-                                    Colors.pink, // tick ka background color
-                                checkColor: Colors.white, // tick ka color
-                                onChanged: (bool? newValue) {
-                                  setState(() {
-                                    _isChecked = newValue ?? false;
-                                  });
+                                value: _isChecked,
+                                onChanged: (value) {
+                                  setState(() => _isChecked = value!);
                                 },
                               ),
-                              Text(
-                                'Check if you are female.',
-                                style: style16.copyWith(color: blackColor),
-                              ),
+                              const Text("I confirm I am female"),
                             ],
                           ),
-
+                          if (!_isChecked)
+                            const Padding(
+                              padding: EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                "Please confirm that you are female",
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
                           20.verticalSpace,
 
                           Center(
@@ -222,26 +241,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       ),
                                     )
                                     : CustomButton(
-                                      text: "Sign Up",
+                                      text: "Next",
                                       backgroundColor: primaryColor,
                                       onTap: () async {
-                                        if (!_isChecked) {
+                                        if (_formKey.currentState!.validate() &&
+                                            _isChecked) {
+                                          bool success =
+                                              await model.signUpUser();
+                                          if (success) {
+                                            // ✅ pehle email verification screen pe le jao
+                                            Get.to(
+                                              () =>
+                                                  const EmailVerificationScreen(),
+                                            );
+                                          }
+                                        } else if (!_isChecked) {
+                                          // checkbox error alag se dikhana
                                           Get.snackbar(
                                             "Notice",
-                                            "Please confirm that you are female by checking the box.",
+                                            "Please confirm that you are female",
                                             backgroundColor: secondaryColor,
                                             colorText: Colors.white,
                                           );
-                                        } else if (_formKey.currentState!
-                                            .validate()) {
-                                          bool success =
-                                              await model.signInUser();
-                                          if (success) {
-                                            // ✅ sirf tabhi agle screen pe jao jab email already registered na ho
-                                            Get.to(() => SignUpExtraScreen());
-                                          }
-                                        } else {
-                                          print("Form is not valid");
                                         }
                                       },
                                     ),

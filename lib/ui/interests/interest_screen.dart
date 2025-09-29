@@ -26,7 +26,7 @@ class _InterestSelectionScreenState extends State<InterestSelectionScreen> {
     "Mommy & Baby",
     "Sport",
     "Fun",
-    "Aet & Cultural",
+    "Art & Cultural",
     "Health & Wellbeing",
     "Career & Business",
     "Hobbies & Passions",
@@ -43,7 +43,10 @@ class _InterestSelectionScreenState extends State<InterestSelectionScreen> {
     'Camping',
     'Workshop',
   ];
+
   final List<String> selectedInterests = [];
+  String?
+  errorMessage; // ✅ error ko snackbar ke bajaye screen par show karne ke liye
 
   void toggleInterest(String interest) {
     setState(() {
@@ -52,27 +55,39 @@ class _InterestSelectionScreenState extends State<InterestSelectionScreen> {
       } else {
         selectedInterests.add(interest);
       }
+      // jab user interact kare to error hata do
+      if (selectedInterests.length >= 3) {
+        errorMessage = null;
+      }
     });
   }
 
   Future<void> saveInterests() async {
     if (selectedInterests.length < 3) {
-      Get.snackbar(
-        'Select at least 3',
-        'Please select at least 3 interests to continue.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: secondaryColor,
-        colorText: Colors.white,
-      );
+      setState(() {
+        errorMessage = "Please select at least 3 interests to continue.";
+      });
       return;
     }
+
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       await FirebaseFirestore.instance
           .collection('app-user')
           .doc(user.uid)
           .update({'interests': selectedInterests});
-      // Navigate to root screen
+      Get.offAll(RootScreen());
+    }
+  }
+
+  Future<void> skipInterests() async {
+    // ✅ skip option: bina interests ke bhi aage jaa sakte ho
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance.collection('app-user').doc(user.uid).set(
+        {'interests': []},
+        SetOptions(merge: true),
+      );
       Get.offAll(RootScreen());
     }
   }
@@ -104,35 +119,58 @@ class _InterestSelectionScreenState extends State<InterestSelectionScreen> {
       appBar: AppBar(title: Text('Select Your Interests', style: style20B)),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Wrap(
-          spacing: 10,
-          children:
-              interests.map((interest) {
-                final isSelected = selectedInterests.contains(interest);
-                return ChoiceChip(
-                  checkmarkColor: whiteColor,
-                  selectedColor: primaryColor,
-                  backgroundColor: secondaryColor,
-                  selectedShadowColor: blackColor,
-                  side: BorderSide.none, // <-- yahan border remove kiya
-                  label: Text(
-                    interest,
-                    style: style14.copyWith(color: whiteColor),
-                  ),
-
-                  selected: isSelected,
-                  onSelected: (_) => toggleInterest(interest),
-                );
-              }).toList(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 10,
+              children:
+                  interests.map((interest) {
+                    final isSelected = selectedInterests.contains(interest);
+                    return ChoiceChip(
+                      checkmarkColor: whiteColor,
+                      selectedColor: primaryColor,
+                      backgroundColor: secondaryColor,
+                      side: BorderSide.none,
+                      label: Text(
+                        interest,
+                        style: style14.copyWith(color: whiteColor),
+                      ),
+                      selected: isSelected,
+                      onSelected: (_) => toggleInterest(interest),
+                    );
+                  }).toList(),
+            ),
+            if (errorMessage != null) ...[
+              const SizedBox(height: 10),
+              Text(
+                errorMessage!,
+                style: const TextStyle(color: Colors.red, fontSize: 14),
+              ),
+            ],
+          ],
         ),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: CustomButton(
-          onTap: saveInterests,
-          text: 'Save & Continue',
-          backgroundColor: primaryColor,
-          textColor: whiteColor,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CustomButton(
+              onTap: saveInterests,
+              text: 'Save & Continue',
+              backgroundColor: primaryColor,
+              textColor: whiteColor,
+            ),
+            const SizedBox(height: 10),
+            CustomButton(
+              onTap: skipInterests,
+              text: 'Skip for now',
+              backgroundColor: secondaryColor,
+              textColor: whiteColor,
+            ),
+            const SizedBox(height: 20),
+          ],
         ),
       ),
     );

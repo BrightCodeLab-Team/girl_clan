@@ -50,11 +50,13 @@ class CustomUpComingEventsCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      eventModel.eventName ?? '',
-                      style: style16B,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    Expanded(
+                      child: Text(
+                        eventModel.eventName ?? '',
+                        style: style16B,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                     Text(
                       "${eventModel.availablePeople}/${eventModel.joiningPeople}",

@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart' show style25B;
 import 'package:girl_clan/custom_widget/custom_button.dart';
-import 'package:girl_clan/ui/password/otp_verification_screen.dart';
+import 'package:girl_clan/ui/auth/login/login_screen.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -16,12 +18,32 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final TextEditingController emailController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  void _continue() {
+  void _continue() async {
     if (_formKey.currentState!.validate()) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const OtpVerificationScreen()),
-      );
+      try {
+        await FirebaseAuth.instance.sendPasswordResetEmail(
+          email: emailController.text.trim(),
+        );
+        Get.snackbar(
+          "Success",
+          "Password reset link sent to your email",
+          colorText: whiteColor,
+          backgroundColor: secondaryColor,
+          snackPosition: SnackPosition.TOP,
+          duration: const Duration(seconds: 4),
+        );
+
+        // Optionally navigate to login instead of OTP screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => LoginScreen()),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Error: ${e.toString()}")));
+        print("Error:  ${e.toString()}");
+      }
     }
   }
 
@@ -31,7 +53,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: false,
-        title: Text("Forget Passwords", style: style25B.copyWith(fontSize: 22)),
+        title: Text("Reset Password", style: style25B.copyWith(fontSize: 22)),
         backgroundColor: Colors.white,
         leading: Padding(
           padding: EdgeInsets.only(left: 15),
@@ -65,7 +87,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               const SizedBox(height: 8),
               TextFormField(
-                decoration: EditProfileFieldDecoration.copyWith(
+                controller: emailController,
+                decoration: customAuthField3.copyWith(
                   hintText: 'Type your email',
                 ),
                 validator: (value) {

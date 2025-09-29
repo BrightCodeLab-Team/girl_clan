@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/core/constants/strings.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/model/groups_model.dart';
@@ -167,9 +168,19 @@ class _GroupDetailsScreennState extends State<GroupDetailsScreen> {
                                       bottomLeft: Radius.circular(20),
                                     ),
                                     image: DecorationImage(
-                                      image: NetworkImage(
-                                        "${widget.groupsModel!.imageUrl}",
-                                      ),
+                                      image:
+                                          widget.groupsModel!.imageUrl !=
+                                                      null &&
+                                                  widget
+                                                      .groupsModel!
+                                                      .imageUrl!
+                                                      .isEmpty
+                                              ? NetworkImage(
+                                                "${widget.groupsModel!.imageUrl}",
+                                              )
+                                              : AssetImage(
+                                                "$staticAssets/SplashScreenImage.png",
+                                              ),
                                       fit: BoxFit.cover,
                                     ),
                                   ),

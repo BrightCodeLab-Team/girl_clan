@@ -69,7 +69,7 @@ class CustomSearchResultCard extends StatelessWidget {
                 5.verticalSpace,
                 Text(
                   //date
-                  eventModel.date ?? '',
+                  "${eventModel.date}" ?? '',
                   style: style14.copyWith(fontSize: 10),
                 ),
                 5.verticalSpace,

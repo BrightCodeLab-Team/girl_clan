@@ -122,7 +122,7 @@ class CustomHomeTopPickEventsCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          eventModel.date ?? '',
+                          "${eventModel.date}" ?? '',
                           style: style14B.copyWith(
                             fontSize: 13,
                             color: whiteColor,

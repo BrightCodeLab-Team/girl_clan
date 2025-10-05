@@ -238,7 +238,7 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                                   Row(
                                     children: [
                                       Text(
-                                        widget.eventModel?.date ?? '',
+                                        "${widget.eventModel?.date}" ?? '',
                                         style: style14.copyWith(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500,

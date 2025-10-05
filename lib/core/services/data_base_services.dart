@@ -22,7 +22,7 @@ class DatabaseServices {
   DatabaseServices._internal();
 
   ///
-  ///. fetch all current user events
+  /// fetch all current user events
   ///
   Future<List<EventModel>> getCurrentUserEvents(currentUserId) async {
     try {
@@ -53,36 +53,18 @@ class DatabaseServices {
 
   ///
   ///. ad event details to database
-  addEventsToDataBase(EventModel eventModel, hostName) async {
-    try {
-      final ref = _db.collection('events');
-      eventModel.id = currentUserId;
-      eventModel.hostName = hostName;
-      eventModel = ref.add(eventModel.toJson()) as EventModel;
-      print("event data ${eventModel.toJson()}");
-    } catch (e, s) {
-      debugPrint('Exception @DatabaseService/addEvent');
-      debugPrint(s.toString());
-      return false;
-    }
+  Future<String?> addEventsToDataBase(
+    EventModel eventModel,
+    String hostName,
+  ) async {
+    final docRef = FirebaseFirestore.instance.collection("events").doc();
+    eventModel.id = docRef.id;
+    eventModel.hostUserId = FirebaseAuth.instance.currentUser!.uid;
+
+    await docRef.set(eventModel.toJson());
+    return docRef.id;
   }
 
-  //  Future<List<EventModel>> getUpcomingEvents() async {
-  //     try {
-  //       final query = FirebaseFirestore.instance
-  //           .collection('events')
-  //           .where('status', isNotEqualTo: 'ended') // Only active events
-  //           .orderBy('date');
-
-  //       final snapshot = await query.get();
-  //       return snapshot.docs
-  //           .map((doc) => EventModel.fromJson(doc.data()))
-  //           .toList();
-  //     } catch (e) {
-  //       debugPrint('Error getting upcoming events: $e');
-  //       return [];
-  //     }
-  //   }
   Future<List<EventModel>> getUpcomingEvents() async {
     try {
       final snapshot = await _db.collection('events').orderBy('date').get();
@@ -115,10 +97,6 @@ class DatabaseServices {
       return [];
     }
   }
-
-  ///
-  ///
-  ///
 
   ///
   ///  get all events from database
@@ -380,10 +358,6 @@ class DatabaseServices {
   // Get all users for chat list
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  // static final DatabaseServices _singleton = DatabaseServices._internal();
-  // factory DatabaseServices() => _singleton;
-  // DatabaseServices._internal();
 
   // Get current user ID
   String get currentUserId => _auth.currentUser?.uid ?? '';
@@ -677,17 +651,6 @@ class DatabaseServices {
     final doc = await _firestore.collection('users').doc(userId).get();
     return doc.data()?['profileImageUrl'] ?? '';
   }
-
-  // String _formatTimestamp(Timestamp timestamp) {
-  //   final now = DateTime.now();
-  //   final date = timestamp.toDate();
-  //   final difference = now.difference(date);
-
-  //   if (difference.inMinutes < 1) return 'Just now';
-  //   if (difference.inHours < 1) return '${difference.inMinutes}m ago';
-  //   if (difference.inDays < 1) return '${difference.inHours}h ago';
-  //   return '${difference.inDays}d ago';
-  // }
 
   // ------------------ GROUP CHAT METHODS ------------------
 

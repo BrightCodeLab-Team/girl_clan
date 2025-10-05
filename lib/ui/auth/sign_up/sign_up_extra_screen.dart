@@ -313,64 +313,62 @@ class _ConsentTextState extends State<ConsentText> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: RichText(
-        text: TextSpan(
-          style: TextStyle(fontSize: 12, color: Colors.white),
-          children: [
-            TextSpan(
-              text: "By Selecting Agree and continue, I agree to our ",
-              style: TextStyle(color: blackColor, fontWeight: FontWeight.w600),
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(fontSize: 12, color: Colors.white),
+        children: [
+          TextSpan(
+            text: "By Selecting Agree and continue, I agree to our ",
+            style: TextStyle(color: blackColor, fontWeight: FontWeight.w600),
+          ),
+          TextSpan(
+            text: "Terms of Service",
+            style: TextStyle(
+              decoration: TextDecoration.underline,
+              color: blackColor,
+              fontWeight: FontWeight.w600,
             ),
-            TextSpan(
-              text: "Terms of Service",
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                color: blackColor,
-                fontWeight: FontWeight.w600,
-              ),
-              recognizer: _termsRecognizer,
+            recognizer: _termsRecognizer,
+          ),
+          TextSpan(
+            text: ", ",
+            style: TextStyle(color: blackColor, fontWeight: FontWeight.w600),
+          ),
+          TextSpan(
+            text: "Payments Terms of Service",
+            style: TextStyle(
+              decoration: TextDecoration.underline,
+              color: blackColor,
+              fontWeight: FontWeight.w600,
             ),
-            TextSpan(
-              text: ", ",
-              style: TextStyle(color: blackColor, fontWeight: FontWeight.w600),
+            recognizer: _paymentsRecognizer,
+          ),
+          TextSpan(
+            text: " and ",
+            style: TextStyle(color: blackColor, fontWeight: FontWeight.w600),
+          ),
+          TextSpan(
+            text: "Nondiscrimination Policy",
+            style: TextStyle(
+              decoration: TextDecoration.underline,
+              color: blackColor,
             ),
-            TextSpan(
-              text: "Payments Terms of Service",
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                color: blackColor,
-                fontWeight: FontWeight.w600,
-              ),
-              recognizer: _paymentsRecognizer,
+            recognizer: _policyRecognizer,
+          ),
+          TextSpan(
+            text: " and acknowledge the ",
+            style: TextStyle(color: blackColor, fontWeight: FontWeight.w600),
+          ),
+          TextSpan(
+            text: "Privacy Policy",
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              decoration: TextDecoration.underline,
+              color: blackColor,
             ),
-            TextSpan(
-              text: " and ",
-              style: TextStyle(color: blackColor, fontWeight: FontWeight.w600),
-            ),
-            TextSpan(
-              text: "Nondiscrimination Policy",
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                color: blackColor,
-              ),
-              recognizer: _policyRecognizer,
-            ),
-            TextSpan(
-              text: " and acknowledge the ",
-              style: TextStyle(color: blackColor, fontWeight: FontWeight.w600),
-            ),
-            TextSpan(
-              text: "Privacy Policy",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                decoration: TextDecoration.underline,
-                color: blackColor,
-              ),
-              recognizer: _privacyRecognizer,
-            ),
-          ],
-        ),
+            recognizer: _privacyRecognizer,
+          ),
+        ],
       ),
     );
   }

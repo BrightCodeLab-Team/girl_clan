@@ -113,17 +113,50 @@ class HomeViewModel extends BaseViewModel {
     setState(ViewState.busy);
     try {
       upcomingEventsList = await db.getUpcomingEvents();
-      debugPrint('Successfully fetched ${upcomingEventsList.length} events');
 
-      // Debug print all event names and dates
+      List<EventModel> processedEvents = [];
+
       for (var event in upcomingEventsList) {
-        debugPrint('Event: ${event.eventName}, Date: ${event.date}');
+        if (event.recurrence == "Weekly" || event.recurrence == "Monthly") {
+          DateTime baseDate = DateTime.parse(event.date!);
+
+          // Repeat agle 3 instances ke liye example
+          for (int i = 1; i <= 3; i++) {
+            DateTime nextDate;
+            if (event.recurrence == "Weekly") {
+              nextDate = baseDate.add(Duration(days: 7 * i));
+            } else {
+              nextDate = DateTime(
+                baseDate.year,
+                baseDate.month + i,
+                baseDate.day,
+              );
+            }
+
+            EventModel newEvent = EventModel(
+              id: "${event.id}_$i",
+              eventName: event.eventName,
+              date: nextDate.toIso8601String(),
+              startTime: event.startTime,
+              location: event.location,
+              category: event.category,
+              imageUrl: event.imageUrl,
+              hostUserId: event.hostUserId,
+              recurrence: event.recurrence,
+            );
+
+            processedEvents.add(newEvent);
+          }
+        }
       }
 
+      // Add recurring copies in the main list
+      upcomingEventsList.addAll(processedEvents);
+
+      debugPrint('Successfully fetched ${upcomingEventsList.length} events');
       notifyListeners();
     } catch (e) {
       debugPrint('Error in init: $e');
-      //Get.snackbar('Error', 'Failed to load events');
     } finally {
       setState(ViewState.idle);
     }

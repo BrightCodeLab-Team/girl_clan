@@ -37,48 +37,25 @@ final InputDecoration customAuthField3 = InputDecoration(
 final InputDecoration customHomeAuthField = InputDecoration(
   contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
   border: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(
-      50,
-    ), // Increased border radius for more rounded shape
-    borderSide: BorderSide(
-      color: Colors.transparent,
-    ), // Transparent border to match the image
+    borderRadius: BorderRadius.circular(50),
+    borderSide: BorderSide(color: Colors.transparent),
   ),
   focusedBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(
-      50,
-    ), // Increased border radius for more rounded shape
-    borderSide: BorderSide(
-      color: Colors.transparent,
-    ), // Transparent border to match the image
+    borderRadius: BorderRadius.circular(50),
+    borderSide: BorderSide(color: Colors.transparent),
   ),
   enabledBorder: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(
-      50,
-    ), // Increased border radius for more rounded shape
-    borderSide: BorderSide(
-      color: Colors.transparent,
-    ), // Transparent border to match the image
+    borderRadius: BorderRadius.circular(50),
+    borderSide: BorderSide(color: Colors.transparent),
   ),
   filled: true,
-  fillColor: thinGreyColor, // A light grey fill color to match the image
-  hintText: 'Search', // Hint text "Search"
+  fillColor: thinGreyColor,
+  hintText: 'Search',
   hintStyle: style14B.copyWith(
     fontWeight: FontWeight.w600,
-    fontSize: 12, // Slightly larger font size for hint
-    color: ternaryColor, // Assuming ternaryColor is a suitable dark grey
+    fontSize: 12,
+    color: ternaryColor,
   ),
-  prefixIcon: Icon(
-    Icons.search, // Search icon
-    color: ternaryColor, // Icon color
-    size: 24,
-  ),
-
-  prefixStyle: style20B.copyWith(
-    fontWeight: FontWeight.w400,
-    color: Colors.grey.shade400,
-  ),
-  isDense: true, // Make the input field more compact
 );
 //******* */
 //****************************************************************************************************************************************** */

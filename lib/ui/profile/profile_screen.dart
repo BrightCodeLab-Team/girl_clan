@@ -130,7 +130,7 @@ class ProfileScreen extends StatelessWidget {
                                 buildEvent(
                                   homeModel.upcomingEventsList.length
                                       .toString(),
-                                  'Upcoming events',
+                                  'UpComing Events',
                                 ),
                               ],
                             ),

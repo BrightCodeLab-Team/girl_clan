@@ -60,6 +60,16 @@ class HomeScreen extends StatelessWidget {
                       autofocus: true,
                       readOnly: true,
                       decoration: customHomeAuthField.copyWith(
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: ternaryColor,
+                          size: 24,
+                        ),
+
+                        prefixStyle: style20B.copyWith(
+                          fontWeight: FontWeight.w400,
+                          color: Colors.grey.shade400,
+                        ),
                         suffixIcon: Padding(
                           padding: const EdgeInsets.only(right: 8.0),
 

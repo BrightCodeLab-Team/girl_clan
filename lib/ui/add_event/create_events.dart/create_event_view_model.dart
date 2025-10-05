@@ -106,6 +106,14 @@ class AddEventViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  String? selectedRecurrence;
+
+  void selectRecurrence(String value) {
+    selectedRecurrence = value;
+    eventModel.recurrence = value;
+    notifyListeners();
+  }
+
   // Add Event
   Future<void> addEventToDB(eventModel, hostName) async {
     setState(ViewState.busy);
@@ -159,5 +167,12 @@ class AddEventViewModel extends BaseViewModel {
   String? validateSelectedTime() {
     if (selectedTime == null) return 'Select start time';
     return null;
+  }
+
+  void clearEventModel() {
+    eventModel = EventModel(); // fresh model create
+    selectedTime = null;
+    selectedRecurrence = "None";
+    notifyListeners();
   }
 }

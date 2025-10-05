@@ -70,7 +70,7 @@ class CustomUpComingEventsCard extends StatelessWidget {
                 4.verticalSpace,
 
                 Text(
-                  eventModel.date ?? '',
+                  "${eventModel.date}" ?? '',
                   style: style14B.copyWith(fontSize: 10),
                 ),
                 4.verticalSpace,

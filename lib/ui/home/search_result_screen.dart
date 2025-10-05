@@ -48,6 +48,15 @@ class SearchResultScreen extends StatelessWidget {
                     model.searchEvents(value);
                   },
                   decoration: customHomeAuthField.copyWith(
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: ternaryColor,
+                      size: 24,
+                    ),
+                    prefixStyle: style20B.copyWith(
+                      fontWeight: FontWeight.w400,
+                      color: Colors.grey.shade400,
+                    ),
                     suffixIcon: Padding(
                       padding: EdgeInsets.all(10),
                       child: CircleAvatar(

@@ -22,6 +22,8 @@ class EventModel {
   double? locationLat;
   double? locationLng;
 
+  String? recurrence; // 🔥 new field (None, Weekly, Monthly)
+
   EventModel({
     this.id,
     this.eventName,
@@ -40,6 +42,7 @@ class EventModel {
     this.joinedUsers,
     this.locationLat,
     this.locationLng,
+    this.recurrence = "None", // default
   });
 
   Map<String, dynamic> toJson() {
@@ -61,6 +64,7 @@ class EventModel {
       'joinedUsers': joinedUsers ?? [],
       'locationLat': locationLat,
       'locationLng': locationLng,
+      'recurrence': recurrence,
     };
   }
 
@@ -92,6 +96,7 @@ class EventModel {
           json['locationLng'] != null
               ? double.tryParse(json['locationLng'].toString())
               : null,
+      recurrence: json['recurrence'] ?? "None",
     );
   }
 }

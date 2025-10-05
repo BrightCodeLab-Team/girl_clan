@@ -88,11 +88,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(child: CircularProgressIndicator());
                       }
-                      if (!snapshot.hasData) {
-                        return Center(child: Text('No data found'));
+                      if (!snapshot.hasData ||
+                          !snapshot.data!.exists ||
+                          snapshot.data!.data() == null) {
+                        return Center(child: Text("No user data available"));
                       }
 
-                      // get data
                       final userData =
                           snapshot.data!.data() as Map<String, dynamic>;
 

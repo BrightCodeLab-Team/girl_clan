@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.girl-clan</string>
+	<string>com.example.girlclan</string>
 	<key>PROJECT_ID</key>
 	<string>event-app-d66c5</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:413553926888:ios:f4b8f060d6d2b5f5205f5d</string>
+	<string>1:413553926888:ios:17e8cc65fa56ffb0205f5d</string>
 </dict>
 </plist>

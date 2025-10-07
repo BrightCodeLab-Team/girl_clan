@@ -22,64 +22,60 @@ class LoginViewModel extends BaseViewModel {
   ///. login user if user is already  signUp
   ///
   final auth = FirebaseAuth.instance;
-  String message = "Login failed";
+  String message = "";
 
-  Future<void> LoginUser() async {
+  Future<void> loginUser() async {
     setState(ViewState.busy);
     try {
-      await auth
-          .signInWithEmailAndPassword(
-            email: emailController.text.trim(),
-            password: passwordController.text.trim(),
-          )
-          .then((onValue) {
-            Get.offAll(RootScreen());
+      await auth.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
 
-            Get.snackbar(
-              "Success",
-              "Login successfully",
-              colorText: whiteColor,
-              backgroundColor: secondaryColor,
-              snackPosition: SnackPosition.TOP,
-              duration: const Duration(seconds: 4),
-            );
-          })
-          .catchError((error) {
-            if (error is FirebaseAuthException) {
-              String message = "Login failed";
+      Get.offAll(RootScreen());
+      Get.snackbar(
+        "Success",
+        "Login successfully",
+        colorText: whiteColor,
+        backgroundColor: secondaryColor,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 4),
+      );
+    } on FirebaseAuthException catch (error) {
+      print("Firebase Error Code: ${error.code}");
+      print("Firebase Error Message: ${error.message}");
+      if (error.code == 'user-not-found') {
+        message = "This email is not registered. Please sign up first.";
+      } else if (error.code == 'wrong-password') {
+        message = "The password you entered is incorrect.";
+      } else if (error.code == 'invalid-email') {
+        message = "Please enter a valid email address.";
+      } else if (error.code == 'user-disabled') {
+        message = "This account has been disabled by the administrator.";
+      } else {
+        message = "Invalid email or password.";
+      }
 
-              if (error.code == 'user-not-found') {
-                message = "This email is not registered. Please sign up first.";
-              } else if (error.code == 'wrong-password') {
-                message = "The password you entered is incorrect.";
-              } else if (error.code == 'invalid-email') {
-                message = "Please enter a valid email address.";
-              }
-
-              Get.snackbar(
-                "Error",
-                message,
-                backgroundColor: secondaryColor,
-                colorText: whiteColor,
-                snackPosition: SnackPosition.TOP,
-                duration: const Duration(seconds: 5),
-              );
-            } else {
-              Get.snackbar(
-                "Error",
-                "Something went wrong. Please try again.",
-                backgroundColor: secondaryColor,
-                colorText: whiteColor,
-                snackPosition: SnackPosition.TOP,
-                duration: const Duration(seconds: 4),
-              );
-            }
-            notifyListeners();
-          });
+      Get.snackbar(
+        "Error",
+        message,
+        backgroundColor: secondaryColor,
+        colorText: whiteColor,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 5),
+      );
     } catch (e) {
-      print("Login Failed $e");
+      Get.snackbar(
+        "Error",
+        "Something went wrong. Please try again.",
+        backgroundColor: secondaryColor,
+        colorText: whiteColor,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 4),
+      );
+    } finally {
+      setState(ViewState.idle);
     }
-    setState(ViewState.idle);
   }
 
   ///

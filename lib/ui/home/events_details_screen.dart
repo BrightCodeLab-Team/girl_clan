@@ -17,6 +17,7 @@ import 'package:girl_clan/ui/home/map/event_map_screen.dart';
 import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class EventsDetailsScreen extends StatefulWidget {
   EventModel? eventModel;
@@ -176,11 +177,10 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0,
-                                    vertical: 30,
-                                  ),
+                                // Back Button
+                                Positioned(
+                                  top: 30,
+                                  left: 16,
                                   child: IconButton(
                                     onPressed: () {
                                       model.upComingEvents();
@@ -198,8 +198,36 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                                     ),
                                   ),
                                 ),
+                                // Share Button
+                                Positioned(
+                                  top: 40,
+                                  right: 20,
+                                  child: IconButton(
+                                    onPressed: () async {
+                                      final eventName =
+                                          widget.eventModel?.eventName ??
+                                          "Event";
+                                      final eventDesc =
+                                          widget.eventModel?.description ?? "";
+                                      final eventLink =
+                                          "https://girlclan.com/event/${widget.eventModel?.id}";
+                                      // Replace with your real website link if you have one
+
+                                      final shareText =
+                                          "$eventName\n\n$eventDesc\n\nJoin here: $eventLink";
+
+                                      await Share.share(shareText);
+                                    },
+                                    icon: Icon(
+                                      Icons.share,
+                                      size: 28,
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
+
                             10.verticalSpace,
 
                             /// Event Details

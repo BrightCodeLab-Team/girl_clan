@@ -27,141 +27,129 @@ class LoginScreen extends StatelessWidget {
             inAsyncCall: model.state == ViewState.busy,
             child: Scaffold(
               backgroundColor: whiteColor,
-              body: Container(
-                height: MediaQuery.of(context).size.height * 1,
-                width: MediaQuery.of(context).size.width * 1,
+              body: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                child: Form(
+                  key: _formKey,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        70.verticalSpacingDiagonal,
+                        Center(
+                          child: Image.asset(
+                            AppAssets().appLogo,
+                            height: 112,
+                            width: 112,
+                          ),
+                        ),
 
-                // decoration: BoxDecoration(
-                //   image: DecorationImage(
-                //     image: AssetImage("$staticAssets/loginImage.jpg"),
-                //     fit: BoxFit.cover,
-                //   ),
-                // ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w),
-                  child: Form(
-                    key: _formKey,
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          25.verticalSpacingDiagonal,
-                          Center(
-                            child: Image.asset(
-                              AppAssets().appLogo,
-                              height: 112,
-                              width: 112,
-                            ),
+                        40.verticalSpace,
+                        Text(
+                          "Login Account",
+                          style: style25B.copyWith(
+                            fontSize: 24,
+                            color: blackColor,
                           ),
-
-                          40.verticalSpace,
-                          Text(
-                            "Login Account",
-                            style: style25B.copyWith(
-                              fontSize: 24,
-                              color: blackColor,
-                            ),
+                        ),
+                        20.verticalSpace,
+                        Text(
+                          "Email Address",
+                          style: style16B.copyWith(color: blackColor),
+                        ),
+                        6.verticalSpace,
+                        TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: customAuthField3.copyWith(
+                            hintText: "Email Address",
                           ),
-                          20.verticalSpace,
-                          Text(
-                            "Email Address",
-                            style: style16B.copyWith(color: blackColor),
-                          ),
-                          6.verticalSpace,
-                          TextFormField(
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: customAuthField3.copyWith(
-                              hintText: "Email Address",
-                            ),
-                            controller: model.emailController,
-                            validator: model.validateEmail,
-                          ),
-                          6.verticalSpace,
-                          Text(
-                            "Password",
-                            style: style16B.copyWith(color: blackColor),
-                          ),
-                          1.verticalSpace,
-                          TextFormField(
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: model.isPasswordVisible,
-                            decoration: customAuthField3.copyWith(
-                              hintText: "Password",
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  model.isPasswordVisible
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                  color: Colors.grey,
-                                ),
-                                onPressed: () {
-                                  model.togglePasswordVisibility();
-                                },
+                          controller: model.emailController,
+                          validator: model.validateEmail,
+                        ),
+                        6.verticalSpace,
+                        Text(
+                          "Password",
+                          style: style16B.copyWith(color: blackColor),
+                        ),
+                        1.verticalSpace,
+                        TextFormField(
+                          keyboardType: TextInputType.visiblePassword,
+                          obscureText: model.isPasswordVisible,
+                          decoration: customAuthField3.copyWith(
+                            hintText: "Password",
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                model.isPasswordVisible
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.grey,
                               ),
+                              onPressed: () {
+                                model.togglePasswordVisibility();
+                              },
                             ),
-
-                            controller: model.passwordController,
-                            validator: model.validatePassword,
                           ),
-                          10.verticalSpace,
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: GestureDetector(
+
+                          controller: model.passwordController,
+                          validator: model.validatePassword,
+                        ),
+                        10.verticalSpace,
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: GestureDetector(
+                            onTap: () {
+                              Get.to(ForgotPasswordScreen());
+                            },
+                            child: Text(
+                              "Forgot Password?",
+                              style: style16B.copyWith(color: blackColor),
+                            ),
+                          ),
+                        ),
+                        20.verticalSpace,
+
+                        Center(
+                          child: CustomButton(
+                            onTap: () async {
+                              if (_formKey.currentState!.validate()) {
+                                model.loginUser();
+                              } else {
+                                Get.snackbar(
+                                  "Validation",
+                                  "Please enter your email and passwords",
+                                  backgroundColor: secondaryColor,
+                                  colorText: whiteColor,
+                                  snackPosition: SnackPosition.TOP,
+                                  duration: const Duration(seconds: 4),
+                                );
+                              }
+                            },
+                            text: 'Login',
+                            backgroundColor: primaryColor,
+                          ),
+                        ),
+                        30.verticalSpace,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Don’t have an account? ",
+                              style: style16.copyWith(color: blackColor),
+                            ),
+                            GestureDetector(
                               onTap: () {
-                                Get.to(ForgotPasswordScreen());
+                                Get.offAll(() => SignUpScreen());
                               },
                               child: Text(
-                                "Forgot Password?",
-                                style: style16B.copyWith(color: blackColor),
+                                "SignUp ",
+                                style: style16B.copyWith(color: primaryColor),
                               ),
                             ),
-                          ),
-                          20.verticalSpace,
-
-                          Center(
-                            child: CustomButton(
-                              onTap: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  model.LoginUser();
-                                  //Get.offAll(RootScreen());
-                                } else {
-                                  Get.snackbar(
-                                    "Validation",
-                                    "Please enter your email and passwords",
-                                    backgroundColor: secondaryColor,
-                                    colorText: whiteColor,
-                                    snackPosition: SnackPosition.TOP,
-                                    duration: const Duration(seconds: 4),
-                                  );
-                                }
-                              },
-                              text: 'Login',
-                              backgroundColor: primaryColor,
-                            ),
-                          ),
-                          30.verticalSpace,
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Don’t have an account? ",
-                                style: style16.copyWith(color: blackColor),
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  Get.offAll(() => SignUpScreen());
-                                },
-                                child: Text(
-                                  "SignUp ",
-                                  style: style16B.copyWith(color: primaryColor),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),

@@ -42,6 +42,8 @@ class MainChatScreen extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 15),
                       child: TextFormField(
+                        onChanged: model.updateSearchQuery,
+                        controller: model.searchController,
                         decoration: customHomeAuthField.copyWith(
                           prefixIcon: Icon(Icons.search),
                         ),
@@ -55,7 +57,10 @@ class MainChatScreen extends StatelessWidget {
                           model.isLoading
                               ? const ChatShimmerLoader()
                               : // People Tab
-                              RefreshIndicator(
+                              model.chatsList.isEmpty &&
+                                  model.searchQuery.isNotEmpty
+                              ? Center(child: Text("No users found"))
+                              : RefreshIndicator(
                                 onRefresh: () async {
                                   model.loadUsers();
                                   model.initMessagesStream();
@@ -107,15 +112,19 @@ class MainChatScreen extends StatelessWidget {
                           // Groups Tab
                           model.isLoading
                               ? const ChatShimmerLoader()
+                              : model.filteredGroupsList.isEmpty &&
+                                  model.searchQuery.isNotEmpty
+                              ? Center(child: Text("No Group found"))
                               : RefreshIndicator(
                                 onRefresh: () async {
                                   await model.loadGroups();
                                   model.initMessagesStream();
                                 },
                                 child: ListView.builder(
-                                  itemCount: model.groupsList.length,
+                                  itemCount: model.filteredGroupsList.length,
                                   itemBuilder: (context, index) {
-                                    final group = model.groupsList[index];
+                                    final group =
+                                        model.filteredGroupsList[index];
 
                                     // Get last message info
                                     final lastMessage =

@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBEP0onQ6CmpYMQjCP0PXxumWF4WTMPDxs',
-    appId: '1:413553926888:android:d459ce168ca2ead9205f5d',
+    appId: '1:413553926888:android:d459ce168ca2ead9205f5d"',
     messagingSenderId: '413553926888',
     projectId: 'event-app-d66c5',
     storageBucket: 'event-app-d66c5.firebasestorage.app',
@@ -59,10 +59,10 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyD0EVdDRBj0pBApW16blBJ4XaGgSJ6t3yk',
-    appId: '1:413553926888:ios:f4b8f060d6d2b5f5205f5d',
+    appId: '1:413553926888:ios:17e8cc65fa56ffb0205f5d',
     messagingSenderId: '413553926888',
     projectId: 'event-app-d66c5',
     storageBucket: 'event-app-d66c5.firebasestorage.app',
-    iosBundleId: 'com.example.girl-clan',
+    iosBundleId: 'com.example.girlclan',
   );
 }

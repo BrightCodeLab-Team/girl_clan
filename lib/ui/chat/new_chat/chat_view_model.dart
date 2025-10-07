@@ -20,12 +20,18 @@ class ChatViewModel extends BaseViewModel {
   final String? receiverId;
   final String? groupId;
   List<Map<String, dynamic>> groupsList = [];
+  final searchController = TextEditingController();
+  String searchQuery = '';
 
   final TextEditingController messageController = TextEditingController();
   bool isTyping = false;
 
   final List<MessageModel> _messages = [];
   List<UserModel> chatsList = [];
+  List<UserModel> allChatsList = [];
+
+  List<Map<String, dynamic>> allGroupsList = [];
+  List<Map<String, dynamic>> filteredGroupsList = [];
 
   List<MessageModel> get messages => _messages;
 
@@ -50,6 +56,25 @@ class ChatViewModel extends BaseViewModel {
       isTyping = hasText;
       notifyListeners();
     }
+  }
+
+  void updateSearchQuery(String query) {
+    searchQuery = query.toLowerCase();
+
+    // Filter users
+    chatsList =
+        allChatsList.where((user) {
+          return user.name!.toLowerCase().contains(searchQuery);
+        }).toList();
+
+    // Filter groups
+    filteredGroupsList =
+        allGroupsList.where((group) {
+          final groupName = (group['name'] ?? '').toString().toLowerCase();
+          return groupName.contains(searchQuery);
+        }).toList();
+
+    notifyListeners();
   }
 
   initMessagesStream() {
@@ -125,19 +150,20 @@ class ChatViewModel extends BaseViewModel {
     try {
       setState(ViewState.busy);
       isLoading = true;
-      notifyListeners(); // Inform UI shimmer or loader
+      notifyListeners();
 
-      chatsList = await _db.getAllChatUsers();
+      // Fetch all users
+      allChatsList = await _db.getAllChatUsers();
+
+      // Initially show all users
+      chatsList = List.from(allChatsList);
+
       debugPrint("Loaded chat users: ${chatsList.length}");
-
-      for (var user in chatsList) {
-        debugPrint("User: ${user.name}, ${user.imageUrl}");
-      }
     } catch (e) {
       debugPrint('Error loading users: $e');
     } finally {
       isLoading = false;
-      notifyListeners(); // Final UI update
+      notifyListeners();
       setState(ViewState.idle);
     }
   }
@@ -148,14 +174,13 @@ class ChatViewModel extends BaseViewModel {
       isLoading = true;
       notifyListeners();
 
-      groupsList = await _db.getUserGroups();
+      // Fetch groups from DB
+      allGroupsList = await _db.getUserGroups();
 
-      // Debug print to verify last messages are being loaded
-      for (var group in groupsList) {
-        print('Group: ${group['name']}');
-        print('Last message: ${group['lastMessage']}');
-        print('Last message time: ${group['lastMessageTime']}');
-      }
+      // Initially show all
+      filteredGroupsList = List.from(allGroupsList);
+
+      debugPrint("Loaded groups: ${filteredGroupsList.length}");
     } catch (e) {
       debugPrint('Error loading groups: $e');
     } finally {

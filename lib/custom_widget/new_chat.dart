@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/core/constants/strings.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/model/user_model.dart';
 import 'package:intl/intl.dart';
@@ -35,8 +36,11 @@ class MainChatItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CircleAvatar(
-                  radius: 24,
-                  backgroundImage: NetworkImage(chat.imageUrl ?? ""),
+                  radius: 25,
+                  backgroundImage:
+                      (chat.imageUrl != null && chat.imageUrl!.isNotEmpty)
+                          ? NetworkImage(chat.imageUrl!)
+                          : const AssetImage('$staticAssets/logo.png'),
                 ),
                 10.horizontalSpace,
                 Column(

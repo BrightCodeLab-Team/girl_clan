@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
-import 'package:girl_clan/firebase_options.dart';
 import 'package:girl_clan/locator.dart';
 import 'package:girl_clan/ui/add_event/create_events.dart/create_event_view_model.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_view_model.dart';
@@ -19,7 +18,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp();
   await setupLocator();
   runApp(const MyApp());
 }

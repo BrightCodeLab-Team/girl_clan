@@ -25,7 +25,7 @@ class HomeViewModel extends BaseViewModel {
   ];
 
   ///
-  ///      up coming events
+  ///  Up Coming Events
   ///
   List<EventModel> upcomingEventsList = [];
   List<EventModel> allEventsList = [];
@@ -34,7 +34,7 @@ class HomeViewModel extends BaseViewModel {
   List<GroupsModel> groupsList = [];
 
   ///
-  ///. constructor if not use then no data fetching
+  /// Constructor if not use then no data fetching
   ///
   HomeViewModel() {
     upComingEvents();

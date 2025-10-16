@@ -17,96 +17,102 @@ class UpComingEventsScreen extends StatelessWidget {
     return Consumer<HomeViewModel>(
       builder:
           (context, model, child) => Scaffold(
-            appBar: AppBar(
-              leading: Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: CircleAvatar(
-                  backgroundColor: thinGreyColor,
-                  child: GestureDetector(
-                    onTap: () {
-                      navigator!.pop(context);
-                    },
-                    child: Icon(Icons.arrow_back_ios_new_outlined),
-                  ),
-                ),
-              ),
-              title: Text(
-                'UpComing Events',
-                style: style25B.copyWith(fontSize: 22),
-              ),
-            ),
+            ///
+            /// App Bar
+            ///
+            appBar: appBar(context),
+
+            ///
+            /// Start Body
+            ///
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15.0),
               child: Column(
                 children: [
                   10.verticalSpace,
-
-                  //  search result
-                  FutureBuilder(
-                    future:
+                  Expanded(
+                    child:
                         model.upcomingEventsList.isEmpty
-                            ? model.upComingEvents()
-                            : Future.value(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                      return Expanded(
-                        child:
-                            model.upcomingEventsList.isEmpty
-                                ? Center(
-                                  child: Text(
-                                    'No Upcoming Events',
-                                    style: style18B.copyWith(),
+                            ? Center(
+                              child: Text(
+                                'No Upcoming Events',
+                                style: style18B.copyWith(),
+                              ),
+                            )
+                            : GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    childAspectRatio: 0.71,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10,
                                   ),
-                                )
-                                : GridView.builder(
-                                  gridDelegate:
-                                      const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2,
-                                        childAspectRatio: 0.71,
-                                        crossAxisSpacing: 10,
-                                        mainAxisSpacing: 10,
-                                      ),
 
-                                  ///
-                                  ///  changes here
-                                  ///
-                                  itemCount:
-                                      model
-                                          .upcomingEventsList
-                                          .length, //in this line
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.vertical,
+                              ///
+                              ///  changes here
+                              ///
+                              itemCount:
+                                  model
+                                      .upcomingEventsList
+                                      .length, //in this line
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
 
-                                  itemBuilder: (
-                                    BuildContext context,
-                                    int index,
-                                  ) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Get.to(
-                                          EventsDetailsScreen(
-                                            eventModel:
-                                                model.upcomingEventsList[index],
-                                          ),
-                                        );
-                                      },
-                                      child: CustomSearchResultCard(
+                              itemBuilder: (BuildContext context, int index) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    Get.to(
+                                      EventsDetailsScreen(
                                         eventModel:
-                                            model
-                                                .upcomingEventsList[index], //in this line
+                                            model.upcomingEventsList[index],
                                       ),
                                     );
                                   },
-                                ),
-                      );
-                    },
+                                  child: CustomSearchResultCard(
+                                    eventModel:
+                                        model
+                                            .upcomingEventsList[index], //in this line
+                                  ),
+                                );
+                              },
+                            ),
                   ),
+
+                  //  search result
+                  // FutureBuilder(
+                  //   future:
+                  //       model.upcomingEventsList.isEmpty
+                  //           ? model.upComingEvents()
+                  //           : Future.value(),
+                  //   builder: (context, snapshot) {
+                  //     if (snapshot.connectionState == ConnectionState.waiting) {
+                  //       return Center(child: CircularProgressIndicator());
+                  //     }
+                  //     return ;
+                  //   },
+                  // ),
                 ],
               ),
             ),
           ),
     );
   }
+}
+
+AppBar appBar(BuildContext context) {
+  return AppBar(
+    leading: Padding(
+      padding: const EdgeInsets.only(left: 15.0),
+      child: CircleAvatar(
+        backgroundColor: thinGreyColor,
+        child: GestureDetector(
+          onTap: () {
+            navigator!.pop(context);
+          },
+          child: Icon(Icons.arrow_back_ios_new_outlined),
+        ),
+      ),
+    ),
+    title: Text('UpComing Events', style: style25B.copyWith(fontSize: 22)),
+  );
 }

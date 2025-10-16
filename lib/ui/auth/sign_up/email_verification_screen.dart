@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_extra_screen.dart';
-import 'package:girl_clan/core/constants/app_assets.dart'; // 👈 logo ka path
+import 'package:girl_clan/ui/auth/sign_up/sign_up_screen.dart'; // 👈 Added import
+import 'package:girl_clan/core/constants/app_assets.dart'; // logo ka path
 
 class EmailVerificationScreen extends StatefulWidget {
-  const EmailVerificationScreen({super.key});
+  String? email;
+  EmailVerificationScreen({required this.email});
 
   @override
   State<EmailVerificationScreen> createState() =>
@@ -16,22 +18,23 @@ class EmailVerificationScreen extends StatefulWidget {
 
 class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   bool isVerified = false;
-  bool isLoading = false; // 👈 Loader ka flag
+  bool isLoading = false; // loader flag
 
   @override
   void initState() {
     super.initState();
+    print("email==> ${widget.email}");
     checkVerification();
   }
 
   Future<void> checkVerification() async {
     setState(() {
-      isLoading = true; // loader start
+      isLoading = true;
     });
 
     try {
       User? user = FirebaseAuth.instance.currentUser;
-      await user?.reload(); // refresh user status
+      await user?.reload();
       setState(() {
         isVerified = user?.emailVerified ?? false;
       });
@@ -44,7 +47,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       );
     } finally {
       setState(() {
-        isLoading = false; // loader stop
+        isLoading = false;
       });
     }
   }
@@ -78,7 +81,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           child: Center(
             child:
                 isLoading
-                    ? const CircularProgressIndicator() // 👈 loader
+                    ? const CircularProgressIndicator()
                     : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -124,7 +127,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                 ),
                                 const SizedBox(height: 20),
                                 Text(
-                                  "Please verify your email before continuing.",
+                                  "Please verify ${widget.email} before continuing.",
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: blackColor,
@@ -143,6 +146,21 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                                   child: const Text(
                                     "Resend verification email",
                                     style: TextStyle(color: Colors.blue),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                // 🔹 New Exit Button
+                                TextButton(
+                                  onPressed: () async {
+                                    await FirebaseAuth.instance.signOut();
+                                    Get.offAll(() => SignUpScreen());
+                                  },
+                                  child: const Text(
+                                    "Wrong email? Go back to Register",
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ],

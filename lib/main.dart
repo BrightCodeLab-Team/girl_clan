@@ -2,11 +2,12 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/locator.dart';
-import 'package:girl_clan/ui/add_event/create_events.dart/create_event_view_model.dart';
+import 'package:girl_clan/ui/Event/create_events.dart/create_event_view_model.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_view_model.dart';
 import 'package:girl_clan/ui/auth/splash_screen.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart';
@@ -19,6 +20,8 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await FlutterBranchSdk.init(enableLogging: true);
+
   await setupLocator();
   runApp(const MyApp());
 }
@@ -50,10 +53,7 @@ class MyApp extends StatelessWidget {
             defaultTransition: Transition.leftToRight,
             theme: ThemeData(
               checkboxTheme: CheckboxThemeData(
-                side: BorderSide(
-                  color: Colors.white,
-                  width: 2,
-                ), // border color & thickness
+                side: BorderSide(color: Colors.white, width: 2),
                 checkColor: MaterialStateProperty.all(whiteColor),
               ),
               appBarTheme: AppBarTheme(

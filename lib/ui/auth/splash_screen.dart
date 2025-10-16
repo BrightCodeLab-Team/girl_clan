@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/app_assets.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/ui/auth/sign_up/email_verification_screen.dart';
 import 'package:girl_clan/ui/auth/welcome_screen.dart';
 import 'package:girl_clan/ui/root_screen/root_screen.dart';
 
@@ -18,15 +19,24 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 5), () {
-      final user = FirebaseAuth.instance.currentUser;
+    Timer(const Duration(seconds: 5), checkUser);
+  }
 
-      if (user != null) {
+  void checkUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      await user.reload(); // refresh user info
+
+      if (user.emailVerified) {
         Get.offAll(() => RootScreen());
       } else {
-        Get.offAll(() => WelcomeScreen());
+        // agar email verify nahi hui, to user ki email pass karo
+        Get.offAll(() => EmailVerificationScreen(email: user.email ?? ''));
       }
-    });
+    } else {
+      Get.offAll(() => WelcomeScreen());
+    }
   }
 
   @override

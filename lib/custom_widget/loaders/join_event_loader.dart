@@ -7,7 +7,7 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/strings.dart';
 import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/custom_widget/error/sucess_join_event.dart';
-import 'package:girl_clan/ui/add_event/error_screen.dart';
+import 'package:girl_clan/ui/Event/error_screen.dart';
 
 class JoiningEventLoaderScreen extends StatefulWidget {
   // final Future<void> Function() onClose;

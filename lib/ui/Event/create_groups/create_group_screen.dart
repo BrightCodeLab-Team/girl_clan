@@ -10,8 +10,8 @@ import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
-import 'package:girl_clan/ui/add_event/create_groups/creats_view_model.dart';
-import 'package:girl_clan/ui/add_event/location_picker_screen.dart';
+import 'package:girl_clan/ui/Event/create_groups/creats_view_model.dart';
+import 'package:girl_clan/ui/Event/location_picker_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
@@ -101,40 +101,39 @@ class CreateGroupScreen extends StatelessWidget {
                       ),
                       10.verticalSpace,
 
-                      /// Location
-                      Text(
-                        'Location',
-                        style: style12.copyWith(
-                          color: blackColor.withOpacity(0.5),
-                        ),
-                      ),
-                      5.verticalSpace,
-                      TextFormField(
-                        controller: viewModel.locationController,
-                        readOnly: true, // ✅ user type na kare
-                        onTap: () async {
-                          final selectedLocation = await Get.to(
-                            () => LocationPickerScreen(),
-                          );
+                      // /// Location
+                      // Text(
+                      //   'Location',
+                      //   style: style12.copyWith(
+                      //     color: blackColor.withOpacity(0.5),
+                      //   ),
+                      // ),
+                      // 5.verticalSpace,
+                      // TextFormField(
+                      //   controller: viewModel.locationController,
+                      //   readOnly: true, // ✅ user type na kare
+                      //   onTap: () async {
+                      //     final selectedLocation = await Get.to(
+                      //       () => LocationPickerScreen(),
+                      //     );
 
-                          if (selectedLocation != null) {
-                            viewModel.locationController.text =
-                                selectedLocation['address'];
-                            viewModel.groupsModel.location =
-                                selectedLocation['address'];
-                            viewModel.groupsModel.locationLat =
-                                selectedLocation['lat'];
-                            viewModel.groupsModel.locationLng =
-                                selectedLocation['lng'];
-                          }
-                        },
-                        decoration: EditProfileFieldDecoration.copyWith(
-                          hintText: 'Select location',
-                          suffixIcon: Icon(Icons.location_on_outlined),
-                        ),
-                        validator: (val) => val!.isEmpty ? 'Required' : null,
-                      ),
-
+                      //     if (selectedLocation != null) {
+                      //       viewModel.locationController.text =
+                      //           selectedLocation['address'];
+                      //       viewModel.groupsModel.location =
+                      //           selectedLocation['address'];
+                      //       viewModel.groupsModel.locationLat =
+                      //           selectedLocation['lat'];
+                      //       viewModel.groupsModel.locationLng =
+                      //           selectedLocation['lng'];
+                      //     }
+                      //   },
+                      //   decoration: EditProfileFieldDecoration.copyWith(
+                      //     hintText: 'Select location',
+                      //     suffixIcon: Icon(Icons.location_on_outlined),
+                      //   ),
+                      //   validator: (val) => val!.isEmpty ? 'Required' : null,
+                      // ),
                       10.verticalSpace,
 
                       /// Description

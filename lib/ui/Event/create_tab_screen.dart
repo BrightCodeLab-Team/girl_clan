@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
-import 'package:girl_clan/ui/add_event/create_events.dart/create_event_screen.dart';
-import 'package:girl_clan/ui/add_event/create_groups/create_group_screen.dart';
+import 'package:girl_clan/ui/Event/create_events.dart/create_event_screen.dart';
+import 'package:girl_clan/ui/Event/create_groups/create_group_screen.dart';
 
 class CreateTabScreen extends StatefulWidget {
   const CreateTabScreen({super.key});

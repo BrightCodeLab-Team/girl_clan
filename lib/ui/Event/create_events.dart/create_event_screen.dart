@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use, body_might_complete_normally_nullable, unused_local_variable
+// ignore_for_file: deprecated_member_use, body_might_complete_normally_nullable, unused_local_variable, sort_child_properties_last
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,9 +11,10 @@ import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
+import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
-import 'package:girl_clan/ui/add_event/create_events.dart/create_event_view_model.dart';
-import 'package:girl_clan/ui/add_event/location_picker_screen.dart';
+import 'package:girl_clan/ui/Event/create_events.dart/create_event_view_model.dart';
+import 'package:girl_clan/ui/Event/location_picker_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 

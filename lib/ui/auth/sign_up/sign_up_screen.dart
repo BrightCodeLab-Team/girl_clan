@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_string_interpolations
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/route_manager.dart';
@@ -251,8 +253,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           if (success) {
                                             // ✅ pehle email verification screen pe le jao
                                             Get.to(
-                                              () =>
-                                                  const EmailVerificationScreen(),
+                                              () => EmailVerificationScreen(
+                                                email:
+                                                    "${model.emailController.text}",
+                                              ),
                                             );
                                           }
                                         } else if (!_isChecked) {

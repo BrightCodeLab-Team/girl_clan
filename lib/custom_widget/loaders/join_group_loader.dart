@@ -7,7 +7,7 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/strings.dart';
 import 'package:girl_clan/core/model/groups_model.dart';
 import 'package:girl_clan/custom_widget/error/sucess_join_group.dart';
-import 'package:girl_clan/ui/add_event/error_screen.dart';
+import 'package:girl_clan/ui/Event/error_screen.dart';
 
 class JoinGroupLoader extends StatefulWidget {
   // final Future<void> Function() onClose;

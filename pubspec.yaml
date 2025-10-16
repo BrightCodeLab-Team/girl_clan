@@ -56,6 +56,10 @@ dependencies:
   locator: ^0.0.0-dev.2
   font_awesome_flutter: ^10.7.0
   device_preview: ^1.2.0
+  flutter_branch_sdk:
+  app_links: ^6.4.1
+
+  
 
 dev_dependencies:
   flutter_test:

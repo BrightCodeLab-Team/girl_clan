@@ -14,7 +14,7 @@ import 'package:girl_clan/custom_widget/home_top_pick_events.dart';
 import 'package:girl_clan/custom_widget/home_up_coming_events.dart';
 import 'package:girl_clan/custom_widget/shimmer/all_events_shimmer.dart';
 import 'package:girl_clan/custom_widget/shimmer/up_coming_events.dart';
-import 'package:girl_clan/ui/add_event/create_tab_screen.dart';
+import 'package:girl_clan/ui/Event/create_tab_screen.dart';
 import 'package:girl_clan/ui/home/events_details_screen.dart';
 import 'package:girl_clan/ui/home/group_details_screen.dart';
 import 'package:girl_clan/ui/home/group_screen.dart/group_screen.dart';

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/constants/strings.dart';
-import 'package:girl_clan/ui/add_event/sucess_screen.dart';
+import 'package:girl_clan/ui/Event/sucess_screen.dart';
 
 class AddEventLoader extends StatefulWidget {
   final Future Function() addEventCall;

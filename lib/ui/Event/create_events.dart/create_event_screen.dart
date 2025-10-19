@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use, body_might_complete_normally_nullable, unused_local_variable, sort_child_properties_last
+// ignore_for_file: deprecated_member_use, body_might_complete_normally_nullable, unused_local_variable, sort_child_properties_last, curly_braces_in_flow_control_structures, unused_field
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,8 +11,9 @@ import 'package:get/get.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
-import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
+import 'package:girl_clan/custom_widget/drop_down/custom_menu_dropdown.dart';
+import 'package:girl_clan/custom_widget/drop_down/custom_textField_dropdown.dart';
 import 'package:girl_clan/ui/Event/create_events.dart/create_event_view_model.dart';
 import 'package:girl_clan/ui/Event/location_picker_screen.dart';
 import 'package:image_picker/image_picker.dart';
@@ -80,15 +81,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final currentUser = FirebaseAuth.instance.currentUser;
 
   final TextEditingController _dateController = TextEditingController();
-  String? _selectedCategory;
-  final List<String> _categories = [
-    'Concert',
-    'Hiking',
-    'Party',
-    'Workshop',
-    'Sports',
-    'Art Exhibition',
-  ];
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -280,39 +272,59 @@ class _AddEventScreenState extends State<AddEventScreen> {
                         ),
                       ),
                       5.verticalSpace,
-                      DropdownButtonFormField<String>(
-                        value: _selectedCategory,
-                        dropdownColor: whiteColor,
-                        borderRadius: BorderRadius.circular(16),
-                        isExpanded: true, // 👈 taake dropdown full width le
-                        decoration: EditProfileFieldDecoration.copyWith(
-                          hintText: "Select Category",
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 14,
-                          ),
-                          suffixIcon: Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Colors.grey.shade800,
-                          ), // 👈 ye bilkul end me aayega
-                        ),
-                        icon: SizedBox(),
-                        items:
-                            _categories.map((e) {
-                              return DropdownMenuItem<String>(
-                                value: e,
-                                child: Text(e),
-                              );
-                            }).toList(),
-                        onChanged: (val) {
-                          setState(() => _selectedCategory = val);
-                          model.eventModel.category = val;
-                        },
-                        validator:
-                            (val) =>
-                                val == null ? "Category is required" : null,
+                      // DropdownButtonFormField<String>(
+                      //   value: _selectedCategory,
+                      //   dropdownColor: whiteColor,
+                      //   borderRadius: BorderRadius.circular(16),
+                      //   isExpanded: true, // 👈 taake dropdown full width le
+                      //   decoration: EditProfileFieldDecoration.copyWith(
+                      //     hintText: "Select Category",
+                      //     contentPadding: EdgeInsets.symmetric(
+                      //       horizontal: 12,
+                      //       vertical: 14,
+                      //     ),
+                      //     suffixIcon: Icon(
+                      //       Icons.keyboard_arrow_down,
+                      //       color: Colors.grey.shade800,
+                      //     ), // 👈 ye bilkul end me aayega
+                      //   ),
+                      //   icon: SizedBox(),
+                      //   items:
+                      //       _categories.map((e) {
+                      //         return DropdownMenuItem<String>(
+                      //           value: e,
+                      //           child: Text(e),
+                      //         );
+                      //       }).toList(),
+                      //   onChanged: (val) {
+                      //     setState(() => _selectedCategory = val);
+                      //     model.eventModel.category = val;
+                      //   },
+                      //   validator:
+                      //       (val) =>
+                      //           val == null ? "Category is required" : null,
+                      // ),
+                      // 10.verticalSpace,
+                      CustomDropDownTextField(
+                        hasDroppedDown: model.dropDown,
+                        onTap: model.toggleDropDown,
+                        text: model.dropDownText,
+                        borderColor:
+                            model.dropDown4Error ? primaryColor : filledColor,
                       ),
+
                       10.verticalSpace,
+
+                      DropDownMenu(
+                        isDroppedDown: model.dropDown,
+                        height: 180,
+                        options: model.stateOptions,
+                        onItemTap: (val) {
+                          model.setDropDownText(val);
+                          model.toggleDropDown();
+                          model.selectCategory(val);
+                        },
+                      ),
 
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
@@ -464,7 +476,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                 if (uploadedUrl != null)
                                   model.eventModel.imageUrl = uploadedUrl;
 
-                                model.eventModel.category = _selectedCategory!;
+                                model.eventModel.category =
+                                    model.selectedCategory!;
                                 model.eventModel.date = _dateController.text;
                                 model.eventModel.hostUserId = currentUser?.uid;
 
@@ -487,7 +500,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                 setState(() {
                                   _pickedImageFile = null;
                                   _webImage = null;
-                                  _selectedCategory = null;
+                                  model.selectedCategory = null;
                                   model.selectedRecurrence = null;
                                 });
                               }

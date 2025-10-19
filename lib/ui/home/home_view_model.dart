@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_null_comparison
+// ignore_for_file: unnecessary_null_comparison, strict_top_level_inference
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,15 +13,30 @@ class HomeViewModel extends BaseViewModel {
   EventModel eventModel = EventModel();
   final db = locator<DatabaseServices>();
   final currentUser = FirebaseAuth.instance;
-
   final List<Map<String, dynamic>> tabs = [
     {'icon': Icons.apps, 'text': 'All'},
-    {'icon': Icons.hiking, 'text': 'Hiking'},
+    {'icon': Icons.palette, 'text': 'Art & Cultural'},
+    {'icon': Icons.beach_access, 'text': 'Beach Day'},
+    {'icon': Icons.book, 'text': 'Book Club'},
+    {'icon': Icons.business_center, 'text': 'Career & Business'},
+    {'icon': Icons.campaign, 'text': 'Camping'},
     {'icon': Icons.music_note, 'text': 'Concert'},
-    {'icon': Icons.music_note, 'text': 'Party'},
-    {'icon': Icons.music_note, 'text': 'Workshop'},
-    {'icon': Icons.music_note, 'text': 'Sports'},
-    {'icon': Icons.music_note, 'text': 'Art Exhibitions'},
+    {'icon': Icons.local_cafe, 'text': 'Coffee & Chats'},
+    {'icon': Icons.dinner_dining, 'text': 'Dinner & Drinks'},
+    {'icon': Icons.directions_run, 'text': 'Run'},
+    {'icon': Icons.festival, 'text': 'Festival'},
+    {'icon': Icons.restaurant, 'text': 'Food & Drinks'},
+    {'icon': Icons.sports_esports, 'text': 'Games'},
+    {'icon': Icons.health_and_safety, 'text': 'Health & Wellbeing'},
+    {'icon': Icons.hiking, 'text': 'Hiking'},
+    {'icon': Icons.favorite, 'text': 'Hobbies & Passions'},
+    {'icon': Icons.child_friendly, 'text': 'Mommy & Baby'},
+    {'icon': Icons.directions_car, 'text': 'Road Trip'},
+    {'icon': Icons.sports_soccer, 'text': 'Sport'},
+    {'icon': Icons.travel_explore, 'text': 'Travel'},
+    {'icon': Icons.water, 'text': 'Water sports'},
+    {'icon': Icons.work, 'text': 'Workshop'},
+    {'icon': Icons.music_note, 'text': 'Dance'},
   ];
 
   ///

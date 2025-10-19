@@ -30,6 +30,55 @@ class CreateGroupViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  /// Opciones para el dropdown de estados
+  List<String> stateOptions = [
+    "Coffee & Chats",
+    "Dinner & Drinks",
+    "Run",
+    "Water sports",
+    "Book Club",
+    "Games",
+    "Mommy & Baby",
+    "Sport",
+    "Art & Cultural",
+    "Health & Wellbeing",
+    "Career & Business",
+    "Hobbies & Passions",
+    "Dance",
+    'Concert',
+    'Travel',
+    'Festival',
+    'Hiking',
+    'Food & Drinks',
+    'Beach Day',
+    'Road Trip',
+    'Camping',
+    'Workshop',
+  ]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+  bool _dropDown = false;
+  String _dropDownText = '';
+
+  String get dropDownText => _dropDownText;
+
+  bool get dropDown => _dropDown;
+
+  bool dropDown4Error = false;
+  bool dropDown5Error = false;
+
+  String _dropDownText5 = '';
+
+  String get dropDownText5 => _dropDownText5;
+
+  void setDropDownText(String value) {
+    _dropDownText = value;
+    notifyListeners();
+  }
+
+  void toggleDropDown() {
+    _dropDown = !_dropDown;
+    notifyListeners();
+  }
+
   Future<void> pickImage() async {
     final picker = ImagePicker();
     final XFile? picked = await picker.pickImage(source: ImageSource.gallery);

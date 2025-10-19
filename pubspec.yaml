@@ -46,7 +46,7 @@ dependencies:
 
   # Media & Sharing
   image_picker: ^1.1.2
-  share_plus: ^10.1.0
+  share_plus: ^12.0.0
 
   # Utilities
   modal_progress_hud_nsn: ^0.5.1

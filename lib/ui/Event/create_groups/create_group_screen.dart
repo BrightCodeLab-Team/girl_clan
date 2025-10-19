@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, use_key_in_widget_constructors
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -10,8 +10,9 @@ import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
+import 'package:girl_clan/custom_widget/drop_down/custom_menu_dropdown.dart';
+import 'package:girl_clan/custom_widget/drop_down/custom_textField_dropdown.dart';
 import 'package:girl_clan/ui/Event/create_groups/creats_view_model.dart';
-import 'package:girl_clan/ui/Event/location_picker_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
@@ -52,6 +53,8 @@ class CreateGroupScreen extends StatelessWidget {
                       10.verticalSpace,
 
                       /// Category Dropdown
+                      ///
+                      ///
                       Text(
                         'Category',
                         style: style12.copyWith(
@@ -59,46 +62,69 @@ class CreateGroupScreen extends StatelessWidget {
                         ),
                       ),
                       5.verticalSpace,
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(99.r),
-                          border: Border.all(
-                            color: borderColor.withOpacity(0.4),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 12.w),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              isExpanded: true,
-                              dropdownColor: whiteColor,
-                              value: viewModel.selectedCategory,
-                              hint: Text(
-                                'Select category',
-                                style: style14.copyWith(fontSize: 12),
-                              ),
-                              icon: Icon(
-                                Icons.keyboard_arrow_down,
-                                color: Colors.grey.shade900,
-                              ),
-                              items:
-                                  viewModel.categories.map((val) {
-                                    return DropdownMenuItem(
-                                      value: val,
-                                      child: Text(
-                                        val,
-                                        style: style14.copyWith(fontSize: 14),
-                                      ),
-                                    );
-                                  }).toList(),
-                              onChanged: (val) {
-                                if (val != null) viewModel.setCategory(val);
-                              },
-                            ),
-                          ),
-                        ),
+
+                      CustomDropDownTextField(
+                        hasDroppedDown: viewModel.dropDown,
+                        onTap: viewModel.toggleDropDown,
+                        text: viewModel.dropDownText,
+                        borderColor:
+                            viewModel.dropDown4Error
+                                ? primaryColor
+                                : filledColor,
                       ),
+
+                      10.verticalSpace,
+
+                      DropDownMenu(
+                        isDroppedDown: viewModel.dropDown,
+                        height: 180,
+                        options: viewModel.stateOptions,
+                        onItemTap: (val) {
+                          viewModel.setDropDownText(val);
+                          viewModel.toggleDropDown();
+                          viewModel.setCategory(val);
+                        },
+                      ),
+                      // Container(
+                      //   decoration: BoxDecoration(
+                      //     color: Colors.white,
+                      //     borderRadius: BorderRadius.circular(99.r),
+                      //     border: Border.all(
+                      //       color: borderColor.withOpacity(0.4),
+                      //     ),
+                      //   ),
+                      //   child: Padding(
+                      //     padding: EdgeInsets.symmetric(horizontal: 12.w),
+                      //     child: DropdownButtonHideUnderline(
+                      //       child: DropdownButton<String>(
+                      //         isExpanded: true,
+                      //         dropdownColor: whiteColor,
+                      //         value: viewModel.selectedCategory,
+                      //         hint: Text(
+                      //           'Select category',
+                      //           style: style14.copyWith(fontSize: 12),
+                      //         ),
+                      //         icon: Icon(
+                      //           Icons.keyboard_arrow_down,
+                      //           color: Colors.grey.shade900,
+                      //         ),
+                      //         items:
+                      //             viewModel.categories.map((val) {
+                      //               return DropdownMenuItem(
+                      //                 value: val,
+                      //                 child: Text(
+                      //                   val,
+                      //                   style: style14.copyWith(fontSize: 14),
+                      //                 ),
+                      //               );
+                      //             }).toList(),
+                      //         onChanged: (val) {
+                      //           if (val != null) viewModel.setCategory(val);
+                      //         },
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                       10.verticalSpace,
 
                       // /// Location

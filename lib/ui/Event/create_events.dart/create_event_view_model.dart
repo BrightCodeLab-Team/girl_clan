@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, deprecated_member_use
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use, prefer_final_fields, strict_top_level_inference, avoid_print
 
 import 'dart:io';
 
@@ -18,12 +18,62 @@ class AddEventViewModel extends BaseViewModel {
   final TextEditingController locationController = TextEditingController();
   final TextEditingController dateController = TextEditingController();
 
+  /// Opciones para el dropdown de estados
+  List<String> stateOptions = [
+    "Coffee & Chats",
+    "Dinner & Drinks",
+    "Run",
+    "Water sports",
+    "Book Club",
+    "Games",
+    "Mommy & Baby",
+    "Sport",
+    "Art & Cultural",
+    "Health & Wellbeing",
+    "Career & Business",
+    "Hobbies & Passions",
+    "Dance",
+    'Concert',
+    'Travel',
+    'Festival',
+    'Hiking',
+    'Food & Drinks',
+    'Beach Day',
+    'Road Trip',
+    'Camping',
+    'Workshop',
+  ]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+
   final picker = ImagePicker();
   File? pickedImageFile;
   Uint8List? webImage;
 
   String? selectedCategory;
   TimeOfDay? selectedTime;
+
+  bool _dropDown = false;
+  String _dropDownText = '';
+
+  String get dropDownText => _dropDownText;
+
+  bool get dropDown => _dropDown;
+
+  bool dropDown4Error = false;
+  bool dropDown5Error = false;
+
+  String _dropDownText5 = '';
+
+  String get dropDownText5 => _dropDownText5;
+
+  void setDropDownText(String value) {
+    _dropDownText = value;
+    notifyListeners();
+  }
+
+  void toggleDropDown() {
+    _dropDown = !_dropDown;
+    notifyListeners();
+  }
 
   EventModel eventModel = EventModel();
   final db = locator<DatabaseServices>();

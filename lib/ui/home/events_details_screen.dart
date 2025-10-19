@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/route_manager.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/core/constants/strings.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/model/event_model.dart';
@@ -169,14 +170,42 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                                       bottomRight: Radius.circular(20),
                                       bottomLeft: Radius.circular(20),
                                     ),
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                        "${widget.eventModel!.imageUrl}",
-                                      ),
-                                      fit: BoxFit.cover,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.only(
+                                      bottomRight: Radius.circular(20),
+                                      bottomLeft: Radius.circular(20),
                                     ),
+                                    child:
+                                        widget.eventModel?.imageUrl != null &&
+                                                widget
+                                                    .eventModel!
+                                                    .imageUrl!
+                                                    .isNotEmpty &&
+                                                widget.eventModel!.imageUrl!
+                                                    .startsWith('http')
+                                            ? Image.network(
+                                              widget.eventModel!.imageUrl!,
+                                              fit: BoxFit.cover,
+                                              width: double.infinity,
+                                              height: double.infinity,
+                                              errorBuilder:
+                                                  (
+                                                    context,
+                                                    error,
+                                                    stackTrace,
+                                                  ) => Image.asset(
+                                                    '$staticAssets/SplashScreenImage.png',
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                            )
+                                            : Image.asset(
+                                              '$staticAssets/SplashScreenImage.png',
+                                              fit: BoxFit.cover,
+                                            ),
                                   ),
                                 ),
+
                                 // Back Button
                                 Positioned(
                                   top: 30,

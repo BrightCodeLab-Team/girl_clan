@@ -25,14 +25,11 @@ class _InterestSelectionScreenState extends State<InterestSelectionScreen> {
     "Games",
     "Mommy & Baby",
     "Sport",
-    "Fun",
     "Art & Cultural",
     "Health & Wellbeing",
     "Career & Business",
     "Hobbies & Passions",
     "Dance",
-    "Ideas",
-    'Party',
     'Concert',
     'Travel',
     'Festival',
@@ -42,7 +39,7 @@ class _InterestSelectionScreenState extends State<InterestSelectionScreen> {
     'Road Trip',
     'Camping',
     'Workshop',
-  ];
+  ]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
 
   final List<String> selectedInterests = [];
   String?

@@ -2,6 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- ⚙️ App Configuration -->
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -24,14 +25,40 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 
-	<!-- Launch Screen -->
+	<!-- 📍 Location Permissions -->
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app requires location access to work properly in both foreground and background.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app requires location access to work properly in the background.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app requires location access to provide location-based features.</string>
+
+	<!-- 🔔 Notification Permissions -->
+	<key>NSUserNotificationUsageDescription</key>
+	<string>This app needs permission to send you notifications.</string>
+
+	<!-- 📲 Firebase Notifications (for FCM) -->
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
+
+	<!-- ⚙️ Enable background mode for remote notifications -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+
+	<!-- 🧭 Google Maps Key (set in AppDelegate.swift) -->
+	<key>GMSApiKey</key>
+	<string>YOUR_GOOGLE_MAPS_API_KEY</string>
+
+	<!-- 🖼️ Launch Screen and Orientation -->
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-
-	<!-- Orientation -->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -46,18 +73,8 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 
-	<!-- Location Permissions -->
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app requires location access to provide location-based features.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app requires location access to work properly in the background.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app requires location access to work properly in both foreground and background.</string>
-
-	<!-- Others -->
+	<!-- 🏎️ Optional: Improve animation smoothness on iPhones -->
 	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 </dict>
 </plist>

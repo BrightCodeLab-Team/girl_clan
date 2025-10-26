@@ -6,6 +6,7 @@ import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
+import 'package:girl_clan/core/services/notification_services.dart';
 import 'package:girl_clan/locator.dart';
 import 'package:girl_clan/ui/Event/create_events.dart/create_event_view_model.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_view_model.dart';
@@ -21,7 +22,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await FlutterBranchSdk.init(enableLogging: true);
-
+  await NotificationServices().initNotification();
   await setupLocator();
   runApp(const MyApp());
 }

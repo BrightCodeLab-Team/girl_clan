@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use, body_might_complete_normally_nullable, unused_local_variable, sort_child_properties_last, curly_braces_in_flow_control_structures, unused_field
+// ignore_for_file: deprecated_member_use, body_might_complete_normally_nullable, unused_local_variable, sort_child_properties_last, curly_braces_in_flow_control_structures, unused_field, avoid_print
 
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';

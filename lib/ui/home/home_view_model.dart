@@ -69,6 +69,28 @@ class HomeViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  // Future<void> sendJoinNotification({
+  //   required String eventId,
+  //   required String eventName,
+  //   required String hostUserId,
+  // }) async {
+  //   try {
+  //     print('🔔 Sending join notification...');
+
+  //     // Example: You can use your OneSignal or Firebase Cloud Messaging service here
+  //     await NotificationServices.sendNotificationToUser(
+  //       receiverId: hostUserId,
+  //       title: 'New Event Join',
+  //       body: 'Someone just joined your event "$eventName"!',
+  //       data: {'type': 'event_join', 'eventId': eventId},
+  //     );
+
+  //     print('✅ Notification sent successfully.');
+  //   } catch (e) {
+  //     print('❌ Error sending notification: $e');
+  //   }
+  // }
+
   ///
   ///. all current user events
   ///

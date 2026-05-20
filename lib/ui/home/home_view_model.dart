@@ -1,0 +1,422 @@
+// ignore_for_file: unnecessary_null_comparison, strict_top_level_inference
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:girl_clan/core/enums/view_state_model.dart';
+import 'package:girl_clan/core/model/event_model.dart';
+import 'package:girl_clan/core/model/groups_model.dart';
+import 'package:girl_clan/core/others/base_view_model.dart';
+import 'package:girl_clan/core/services/data_base_services.dart';
+import 'package:girl_clan/core/utils/date_parser.dart';
+import 'package:girl_clan/locator.dart';
+
+class HomeViewModel extends BaseViewModel {
+  EventModel eventModel = EventModel();
+  final db = locator<DatabaseServices>();
+  final currentUser = FirebaseAuth.instance;
+  final List<Map<String, dynamic>> tabs = [
+    {'icon': Icons.apps, 'text': 'All'},
+    {'icon': Icons.palette, 'text': 'Art & Cultural'},
+    {'icon': Icons.beach_access, 'text': 'Beach Day'},
+    {'icon': Icons.book, 'text': 'Book Club'},
+    {'icon': Icons.business_center, 'text': 'Career & Business'},
+    {'icon': Icons.campaign, 'text': 'Camping'},
+    {'icon': Icons.music_note, 'text': 'Concert'},
+    {'icon': Icons.local_cafe, 'text': 'Coffee & Chats'},
+    {'icon': Icons.dinner_dining, 'text': 'Dinner & Drinks'},
+    {'icon': Icons.directions_run, 'text': 'Run'},
+    {'icon': Icons.festival, 'text': 'Festival'},
+    {'icon': Icons.restaurant, 'text': 'Food & Drinks'},
+    {'icon': Icons.sports_esports, 'text': 'Games'},
+    {'icon': Icons.health_and_safety, 'text': 'Health & Wellbeing'},
+    {'icon': Icons.hiking, 'text': 'Hiking'},
+    {'icon': Icons.favorite, 'text': 'Hobbies & Passions'},
+    {'icon': Icons.child_friendly, 'text': 'Mommy & Baby'},
+    {'icon': Icons.directions_car, 'text': 'Road Trip'},
+    {'icon': Icons.sports_soccer, 'text': 'Sport'},
+    {'icon': Icons.travel_explore, 'text': 'Travel'},
+    {'icon': Icons.water, 'text': 'Water sports'},
+    {'icon': Icons.work, 'text': 'Workshop'},
+    {'icon': Icons.music_note, 'text': 'Dance'},
+  ];
+
+  ///
+  ///  Up Coming Events
+  ///
+  List<EventModel> upcomingEventsList = [];
+  List<EventModel> allEventsList = [];
+  List<EventModel> currentUserEventsList = [];
+
+  List<GroupsModel> groupsList = [];
+
+  ///
+  /// Constructor if not use then no data fetching
+  ///
+  HomeViewModel() {
+    upComingEvents();
+    getAllEvent(tabs[selectedTabIndex]['text']); // Pass "All"
+    getCurrentUserEvents();
+    groupsData();
+  }
+
+  ///
+  ///. refresh all events to get latest data
+  ///
+  Future<void> refreshAllEvents() async {
+    await upComingEvents();
+    await getAllEvent("$selectedTabIndex");
+    await getCurrentUserEvents();
+    await groupsData();
+    notifyListeners();
+  }
+
+  // Future<void> sendJoinNotification({
+  //   required String eventId,
+  //   required String eventName,
+  //   required String hostUserId,
+  // }) async {
+  //   try {
+  //     print('🔔 Sending join notification...');
+
+  //     // Example: You can use your OneSignal or Firebase Cloud Messaging service here
+  //     await NotificationServices.sendNotificationToUser(
+  //       receiverId: hostUserId,
+  //       title: 'New Event Join',
+  //       body: 'Someone just joined your event "$eventName"!',
+  //       data: {'type': 'event_join', 'eventId': eventId},
+  //     );
+
+  //     print('✅ Notification sent successfully.');
+  //   } catch (e) {
+  //     print('❌ Error sending notification: $e');
+  //   }
+  // }
+
+  ///
+  ///. all current user events
+  ///
+  getCurrentUserEvents() async {
+    setState(ViewState.busy);
+    try {
+      if (currentUser != null) {
+        currentUserEventsList = await db.getCurrentUserEvents(
+          currentUser.currentUser!.uid,
+        ); // Pass UID only
+        debugPrint(
+          'Fetched ${currentUserEventsList.length} current user events',
+        );
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error fetching current user events: $e');
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  Future<void> deleteGroup(String groupId) async {
+    setState(ViewState.busy);
+    try {
+      // First verify the current user is the host of this group
+      final group = await db.getGroupById(groupId);
+      if (group?.hostUserId == currentUser.currentUser?.uid) {
+        await db.deleteGroup(groupId);
+        await refreshAllData(); // Refresh the groups list
+        debugPrint('Group $groupId deleted successfully');
+      } else {
+        debugPrint('User is not the host of this group');
+        throw Exception('Only the group host can delete this group');
+      }
+    } catch (e) {
+      debugPrint('Error deleting group: $e');
+      rethrow; // Re-throw to show error in UI
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  Future<void> refreshAllData() async {
+    await upComingEvents();
+    await getAllEvent(tabs[selectedTabIndex]['text']);
+    await getCurrentUserEvents();
+    await groupsData();
+    notifyListeners();
+  }
+
+  ///
+  /// let debug first fetch all events from the database then classify them
+  ///
+
+  Future<void> upComingEvents() async {
+    setState(ViewState.busy);
+    try {
+      upcomingEventsList = await db.getUpcomingEvents();
+
+      List<EventModel> processedEvents = [];
+
+      for (var event in upcomingEventsList) {
+        if (event.recurrence == "Weekly" || event.recurrence == "Monthly") {
+          final baseDate = parseFlexibleDate(event.date);
+          if (baseDate == null) {
+            debugPrint('Skipping recurring event with invalid date: ${event.date}');
+            continue;
+          }
+
+          for (int i = 1; i <= 3; i++) {
+            DateTime nextDate;
+            if (event.recurrence == "Weekly") {
+              nextDate = baseDate.add(Duration(days: 7 * i));
+            } else {
+              nextDate = DateTime(
+                baseDate.year,
+                baseDate.month + i,
+                baseDate.day,
+              );
+            }
+
+            EventModel newEvent = EventModel(
+              id: "${event.id}_$i",
+              eventName: event.eventName,
+              date: nextDate.toIso8601String(),
+              startTime: event.startTime,
+              location: event.location,
+              category: event.category,
+              imageUrl: event.imageUrl,
+              hostUserId: event.hostUserId,
+              recurrence: event.recurrence,
+            );
+
+            processedEvents.add(newEvent);
+          }
+        }
+      }
+
+      // Add recurring copies in the main list
+      upcomingEventsList.addAll(processedEvents);
+
+      debugPrint('Successfully fetched ${upcomingEventsList.length} events');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error in init: $e');
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  ///
+  ///.  get all events from database
+  ///
+  Future<void> getAllEvent(String? category) async {
+    setState(ViewState.busy);
+    try {
+      allEventsList = await db.getAllEventsByCategory("$category");
+      debugPrint('Successfully fetched ${allEventsList.length} events');
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error fetching all events: $e');
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  ///
+  ///     tabs
+  ///
+  int selectedTabIndex = 0;
+  selectedTabFunction(int index) {
+    selectedTabIndex = index;
+
+    final selectedCategory = tabs[index]['text'];
+
+    getAllEvent(selectedCategory); // fetch events by category
+
+    notifyListeners();
+  }
+
+  ////
+  /// JOIN EVENTS AND LEAVE EVENTS
+  ///
+  Future<void> joinEvent(String eventId) async {
+    setState(ViewState.busy);
+    try {
+      final isAlreadyJoined = await db.isUserJoined(
+        eventId,
+        currentUser.currentUser!.uid,
+      );
+
+      if (!isAlreadyJoined) {
+        await db.joinEvent(eventId, currentUser.currentUser!.uid);
+        await refreshAllEvents(); // To refresh local lists
+      }
+    } catch (e) {
+      debugPrint("Error joining event: $e");
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  Future<void> endEvent(String eventId) async {
+    setState(ViewState.busy);
+    try {
+      // First verify the current user is the host of this event
+      final event = await db.getEventById(eventId);
+      if (event?.hostUserId == currentUser.currentUser?.uid) {
+        await db.endEvent(eventId);
+        await refreshAllEvents(); // Refresh the event lists
+        debugPrint('Event $eventId ended successfully');
+      } else {
+        debugPrint('User is not the host of this event');
+        throw Exception('Only the event host can end this event');
+      }
+    } catch (e) {
+      debugPrint('Error ending event: $e');
+      rethrow; // Re-throw to show error in UI
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  Future<void> leaveEvent(String eventId) async {
+    setState(ViewState.busy);
+    try {
+      await db.leaveEvent(eventId, currentUser.currentUser!.uid);
+      await refreshAllEvents();
+    } catch (e) {
+      debugPrint("Error leaving event: $e");
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  /// Get seat data (capacity & joined) from DatabaseServices
+  Future<Map<String, int>> getEventSeatData(String eventId) async {
+    try {
+      return await db.getEventSeatData(eventId);
+    } catch (e) {
+      debugPrint('Error getting event seat data: $e');
+      return {'capacity': 0, 'joined': 0};
+    }
+  }
+
+  Future<void> groupsData() async {
+    setState(ViewState.busy);
+    try {
+      groupsList = await db.getGroupsData();
+      if (groupsList.isNotEmpty) {
+        debugPrint(
+          "Groups data fetched successfully: ${groupsList.length} items",
+        );
+      } else {
+        debugPrint("No group data found.");
+      }
+    } catch (e) {
+      debugPrint("Error in groupsData(): $e");
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  /// Update the seat count in Firestore via DatabaseServices
+  Future<void> updateSeatCount(String eventId, int newCount) async {
+    try {
+      await db.updateSeatCount(eventId, newCount);
+    } catch (e) {
+      debugPrint('Error updating seat count: $e');
+    }
+  }
+
+  Future<bool> hasUserJoined(String eventId) async {
+    try {
+      return await db.isUserJoined(eventId, currentUser.currentUser!.uid);
+    } catch (e) {
+      debugPrint("Error checking joined status: $e");
+      return false;
+    }
+  }
+
+  Future<bool> hasUserJoinedGroup(String groupId) async {
+    try {
+      return await db.isUserJoinedGroup(groupId, currentUser.currentUser!.uid);
+    } catch (e) {
+      debugPrint("Error checking joined group status: $e");
+      return false;
+    }
+  }
+
+  Future<void> joinGroup(String groupId) async {
+    setState(ViewState.busy);
+    try {
+      final isAlreadyJoined = await db.isUserJoinedGroup(
+        groupId,
+        currentUser.currentUser!.uid,
+      );
+
+      if (!isAlreadyJoined) {
+        await db.joinGroup(groupId);
+        await refreshAllEvents();
+      }
+    } catch (e) {
+      debugPrint("Error joining group: $e");
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  Future<void> leaveGroup(String groupId) async {
+    setState(ViewState.busy);
+    try {
+      await db.leaveGroup(groupId);
+      await groupsData();
+    } catch (e) {
+      debugPrint("Error leaving group: $e");
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
+  // Call this once when you load data (from API / Firebase)
+  void loadEvents(List<EventModel> events) {
+    allEventsList = events;
+    upcomingEventsList = List.from(allEventsList);
+    notifyListeners();
+  }
+
+  void searchEvents(String query) {
+    if (query.isEmpty) {
+      upcomingEventsList = List.from(allEventsList);
+    } else {
+      final lowerQuery = query.toLowerCase();
+      upcomingEventsList =
+          allEventsList.where((event) {
+            return (event.eventName?.toLowerCase().contains(lowerQuery) ??
+                    false) ||
+                (event.category?.toLowerCase().contains(lowerQuery) ?? false) ||
+                (event.location?.toLowerCase().contains(lowerQuery) ?? false);
+          }).toList();
+    }
+    notifyListeners();
+  }
+
+  void applyFilter({String? category, String? date, String? location}) {
+    upcomingEventsList =
+        allEventsList.where((event) {
+          final matchCategory = category == null || event.category == category;
+          final matchDate = date == null || event.date == date;
+          final matchLocation =
+              location == null || event.location!.contains(location);
+          return matchCategory && matchDate && matchLocation;
+        }).toList();
+    notifyListeners();
+  }
+
+  void resetFilters() {
+    upcomingEventsList = List.from(allEventsList);
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    resetFilters();
+    super.dispose();
+  }
+}

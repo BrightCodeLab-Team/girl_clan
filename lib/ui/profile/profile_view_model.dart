@@ -129,6 +129,40 @@ class ProfileViewModel extends BaseViewModel {
     }
   }
 
+  /// Permanently deletes the signed-in account and Firestore profile data.
+  Future<String?> deleteAccount() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return 'You are not signed in.';
+    }
+
+    final uid = user.uid;
+    setState(ViewState.busy);
+    try {
+      try {
+        await FirebaseStorage.instance
+            .ref()
+            .child('profile_images/$uid.jpg')
+            .delete();
+      } catch (_) {}
+
+      await FirebaseFirestore.instance.collection('app-user').doc(uid).delete();
+      await user.delete();
+      clearData();
+      return null;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'requires-recent-login') {
+        return 'Please log out, log in again, then delete your account.';
+      }
+      return e.message ?? 'Could not delete account.';
+    } catch (e) {
+      debugPrint('Delete account failed: $e');
+      return 'Could not delete account. Please try again.';
+    } finally {
+      setState(ViewState.idle);
+    }
+  }
+
   ///
   ///. validate user name
   ///

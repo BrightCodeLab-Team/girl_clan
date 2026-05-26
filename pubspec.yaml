@@ -2,7 +2,7 @@ name: girl_clan
 description: A Flutter project for the Girl Clan app.
 publish_to: 'none'
 
-version: 1.0.0+2
+version: 1.0.0+3
 
 environment:
   sdk: ^3.7.2

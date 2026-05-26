@@ -201,6 +201,9 @@ class ProfileScreen extends StatelessWidget {
                                 buildMenuItem('Logout', () {
                                   _showLogoutDialog(context, profileModel);
                                 }),
+                                buildMenuItem('Delete Account', () {
+                                  _showDeleteAccountDialog(context, profileModel);
+                                }),
                                 15.verticalSpace,
                               ],
                             ),
@@ -258,6 +261,85 @@ const Color containerColor = Color(0xffF7F7F7);
 ///
 ///     bottom sheet
 ///
+void _showDeleteAccountDialog(BuildContext context, ProfileViewModel model) {
+  showDialog(
+    context: context,
+    builder:
+        (_) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.white,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Delete Account', style: style18),
+              const SizedBox(height: 10),
+              Text(
+                'This permanently deletes your account and profile data. This cannot be undone.',
+                style: style12,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Text(
+                    'Delete Account',
+                    style: style14.copyWith(color: whiteColor),
+                  ),
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (_) => const Center(
+                        child: CircularProgressIndicator(color: secondaryColor),
+                      ),
+                    );
+
+                    final error = await model.deleteAccount();
+
+                    if (context.mounted) Navigator.pop(context);
+                    if (!context.mounted) return;
+
+                    if (error != null) {
+                      AppMessenger.show(context, error, isError: true);
+                      return;
+                    }
+
+                    Get.offAll(() => LoginScreen());
+                  },
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Text('Cancel', style: style14.copyWith(color: whiteColor)),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ],
+          ),
+        ),
+  );
+}
+
 void _showLogoutDialog(BuildContext context, ProfileViewModel model) {
   showDialog(
     context: context,

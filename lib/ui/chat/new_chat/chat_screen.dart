@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
+import 'package:get/get.dart';
+import 'package:girl_clan/core/utils/app_messenger.dart';
+import 'package:girl_clan/custom_widget/moderation/report_content_sheet.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart';
 import 'package:girl_clan/ui/chat/new_chat/message_bubble.dart';
 import 'package:provider/provider.dart';
@@ -105,10 +108,42 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.black),
-            onPressed: () {
-              // Handle more options
+          Consumer<ChatViewModel>(
+            builder: (context, model, _) {
+              return PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert, color: Colors.black),
+                onSelected: (value) async {
+                  if (value == 'report') {
+                    final contentId =
+                        widget.isGroupChat
+                            ? (model.groupId ?? widget.chatTitle)
+                            : (model.receiverId ?? '');
+                    showReportContentSheet(
+                      context,
+                      contentType:
+                          widget.isGroupChat ? 'group_chat' : 'message',
+                      contentId: contentId,
+                      reportedUserId:
+                          widget.isGroupChat ? null : model.receiverId,
+                      title:
+                          widget.isGroupChat
+                              ? 'Report Group Chat'
+                              : 'Report User',
+                      blockUserId:
+                          widget.isGroupChat ? null : model.receiverId,
+                      blockUserLabel: widget.chatTitle,
+                      onBlocked: () => Get.back(),
+                    );
+                  }
+                },
+                itemBuilder:
+                    (_) => [
+                      const PopupMenuItem(
+                        value: 'report',
+                        child: Text('Report'),
+                      ),
+                    ],
+              );
             },
           ),
         ],
@@ -179,13 +214,26 @@ class _ChatScreenState extends State<ChatScreen> {
                           onChanged: (text) {
                             model.isTyping = text.trim().isNotEmpty;
                           },
-                          onSubmitted: (value) => model.sendMessage(),
+                          onSubmitted: (value) async {
+                            final err = await model.sendMessage();
+                            if (err != null && context.mounted) {
+                              AppMessenger.show(context, err, isError: true);
+                            }
+                          },
                         ),
                       ),
                     ),
                     10.horizontalSpace,
                     GestureDetector(
-                      onTap: model.isTyping ? model.sendMessage : null,
+                      onTap:
+                          model.isTyping
+                              ? () async {
+                                final err = await model.sendMessage();
+                                if (err != null && context.mounted) {
+                                  AppMessenger.show(context, err, isError: true);
+                                }
+                              }
+                              : null,
                       child: CircleAvatar(
                         radius: 25.r,
                         backgroundColor:

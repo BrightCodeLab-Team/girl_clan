@@ -7,6 +7,9 @@ import 'package:get/get.dart';
 import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/core/model/groups_model.dart';
 import 'package:girl_clan/core/model/user_model.dart';
+import 'package:girl_clan/core/services/moderation_service.dart';
+import 'package:girl_clan/core/utils/content_filter.dart';
+import 'package:girl_clan/locator.dart';
 
 class DatabaseServices {
   final _db = FirebaseFirestore.instance;
@@ -377,6 +380,15 @@ class DatabaseServices {
     required String senderImageUrl, // Add this
   }) async {
     try {
+      if (ContentFilter.containsObjectionableContent(text)) {
+        throw Exception('Message contains language that is not allowed.');
+      }
+
+      final moderation = locator<ModerationService>();
+      if (await moderation.isEitherUserBlocked(receiverId)) {
+        throw Exception('You cannot message this user.');
+      }
+
       final chatId = _getChatId(currentUserId, receiverId);
       final messageRef =
           _firestore
@@ -491,6 +503,9 @@ class DatabaseServices {
         );
 
         if (otherUserId != null) {
+          final moderation = locator<ModerationService>();
+          if (moderation.isUserBlocked(otherUserId)) continue;
+
           final userDoc =
               await FirebaseFirestore.instance
                   .collection('app-user')
@@ -728,6 +743,10 @@ class DatabaseServices {
     required String senderImageUrl,
   }) async {
     try {
+      if (ContentFilter.containsObjectionableContent(text)) {
+        throw Exception('Message contains language that is not allowed.');
+      }
+
       // Create a batch to perform atomic operations
       final batch = FirebaseFirestore.instance.batch();
 

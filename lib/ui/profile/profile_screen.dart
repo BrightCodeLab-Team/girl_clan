@@ -315,6 +315,10 @@ void _showDeleteAccountDialog(BuildContext context, ProfileViewModel model) {
                       return;
                     }
 
+                    AppMessenger.show(
+                      context,
+                      'Your account has been permanently deleted.',
+                    );
                     Get.offAll(() => LoginScreen());
                   },
                 ),

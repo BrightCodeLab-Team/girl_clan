@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:girl_clan/core/model/groups_model.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
+import 'package:girl_clan/core/utils/content_filter.dart';
 
 class CreateGroupViewModel extends BaseViewModel {
   final titleController = TextEditingController();
@@ -126,6 +127,15 @@ class CreateGroupViewModel extends BaseViewModel {
     String hostName,
     String hostImage,
   ) async {
+    for (final field in [
+      titleController.text,
+      descriptionController.text,
+      locationController.text,
+    ]) {
+      final err = ContentFilter.validationError(field);
+      if (err != null) return err;
+    }
+
     setState(ViewState.busy);
 
     try {

@@ -13,7 +13,9 @@ import 'package:girl_clan/custom_widget/custom_button.dart';
 import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:girl_clan/ui/auth/login/login_view_model.dart';
 import 'package:girl_clan/ui/auth/sign_up/sign_up_screen.dart';
+import 'package:girl_clan/ui/auth/terms_and_condition_screen.dart';
 import 'package:girl_clan/ui/password/forget_password_screen.dart';
+import 'package:girl_clan/ui/password/privacy_policy_screen.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
@@ -109,6 +111,88 @@ class LoginScreen extends StatelessWidget {
                             ),
                           ),
                         ),
+                        16.verticalSpace,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Checkbox(
+                              side: BorderSide(color: secondaryColor, width: 2),
+                              value: model.agreeToTerms,
+                              onChanged: (v) => model.setAgreeToTerms(v ?? false),
+                            ),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 12),
+                                child: Wrap(
+                                  children: [
+                                    Text(
+                                      'I agree to the ',
+                                      style: style16.copyWith(
+                                        color: blackColor,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        final agreed = await Get.to(
+                                          () => TermsScreen(
+                                            title: 'Terms of Use & Community Guidelines',
+                                          ),
+                                        );
+                                        if (agreed == true) {
+                                          model.setAgreeToTerms(true);
+                                        }
+                                      },
+                                      child: Text(
+                                        'Terms of Use & Community Guidelines',
+                                        style: style16B.copyWith(
+                                          color: primaryColor,
+                                          fontSize: 13,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      ' and ',
+                                      style: style16.copyWith(
+                                        color: blackColor,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Get.to(() => const PrivacyPolicyScreen());
+                                      },
+                                      child: Text(
+                                        'Privacy Policy',
+                                        style: style16B.copyWith(
+                                          color: primaryColor,
+                                          fontSize: 13,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                    ),
+                                    Text(
+                                      '.',
+                                      style: style16.copyWith(
+                                        color: blackColor,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (model.showTermsError && !model.agreeToTerms)
+                          const Padding(
+                            padding: EdgeInsets.only(left: 8),
+                            child: Text(
+                              'Please accept the Terms of Use to continue',
+                              style: TextStyle(color: Colors.red, fontSize: 12),
+                            ),
+                          ),
                         20.verticalSpace,
 
                         Center(
@@ -118,6 +202,16 @@ class LoginScreen extends StatelessWidget {
                                 AppMessenger.show(
                                   context,
                                   'Please enter your email and password',
+                                  isError: true,
+                                );
+                                return;
+                              }
+
+                              if (!model.agreeToTerms) {
+                                model.setShowTermsError(true);
+                                AppMessenger.show(
+                                  context,
+                                  'Please accept the Terms of Use & Community Guidelines',
                                   isError: true,
                                 );
                                 return;

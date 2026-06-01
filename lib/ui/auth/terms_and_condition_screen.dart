@@ -29,7 +29,7 @@ class TermsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Our community commitment", style: style18B),
-                Text("Terms & Conditions", style: style25B),
+                Text("Terms of Use & Community Guidelines", style: style25B),
                 8.verticalSpace,
                 Text(
                   "Last Updated: April 2026",

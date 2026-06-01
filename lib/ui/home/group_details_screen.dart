@@ -12,6 +12,7 @@ import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/model/groups_model.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
+import 'package:girl_clan/custom_widget/moderation/report_content_sheet.dart';
 import 'package:girl_clan/custom_widget/loaders/join_group_loader.dart';
 import 'package:girl_clan/custom_widget/loaders/leave_event_loader.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_screen.dart';
@@ -194,6 +195,31 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                     icon: Icon(
                                       Icons.arrow_back_ios_new,
                                       size: 30,
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 40,
+                                  right: 68,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      showReportContentSheet(
+                                        context,
+                                        contentType: 'group',
+                                        contentId: widget.groupsModel?.id ?? '',
+                                        reportedUserId:
+                                            widget.groupsModel?.hostUserId,
+                                        title: 'Report Group',
+                                        blockUserId: widget.groupsModel?.hostUserId,
+                                        blockUserLabel:
+                                            widget.groupsModel?.hostName ??
+                                            'Host',
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.flag_outlined,
+                                      size: 26,
                                       color: primaryColor,
                                     ),
                                   ),

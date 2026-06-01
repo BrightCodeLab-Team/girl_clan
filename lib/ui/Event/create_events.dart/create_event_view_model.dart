@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
+import 'package:girl_clan/core/utils/content_filter.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
 import 'package:girl_clan/locator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -164,6 +165,15 @@ class AddEventViewModel extends BaseViewModel {
 
   /// Returns `null` on success, or an error message for the UI.
   Future<String?> addEventToDB(EventModel event, String hostName) async {
+    for (final field in [
+      event.eventName,
+      event.description,
+      event.location,
+    ]) {
+      final err = ContentFilter.validationError(field);
+      if (err != null) return err;
+    }
+
     setState(ViewState.busy);
     try {
       final imageUrl = await uploadImage();

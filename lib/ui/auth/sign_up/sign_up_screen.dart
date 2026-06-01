@@ -267,7 +267,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         onTap: () async {
                                           final agreed = await Get.to(
                                             () => TermsScreen(
-                                              title: "Terms & Conditions",
+                                              title:
+                                                  "Terms of Use & Community Guidelines",
                                             ),
                                           );
                                           if (agreed == true) {
@@ -275,7 +276,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           }
                                         },
                                         child: Text(
-                                          "Terms & Conditions",
+                                          "Terms of Use & Community Guidelines",
                                           style: style16B.copyWith(
                                             color: primaryColor,
                                             fontSize: 13,

@@ -10,6 +10,7 @@ import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
+import 'package:girl_clan/custom_widget/moderation/report_content_sheet.dart';
 import 'package:girl_clan/custom_widget/loaders/join_event_loader.dart';
 import 'package:girl_clan/custom_widget/loaders/leave_event_loader.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_screen.dart';
@@ -229,6 +230,32 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                                     icon: Icon(
                                       Icons.arrow_back_ios_new,
                                       size: 30,
+                                      color: primaryColor,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  top: 40,
+                                  right: 68,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      showReportContentSheet(
+                                        context,
+                                        contentType: 'event',
+                                        contentId: widget.eventModel?.id ?? '',
+                                        reportedUserId:
+                                            widget.eventModel?.hostUserId,
+                                        title: 'Report Event',
+                                        blockUserId:
+                                            widget.eventModel?.hostUserId,
+                                        blockUserLabel:
+                                            widget.eventModel?.hostName ??
+                                            'Host',
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.flag_outlined,
+                                      size: 26,
                                       color: primaryColor,
                                     ),
                                   ),

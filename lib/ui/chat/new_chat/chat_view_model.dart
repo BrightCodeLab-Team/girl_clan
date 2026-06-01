@@ -8,6 +8,8 @@ import 'package:girl_clan/core/model/message_model.dart';
 import 'package:girl_clan/core/model/user_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
+import 'package:girl_clan/core/services/moderation_service.dart';
+import 'package:girl_clan/core/utils/content_filter.dart';
 import 'package:girl_clan/locator.dart';
 import 'package:intl/intl.dart';
 
@@ -85,10 +87,13 @@ class ChatViewModel extends BaseViewModel {
       ) {
         _messages.clear();
         _messages.addAll(
-          snapshot.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            return _parseGroupMessage(data);
-          }),
+          snapshot.docs
+              .map((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                return _parseGroupMessage(data);
+              })
+              .where(_isMessageVisible)
+              .toList(),
         );
         notifyListeners();
       });
@@ -99,14 +104,25 @@ class ChatViewModel extends BaseViewModel {
       ) {
         _messages.clear();
         _messages.addAll(
-          snapshot.docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            return _parseMessage(data);
-          }),
+          snapshot.docs
+              .map((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                return _parseMessage(data);
+              })
+              .where(_isMessageVisible)
+              .toList(),
         );
         notifyListeners();
       });
     }
+  }
+
+  bool _isMessageVisible(MessageModel message) {
+    final moderation = locator<ModerationService>();
+    if (message.isMe) return true;
+    final senderId = message.senderId;
+    if (senderId.isEmpty) return true;
+    return !moderation.isUserBlocked(senderId);
   }
 
   // Update _parseGroupMessage to ensure proper name handling
@@ -152,6 +168,8 @@ class ChatViewModel extends BaseViewModel {
       isLoading = true;
       notifyListeners();
 
+      await locator<ModerationService>().refreshBlockedUsers();
+
       // Fetch all users
       allChatsList = await _db.getAllChatUsers();
 
@@ -191,9 +209,18 @@ class ChatViewModel extends BaseViewModel {
   }
 
   /// Sends a message
-  Future<void> sendMessage() async {
+  Future<String?> sendMessage() async {
     final text = messageController.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty) return null;
+
+    final filterError = ContentFilter.validationError(text);
+    if (filterError != null) return filterError;
+
+    if (receiverId != null) {
+      if (await locator<ModerationService>().isEitherUserBlocked(receiverId!)) {
+        return 'You cannot message this user.';
+      }
+    }
 
     try {
       // Get current user data first
@@ -234,9 +261,10 @@ class ChatViewModel extends BaseViewModel {
           senderImageUrl: currentUserImageUrl,
         );
       }
+      return null;
     } catch (e) {
       debugPrint('Error sending message: $e');
-      // Consider showing error to user
+      return e.toString().replaceFirst('Exception: ', '');
     }
   }
 

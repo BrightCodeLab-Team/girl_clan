@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
@@ -8,7 +9,22 @@ class LoginViewModel extends BaseViewModel {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  bool agreeToTerms = false;
+  bool showTermsError = false;
+  static const String termsLastUpdated = 'April 2026';
+
   bool isPasswordVisible = true;
+
+  void setAgreeToTerms(bool value) {
+    agreeToTerms = value;
+    if (value) showTermsError = false;
+    notifyListeners();
+  }
+
+  void setShowTermsError(bool value) {
+    showTermsError = value;
+    notifyListeners();
+  }
 
   void togglePasswordVisibility() {
     isPasswordVisible = !isPasswordVisible;
@@ -29,6 +45,16 @@ class LoginViewModel extends BaseViewModel {
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
       );
+
+      final uid = auth.currentUser?.uid;
+      if (uid != null && agreeToTerms) {
+        await FirebaseFirestore.instance.collection('app-user').doc(uid).set({
+          'termsAccepted': true,
+          'termsAcceptedAt': FieldValue.serverTimestamp(),
+          'termsLastUpdated': termsLastUpdated,
+        }, SetOptions(merge: true));
+      }
+
       return null;
     } on FirebaseAuthException catch (error) {
       print("Firebase Error Code: ${error.code}");

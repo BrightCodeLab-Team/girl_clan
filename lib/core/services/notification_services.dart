@@ -73,7 +73,7 @@ class NotificationServices {
     print("📦 Initializing local notifications...");
 
     const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/launcher_icon');
 
     const DarwinInitializationSettings iosSettings =
         DarwinInitializationSettings();
@@ -123,7 +123,7 @@ class NotificationServices {
           channelDescription: 'Used for general app notifications',
           importance: Importance.max,
           priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
+          icon: '@mipmap/launcher_icon',
         );
 
     const NotificationDetails notificationDetails = NotificationDetails(

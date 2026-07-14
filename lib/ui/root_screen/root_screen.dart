@@ -4,19 +4,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
+import 'package:girl_clan/core/services/moderation_service.dart';
+import 'package:girl_clan/locator.dart';
 import 'package:girl_clan/ui/root_screen/root_view_model.dart';
 import 'package:provider/provider.dart';
 
-class RootScreen extends StatelessWidget {
+class RootScreen extends StatefulWidget {
   final int? selectedScreen;
+
+  const RootScreen({super.key, this.selectedScreen = 0});
+
+  @override
+  State<RootScreen> createState() => _RootScreenState();
+}
+
+class _RootScreenState extends State<RootScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  RootScreen({super.key, this.selectedScreen = 0});
+  @override
+  void initState() {
+    super.initState();
+    locator<ModerationService>().startRealtimeSync();
+  }
+
+  @override
+  void dispose() {
+    locator<ModerationService>().stopRealtimeSync();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => RootScreenViewModel(selectedScreen: selectedScreen ?? 0),
+      create:
+          (_) => RootScreenViewModel(selectedScreen: widget.selectedScreen ?? 0),
       child: Consumer<RootScreenViewModel>(
         builder:
             (context, model, child) => Scaffold(

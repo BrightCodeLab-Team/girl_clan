@@ -19,9 +19,12 @@ void showReportContentSheet(
   required String contentType,
   required String contentId,
   String? reportedUserId,
+  String? messageId,
+  String? chatId,
   String title = 'Report',
   String? blockUserId,
   String? blockUserLabel,
+  bool hideOnReport = false,
   VoidCallback? onBlocked,
 }) {
   showModalBottomSheet(
@@ -51,12 +54,12 @@ void showReportContentSheet(
                 Text(title, style: style18B),
                 const SizedBox(height: 8),
                 Text(
-                  'Select a reason. Our team reviews all reports.',
+                  'Select a reason. Our moderation team reviews all reports.',
                   style: style12.copyWith(color: Colors.black54),
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: selectedReason,
+                  initialValue: selectedReason,
                   decoration: const InputDecoration(
                     labelText: 'Reason',
                     border: OutlineInputBorder(),
@@ -88,22 +91,64 @@ void showReportContentSheet(
                       backgroundColor: primaryColor,
                     ),
                     onPressed: () async {
-                      final error = await moderation.submitReport(
-                        contentType: contentType,
-                        contentId: contentId,
-                        reason: selectedReason,
-                        reportedUserId: reportedUserId,
-                        details: detailsController.text,
-                      );
+                      final String? error;
+                      if (contentType == 'message' && messageId != null) {
+                        error = await moderation.reportMessage(
+                          messageId: messageId,
+                          reportedUserId: reportedUserId ?? '',
+                          reason: selectedReason,
+                          details: detailsController.text,
+                          chatId: chatId,
+                        );
+                      } else if (contentType == 'user' &&
+                          reportedUserId != null) {
+                        error = await moderation.reportUser(
+                          reportedUserId: reportedUserId,
+                          reason: selectedReason,
+                          details: detailsController.text,
+                        );
+                      } else {
+                        error = await moderation.submitReport(
+                          contentType: contentType,
+                          contentId: contentId,
+                          reason: selectedReason,
+                          reportedUserId: reportedUserId,
+                          details: detailsController.text,
+                          messageId: messageId,
+                          chatId: chatId,
+                          hideKeys:
+                              hideOnReport
+                                  ? [
+                                    if (contentType == 'event' &&
+                                        contentId.isNotEmpty)
+                                      'event_$contentId',
+                                    if (contentType == 'group' &&
+                                        contentId.isNotEmpty)
+                                      'group_$contentId',
+                                    if (messageId != null)
+                                      'message_$messageId',
+                                    if (reportedUserId != null)
+                                      'user_$reportedUserId',
+                                  ]
+                                  : null,
+                        );
+                      }
+
                       if (!context.mounted) return;
                       Navigator.pop(context);
                       if (error != null) {
                         AppMessenger.show(ctx, error, isError: true);
                       } else {
-                        AppMessenger.show(ctx, 'Report submitted. Thank you.');
+                        AppMessenger.show(
+                          ctx,
+                          'Report submitted. Content hidden for you.',
+                        );
                       }
                     },
-                    child: Text('Submit Report', style: style14.copyWith(color: whiteColor)),
+                    child: Text(
+                      'Submit Report',
+                      style: style14.copyWith(color: whiteColor),
+                    ),
                   ),
                 ),
                 if (blockUserId != null && blockUserLabel != null) ...[
@@ -118,7 +163,9 @@ void showReportContentSheet(
                               (dCtx) => AlertDialog(
                                 title: const Text('Block User'),
                                 content: Text(
-                                  'Block $blockUserLabel? You will no longer see their messages or profile in chats.',
+                                  'Block $blockUserLabel? Their content will be '
+                                  'hidden from your feed immediately and our '
+                                  'moderation team will be notified.',
                                 ),
                                 actions: [
                                   TextButton(
@@ -137,13 +184,20 @@ void showReportContentSheet(
                         );
                         if (confirm != true || !context.mounted) return;
 
-                        final error = await moderation.blockUser(blockUserId);
+                        final error = await moderation.blockUser(
+                          blockUserId,
+                          reason: 'User blocked via report',
+                          details: 'Blocked $blockUserLabel',
+                        );
                         if (!context.mounted) return;
                         Navigator.pop(context);
                         if (error != null) {
                           AppMessenger.show(ctx, error, isError: true);
                         } else {
-                          AppMessenger.show(ctx, 'User blocked.');
+                          AppMessenger.show(
+                            ctx,
+                            'User blocked. Content removed from your feed.',
+                          );
                           onBlocked?.call();
                         }
                       },

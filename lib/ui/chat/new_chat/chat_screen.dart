@@ -6,6 +6,8 @@ import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:get/get.dart';
 import 'package:girl_clan/core/utils/app_messenger.dart';
+import 'package:girl_clan/custom_widget/moderation/block_user_dialog.dart';
+import 'package:girl_clan/custom_widget/moderation/message_moderation_menu.dart';
 import 'package:girl_clan/custom_widget/moderation/report_content_sheet.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart';
 import 'package:girl_clan/ui/chat/new_chat/message_bubble.dart';
@@ -114,15 +116,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 icon: const Icon(Icons.more_vert, color: Colors.black),
                 onSelected: (value) async {
                   if (value == 'report') {
-                    final contentId =
-                        widget.isGroupChat
-                            ? (model.groupId ?? widget.chatTitle)
-                            : (model.receiverId ?? '');
                     showReportContentSheet(
                       context,
                       contentType:
-                          widget.isGroupChat ? 'group_chat' : 'message',
-                      contentId: contentId,
+                          widget.isGroupChat ? 'group_chat' : 'user',
+                      contentId:
+                          widget.isGroupChat
+                              ? (model.groupId ?? '')
+                              : (model.receiverId ?? ''),
                       reportedUserId:
                           widget.isGroupChat ? null : model.receiverId,
                       title:
@@ -132,6 +133,15 @@ class _ChatScreenState extends State<ChatScreen> {
                       blockUserId:
                           widget.isGroupChat ? null : model.receiverId,
                       blockUserLabel: widget.chatTitle,
+                      hideOnReport: true,
+                      onBlocked: () => Get.back(),
+                    );
+                  } else if (value == 'block' && model.receiverId != null) {
+                    await confirmAndBlockUser(
+                      context,
+                      userId: model.receiverId!,
+                      userLabel: widget.chatTitle,
+                      details: 'Blocked from direct message chat',
                       onBlocked: () => Get.back(),
                     );
                   }
@@ -142,6 +152,11 @@ class _ChatScreenState extends State<ChatScreen> {
                         value: 'report',
                         child: Text('Report'),
                       ),
+                      if (!widget.isGroupChat)
+                        const PopupMenuItem(
+                          value: 'block',
+                          child: Text('Block User'),
+                        ),
                     ],
               );
             },
@@ -179,10 +194,26 @@ class _ChatScreenState extends State<ChatScreen> {
                   controller: _scrollController,
                   itemCount: model.messages.length,
                   itemBuilder: (context, index) {
+                    final message = model.messages[index];
                     return MessageBubble(
-                      key: ValueKey(model.messages[index].timestamp),
-                      message: model.messages[index],
+                      key: ValueKey(
+                        message.messageId.isNotEmpty
+                            ? message.messageId
+                            : message.timestamp,
+                      ),
+                      message: message,
                       showProfilePic: widget.isGroupChat,
+                      onLongPress:
+                          () => showMessageModerationMenu(
+                            context,
+                            message: message,
+                            isGroupChat: widget.isGroupChat,
+                            chatId: model.chatIdForModeration,
+                            onReply: () => model.replyToMessage(message),
+                            onBlocked: () {
+                              if (!widget.isGroupChat) Get.back();
+                            },
+                          ),
                     );
                   },
                 ),

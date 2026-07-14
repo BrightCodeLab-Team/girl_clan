@@ -10,12 +10,14 @@ import 'package:girl_clan/core/constants/text_style.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/custom_widget/custom_button.dart';
+import 'package:girl_clan/custom_widget/moderation/block_user_dialog.dart';
 import 'package:girl_clan/custom_widget/moderation/report_content_sheet.dart';
 import 'package:girl_clan/custom_widget/loaders/join_event_loader.dart';
 import 'package:girl_clan/custom_widget/loaders/leave_event_loader.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_screen.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_view_model.dart';
 import 'package:girl_clan/ui/home/home_view_model.dart';
+import 'package:girl_clan/custom_widget/open_in_maps_actions.dart';
 import 'package:girl_clan/ui/home/map/event_map_screen.dart';
 import 'package:girl_clan/ui/root_screen/root_screen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -234,32 +236,64 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                                     ),
                                   ),
                                 ),
-                                Positioned(
-                                  top: 40,
-                                  right: 68,
-                                  child: IconButton(
-                                    onPressed: () {
-                                      showReportContentSheet(
-                                        context,
-                                        contentType: 'event',
-                                        contentId: widget.eventModel?.id ?? '',
-                                        reportedUserId:
-                                            widget.eventModel?.hostUserId,
-                                        title: 'Report Event',
-                                        blockUserId:
-                                            widget.eventModel?.hostUserId,
-                                        blockUserLabel:
-                                            widget.eventModel?.hostName ??
-                                            'Host',
-                                      );
-                                    },
-                                    icon: Icon(
-                                      Icons.flag_outlined,
-                                      size: 26,
-                                      color: primaryColor,
+                                if (!isHost &&
+                                    widget.eventModel?.hostUserId != null)
+                                  Positioned(
+                                    top: 40,
+                                    right: 116,
+                                    child: IconButton(
+                                      tooltip: 'Block host',
+                                      onPressed: () {
+                                        confirmAndBlockUser(
+                                          context,
+                                          userId:
+                                              widget.eventModel!.hostUserId!,
+                                          userLabel:
+                                              widget.eventModel?.hostName ??
+                                              'Host',
+                                          details:
+                                              'Blocked from event: ${widget.eventModel?.eventName}',
+                                          onBlocked: () => Get.back(),
+                                        );
+                                      },
+                                      icon: Icon(
+                                        Icons.block,
+                                        size: 26,
+                                        color: primaryColor,
+                                      ),
                                     ),
                                   ),
-                                ),
+                                if (!isHost)
+                                  Positioned(
+                                    top: 40,
+                                    right: 68,
+                                    child: IconButton(
+                                      tooltip: 'Report event',
+                                      onPressed: () {
+                                        showReportContentSheet(
+                                          context,
+                                          contentType: 'event',
+                                          contentId:
+                                              widget.eventModel?.id ?? '',
+                                          reportedUserId:
+                                              widget.eventModel?.hostUserId,
+                                          title: 'Report Event',
+                                          blockUserId:
+                                              widget.eventModel?.hostUserId,
+                                          blockUserLabel:
+                                              widget.eventModel?.hostName ??
+                                              'Host',
+                                          hideOnReport: true,
+                                          onBlocked: () => Get.back(),
+                                        );
+                                      },
+                                      icon: Icon(
+                                        Icons.flag_outlined,
+                                        size: 26,
+                                        color: primaryColor,
+                                      ),
+                                    ),
+                                  ),
                                 // Share Button
                                 Positioned(
                                   top: 40,
@@ -455,25 +489,36 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                                               color: Colors.transparent,
                                               child: InkWell(
                                                 onTap: () {
-                                                  if (widget
-                                                              .eventModel
-                                                              ?.locationLat !=
-                                                          null &&
+                                                  final lat =
                                                       widget
+                                                          .eventModel
+                                                          ?.locationLat;
+                                                  final lng =
+                                                      widget
+                                                          .eventModel
+                                                          ?.locationLng;
+                                                  if (lat != null &&
+                                                      lng != null) {
+                                                    showLocationOptionsSheet(
+                                                      context: context,
+                                                      latitude: lat,
+                                                      longitude: lng,
+                                                      label:
+                                                          widget
                                                               .eventModel
-                                                              ?.locationLng !=
-                                                          null) {
-                                                    Get.to(
-                                                      () => EventMapScreen(
-                                                        lat:
-                                                            widget
-                                                                .eventModel!
-                                                                .locationLat!,
-                                                        lng:
-                                                            widget
-                                                                .eventModel!
-                                                                .locationLng!,
-                                                      ),
+                                                              ?.location,
+                                                      onViewInApp: () {
+                                                        Get.to(
+                                                          () => EventMapScreen(
+                                                            lat: lat,
+                                                            lng: lng,
+                                                            label:
+                                                                widget
+                                                                    .eventModel
+                                                                    ?.location,
+                                                          ),
+                                                        );
+                                                      },
                                                     );
                                                   } else {
                                                     AppMessenger.show(
@@ -490,6 +535,15 @@ class _EventsDetailsScreenState extends State<EventsDetailsScreen> {
                                       ),
                                     ),
                                   ),
+                                  if (widget.eventModel?.locationLat != null &&
+                                      widget.eventModel?.locationLng != null) ...[
+                                    12.verticalSpace,
+                                    OpenInMapsActions(
+                                      latitude: widget.eventModel!.locationLat!,
+                                      longitude: widget.eventModel!.locationLng!,
+                                      label: widget.eventModel?.location,
+                                    ),
+                                  ],
 
                                   50.verticalSpace,
 

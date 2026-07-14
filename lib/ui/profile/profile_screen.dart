@@ -12,6 +12,7 @@ import 'package:girl_clan/ui/home/home_view_model.dart';
 import 'package:girl_clan/ui/interests/interest_screen.dart';
 import 'package:girl_clan/ui/notification_screen/notification_screen.dart';
 import 'package:girl_clan/ui/password/privacy_policy_screen.dart';
+import 'package:girl_clan/ui/profile/blocked_users_screen.dart';
 import 'package:girl_clan/ui/profile/my_profile_screen.dart';
 import 'package:girl_clan/ui/profile/profile_view_model.dart';
 import 'package:provider/provider.dart';
@@ -171,6 +172,9 @@ class ProfileScreen extends StatelessWidget {
                                 }),
                                 buildMenuItem('Notification', () {
                                   Get.to(NotificationScreen());
+                                }),
+                                buildMenuItem('Blocked Users', () {
+                                  Get.to(() => const BlockedUsersScreen());
                                 }),
 
                                 Padding(

@@ -6,12 +6,14 @@ import 'package:girl_clan/core/model/message_model.dart';
 class MessageBubble extends StatelessWidget {
   final MessageModel message;
   final bool showProfilePic;
+  final VoidCallback? onLongPress;
 
   const MessageBubble({
-    Key? key,
+    super.key,
     required this.message,
     this.showProfilePic = true,
-  }) : super(key: key);
+    this.onLongPress,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -54,18 +56,21 @@ class MessageBubble extends StatelessWidget {
   }
 
   Widget _buildMessageBubble() {
-    return Align(
-      alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (!message.isMe && showProfilePic) _buildSenderAvatar(),
-            _buildMessageContent(),
-            if (message.isMe && showProfilePic) _buildUserAvatar(),
-          ],
+    return GestureDetector(
+      onLongPress: onLongPress,
+      child: Align(
+        alignment: message.isMe ? Alignment.centerRight : Alignment.centerLeft,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!message.isMe && showProfilePic) _buildSenderAvatar(),
+              _buildMessageContent(),
+              if (message.isMe && showProfilePic) _buildUserAvatar(),
+            ],
+          ),
         ),
       ),
     );

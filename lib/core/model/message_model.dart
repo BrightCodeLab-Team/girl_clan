@@ -1,6 +1,7 @@
 class MessageModel {
-  final String senderId; // Add this
-  final String receiverId; // Add this
+  final String messageId;
+  final String senderId;
+  final String receiverId;
   final String senderName;
   final String senderImageUrl;
   final String content;
@@ -9,6 +10,7 @@ class MessageModel {
   final bool isTypingIndicator;
 
   MessageModel({
+    this.messageId = '',
     this.senderId = '',
     this.receiverId = '',
     required this.senderName,

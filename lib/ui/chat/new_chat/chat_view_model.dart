@@ -15,6 +15,7 @@ import 'package:intl/intl.dart';
 
 class ChatViewModel extends BaseViewModel {
   final DatabaseServices _db = locator<DatabaseServices>();
+  final ModerationService _moderation = locator<ModerationService>();
   bool isLoading = true;
   final String? chatTitle;
   final String? chatImageUrl;
@@ -38,6 +39,7 @@ class ChatViewModel extends BaseViewModel {
   List<MessageModel> get messages => _messages;
 
   StreamSubscription? _messagesSubscription;
+  VoidCallback? _moderationListener;
 
   ChatViewModel({
     this.chatTitle,
@@ -46,10 +48,51 @@ class ChatViewModel extends BaseViewModel {
     this.receiverId,
     this.groupId,
   }) {
+    _moderationListener = _onModerationChanged;
+    _moderation.addListener(_moderationListener!);
     initMessagesStream();
     loadUsers();
     loadGroups();
     messageController.addListener(_onTyping);
+  }
+
+  void _onModerationChanged() {
+    _applyMessageFilters();
+    chatsList =
+        allChatsList.where((u) => !_moderation.isUserBlocked(u.id ?? '')).toList();
+    notifyListeners();
+  }
+
+  void _applyMessageFilters() {
+    _messages.removeWhere((m) => !_isMessageVisible(m));
+  }
+
+  String? get chatIdForModeration {
+    if (isGroupChat == true && groupId != null) return groupId;
+    if (receiverId != null) {
+      final a = _db.currentUserId;
+      final b = receiverId!;
+      return a.hashCode <= b.hashCode ? '${a}_$b' : '${b}_$a';
+    }
+    return null;
+  }
+
+  void replyToMessage(MessageModel message) {
+    messageController.text = 'Replying to "${message.content}": ';
+    messageController.selection = TextSelection.fromPosition(
+      TextPosition(offset: messageController.text.length),
+    );
+    notifyListeners();
+  }
+
+  Future<String?> blockUser(String userId) async {
+    final error = await _moderation.blockUser(userId);
+    if (error == null) {
+      _applyMessageFilters();
+      await loadUsers();
+      notifyListeners();
+    }
+    return error;
   }
 
   void _onTyping() {
@@ -66,6 +109,7 @@ class ChatViewModel extends BaseViewModel {
     // Filter users
     chatsList =
         allChatsList.where((user) {
+          if (_moderation.isUserBlocked(user.id ?? '')) return false;
           return user.name!.toLowerCase().contains(searchQuery);
         }).toList();
 
@@ -90,7 +134,7 @@ class ChatViewModel extends BaseViewModel {
           snapshot.docs
               .map((doc) {
                 final data = doc.data() as Map<String, dynamic>;
-                return _parseGroupMessage(data);
+                return _parseGroupMessage(data, doc.id);
               })
               .where(_isMessageVisible)
               .toList(),
@@ -107,7 +151,7 @@ class ChatViewModel extends BaseViewModel {
           snapshot.docs
               .map((doc) {
                 final data = doc.data() as Map<String, dynamic>;
-                return _parseMessage(data);
+                return _parseMessage(data, doc.id);
               })
               .where(_isMessageVisible)
               .toList(),
@@ -118,18 +162,19 @@ class ChatViewModel extends BaseViewModel {
   }
 
   bool _isMessageVisible(MessageModel message) {
-    final moderation = locator<ModerationService>();
     if (message.isMe) return true;
+    if (_moderation.isMessageHidden(message.messageId)) return false;
+    if (_moderation.isUserContentHidden(message.senderId)) return false;
     final senderId = message.senderId;
     if (senderId.isEmpty) return true;
-    return !moderation.isUserBlocked(senderId);
+    return !_moderation.isUserBlocked(senderId);
   }
 
-  // Update _parseGroupMessage to ensure proper name handling
-  MessageModel _parseGroupMessage(Map<String, dynamic> data) {
+  MessageModel _parseGroupMessage(Map<String, dynamic> data, String docId) {
     final isMe = data['senderId'] == _db.currentUserId;
     return MessageModel(
-      senderId: data['senderId'],
+      messageId: docId,
+      senderId: data['senderId'] ?? '',
       receiverId: groupId ?? "",
       senderName: isMe ? 'You' : (data['senderName'] ?? 'Unknown User'),
       senderImageUrl: data['senderImageUrl'] ?? '',
@@ -139,11 +184,11 @@ class ChatViewModel extends BaseViewModel {
     );
   }
 
-  /// Converts Firestore document into a MessageModel
-  MessageModel _parseMessage(Map<String, dynamic> data) {
+  MessageModel _parseMessage(Map<String, dynamic> data, String docId) {
     final isMe = data['senderId'] == _db.currentUserId;
     return MessageModel(
-      senderId: data['senderId'],
+      messageId: docId,
+      senderId: data['senderId'] ?? '',
       receiverId: data['receiverId'],
       senderName: isMe ? 'You' : chatTitle ?? "",
       senderImageUrl: isMe ? '' : chatImageUrl ?? "",
@@ -173,8 +218,10 @@ class ChatViewModel extends BaseViewModel {
       // Fetch all users
       allChatsList = await _db.getAllChatUsers();
 
-      // Initially show all users
-      chatsList = List.from(allChatsList);
+      chatsList =
+          allChatsList
+              .where((u) => !_moderation.isUserBlocked(u.id ?? ''))
+              .toList();
 
       debugPrint("Loaded chat users: ${chatsList.length}");
     } catch (e) {
@@ -217,7 +264,7 @@ class ChatViewModel extends BaseViewModel {
     if (filterError != null) return filterError;
 
     if (receiverId != null) {
-      if (await locator<ModerationService>().isEitherUserBlocked(receiverId!)) {
+      if (await _moderation.isEitherUserBlocked(receiverId!)) {
         return 'You cannot message this user.';
       }
     }
@@ -270,6 +317,9 @@ class ChatViewModel extends BaseViewModel {
 
   @override
   void dispose() {
+    if (_moderationListener != null) {
+      _moderation.removeListener(_moderationListener!);
+    }
     messageController.dispose();
     _messagesSubscription?.cancel();
     super.dispose();

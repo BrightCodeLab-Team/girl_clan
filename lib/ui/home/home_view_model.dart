@@ -7,13 +7,16 @@ import 'package:girl_clan/core/model/event_model.dart';
 import 'package:girl_clan/core/model/groups_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
+import 'package:girl_clan/core/services/moderation_service.dart';
 import 'package:girl_clan/core/utils/date_parser.dart';
 import 'package:girl_clan/locator.dart';
 
 class HomeViewModel extends BaseViewModel {
   EventModel eventModel = EventModel();
   final db = locator<DatabaseServices>();
+  final _moderation = locator<ModerationService>();
   final currentUser = FirebaseAuth.instance;
+  VoidCallback? _moderationListener;
   final List<Map<String, dynamic>> tabs = [
     {'icon': Icons.apps, 'text': 'All'},
     {'icon': Icons.palette, 'text': 'Art & Cultural'},
@@ -53,10 +56,37 @@ class HomeViewModel extends BaseViewModel {
   /// Constructor if not use then no data fetching
   ///
   HomeViewModel() {
+    _moderationListener = _onModerationChanged;
+    _moderation.addListener(_moderationListener!);
     upComingEvents();
     getAllEvent(tabs[selectedTabIndex]['text']); // Pass "All"
     getCurrentUserEvents();
     groupsData();
+  }
+
+  void _onModerationChanged() {
+    upcomingEventsList = _filterEvents(upcomingEventsList);
+    allEventsList = _filterEvents(allEventsList);
+    groupsList = _filterGroups(groupsList);
+    notifyListeners();
+  }
+
+  List<EventModel> _filterEvents(List<EventModel> events) =>
+      events.where(_isEventVisible).toList();
+
+  List<GroupsModel> _filterGroups(List<GroupsModel> groups) =>
+      groups.where(_isGroupVisible).toList();
+
+  bool _isEventVisible(EventModel event) {
+    if (_moderation.shouldHideUserContent(event.hostUserId)) return false;
+    final id = event.id ?? '';
+    return id.isEmpty || !_moderation.isEventHidden(id);
+  }
+
+  bool _isGroupVisible(GroupsModel group) {
+    if (_moderation.shouldHideUserContent(group.hostUserId)) return false;
+    final id = group.id ?? '';
+    return id.isEmpty || !_moderation.isGroupHidden(id);
   }
 
   ///
@@ -193,6 +223,7 @@ class HomeViewModel extends BaseViewModel {
 
       // Add recurring copies in the main list
       upcomingEventsList.addAll(processedEvents);
+      upcomingEventsList = _filterEvents(upcomingEventsList);
 
       debugPrint('Successfully fetched ${upcomingEventsList.length} events');
       notifyListeners();
@@ -209,7 +240,9 @@ class HomeViewModel extends BaseViewModel {
   Future<void> getAllEvent(String? category) async {
     setState(ViewState.busy);
     try {
-      allEventsList = await db.getAllEventsByCategory("$category");
+      allEventsList = _filterEvents(
+        await db.getAllEventsByCategory("$category"),
+      );
       debugPrint('Successfully fetched ${allEventsList.length} events');
       notifyListeners();
     } catch (e) {
@@ -301,7 +334,7 @@ class HomeViewModel extends BaseViewModel {
   Future<void> groupsData() async {
     setState(ViewState.busy);
     try {
-      groupsList = await db.getGroupsData();
+      groupsList = _filterGroups(await db.getGroupsData());
       if (groupsList.isNotEmpty) {
         debugPrint(
           "Groups data fetched successfully: ${groupsList.length} items",
@@ -416,6 +449,9 @@ class HomeViewModel extends BaseViewModel {
 
   @override
   void dispose() {
+    if (_moderationListener != null) {
+      _moderation.removeListener(_moderationListener!);
+    }
     resetFilters();
     super.dispose();
   }

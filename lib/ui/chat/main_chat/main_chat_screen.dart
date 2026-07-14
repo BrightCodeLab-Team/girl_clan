@@ -8,6 +8,7 @@ import 'package:get/get_navigation/get_navigation.dart';
 import 'package:girl_clan/core/constants/auth_text_feild.dart';
 import 'package:girl_clan/core/constants/colors.dart';
 import 'package:girl_clan/core/model/user_model.dart';
+import 'package:girl_clan/custom_widget/moderation/message_moderation_menu.dart';
 import 'package:girl_clan/custom_widget/new_chat.dart';
 import 'package:girl_clan/custom_widget/shimmer/chat_shimmer.dart';
 import 'package:girl_clan/ui/chat/new_chat/chat_screen.dart';
@@ -74,11 +75,18 @@ class MainChatScreen extends StatelessWidget {
                                         return MainChatItem(
                                           chat: user,
                                           onLongPress: () {
-                                            _showDeleteDialog(
-                                              context: context,
-                                              model: model,
-                                              chatId: user.id!,
-                                              isGroup: false,
+                                            showUserModerationMenu(
+                                              context,
+                                              userId: user.id!,
+                                              userName: user.name ?? 'User',
+                                              onBlocked: () => model.loadUsers(),
+                                              onDeleteChat:
+                                                  () => _showDeleteDialog(
+                                                    context: context,
+                                                    model: model,
+                                                    chatId: user.id!,
+                                                    isGroup: false,
+                                                  ),
                                             );
                                           },
                                           onTap: () {

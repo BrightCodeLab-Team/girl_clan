@@ -2,7 +2,7 @@ name: girl_clan
 description: A Flutter project for the Girl Clan app.
 publish_to: 'none'
 
-version: 1.0.0+7
+version: 1.0.0+8
 
 environment:
   sdk: ^3.7.2
@@ -77,18 +77,18 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/static_assets/logo.png"
+  image_path: "assets/static_assets/app_icon.png"
   min_sdk_android: 23
   web:
     generate: true
-    image_path: "assets/static_assets/logo.png"
+    image_path: "assets/static_assets/app_icon.png"
   windows:
     generate: true
-    image_path: "assets/static_assets/logo.png"
+    image_path: "assets/static_assets/app_icon.png"
     icon_size: 48
   macos:
     generate: true
-    image_path: "assets/static_assets/logo.png"
+    image_path: "assets/static_assets/app_icon.png"
 
 flutter:
   uses-material-design: true

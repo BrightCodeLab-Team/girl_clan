@@ -22,49 +22,90 @@ class MainChatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasUnread = chat.unreadCount > 0;
+    final unreadLabel =
+        chat.unreadCount > 99 ? '99+' : '${chat.unreadCount}';
+
     return GestureDetector(
       onTap: onTap,
       onLongPress: onLongPress,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 25,
-                  backgroundImage:
-                      (chat.imageUrl != null && chat.imageUrl!.isNotEmpty)
-                          ? NetworkImage(chat.imageUrl!)
-                          : const AssetImage('$staticAssets/logo.png'),
-                ),
-                10.horizontalSpace,
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-
-                  children: [
-                    Text(chat.name ?? "", style: style14B),
-                    Text(
-                      chat.message ?? "",
-                      style: style12.copyWith(
-                        color: blackColor.withOpacity(0.4),
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ],
-                ),
-              ],
+            CircleAvatar(
+              radius: 25,
+              backgroundImage:
+                  (chat.imageUrl != null && chat.imageUrl!.isNotEmpty)
+                      ? NetworkImage(chat.imageUrl!)
+                      : const AssetImage('$staticAssets/logo.png'),
             ),
-
-            Text(
-              chat.time != null ? DateFormat('h:mm a').format(chat.time!) : '',
-              style: style12.copyWith(),
+            10.horizontalSpace,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    chat.name ?? '',
+                    style: style14B.copyWith(
+                      fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  2.verticalSpace,
+                  Text(
+                    chat.message ?? '',
+                    style: style12.copyWith(
+                      color: hasUnread
+                          ? blackColor.withOpacity(0.75)
+                          : blackColor.withOpacity(0.4),
+                      fontWeight:
+                          hasUnread ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
+                ],
+              ),
+            ),
+            8.horizontalSpace,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  chat.time != null
+                      ? DateFormat('h:mm a').format(chat.time!)
+                      : '',
+                  style: style12.copyWith(
+                    color: hasUnread ? primaryColor : blackColor,
+                    fontWeight:
+                        hasUnread ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+                if (hasUnread) ...[
+                  6.verticalSpace,
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: chat.unreadCount > 9 ? 6 : 5,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      unreadLabel,
+                      style: style12.copyWith(
+                        color: whiteColor,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
             ),
           ],
         ),

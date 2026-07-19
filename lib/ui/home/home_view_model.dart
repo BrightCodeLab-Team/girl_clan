@@ -8,6 +8,7 @@ import 'package:girl_clan/core/model/groups_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
 import 'package:girl_clan/core/services/moderation_service.dart';
+import 'package:girl_clan/core/services/notification_services.dart';
 import 'package:girl_clan/core/utils/date_parser.dart';
 import 'package:girl_clan/locator.dart';
 
@@ -99,28 +100,6 @@ class HomeViewModel extends BaseViewModel {
     await groupsData();
     notifyListeners();
   }
-
-  // Future<void> sendJoinNotification({
-  //   required String eventId,
-  //   required String eventName,
-  //   required String hostUserId,
-  // }) async {
-  //   try {
-  //     print('🔔 Sending join notification...');
-
-  //     // Example: You can use your OneSignal or Firebase Cloud Messaging service here
-  //     await NotificationServices.sendNotificationToUser(
-  //       receiverId: hostUserId,
-  //       title: 'New Event Join',
-  //       body: 'Someone just joined your event "$eventName"!',
-  //       data: {'type': 'event_join', 'eventId': eventId},
-  //     );
-
-  //     print('✅ Notification sent successfully.');
-  //   } catch (e) {
-  //     print('❌ Error sending notification: $e');
-  //   }
-  // }
 
   ///
   ///. all current user events
@@ -272,14 +251,38 @@ class HomeViewModel extends BaseViewModel {
   Future<void> joinEvent(String eventId) async {
     setState(ViewState.busy);
     try {
-      final isAlreadyJoined = await db.isUserJoined(
-        eventId,
-        currentUser.currentUser!.uid,
-      );
+      final uid = currentUser.currentUser!.uid;
+      final isAlreadyJoined = await db.isUserJoined(eventId, uid);
 
       if (!isAlreadyJoined) {
-        await db.joinEvent(eventId, currentUser.currentUser!.uid);
-        await refreshAllEvents(); // To refresh local lists
+        await db.joinEvent(eventId, uid);
+        await refreshAllEvents();
+
+        // Notify host (skip if joiner is the host)
+        try {
+          final event = await db.getEventById(eventId);
+          final hostId = event?.hostUserId;
+          if (hostId != null &&
+              hostId.isNotEmpty &&
+              hostId != uid) {
+            final joinerName =
+                currentUser.currentUser?.displayName?.trim().isNotEmpty == true
+                    ? currentUser.currentUser!.displayName!
+                    : 'Someone';
+            await locator<NotificationServices>().sendNotificationToUser(
+              receiverId: hostId,
+              title: 'New event join',
+              body:
+                  '$joinerName joined your event "${event?.eventName ?? 'Event'}"',
+              data: {
+                'type': 'event_join',
+                'eventId': eventId,
+              },
+            );
+          }
+        } catch (e) {
+          debugPrint('Join notification failed: $e');
+        }
       }
     } catch (e) {
       debugPrint("Error joining event: $e");
@@ -379,14 +382,34 @@ class HomeViewModel extends BaseViewModel {
   Future<void> joinGroup(String groupId) async {
     setState(ViewState.busy);
     try {
-      final isAlreadyJoined = await db.isUserJoinedGroup(
-        groupId,
-        currentUser.currentUser!.uid,
-      );
+      final uid = currentUser.currentUser!.uid;
+      final isAlreadyJoined = await db.isUserJoinedGroup(groupId, uid);
 
       if (!isAlreadyJoined) {
         await db.joinGroup(groupId);
         await refreshAllEvents();
+
+        try {
+          final group = await db.getGroupById(groupId);
+          final hostId = group?.hostUserId;
+          if (hostId != null && hostId.isNotEmpty && hostId != uid) {
+            final joinerName =
+                currentUser.currentUser?.displayName?.trim().isNotEmpty == true
+                    ? currentUser.currentUser!.displayName!
+                    : 'Someone';
+            await locator<NotificationServices>().sendNotificationToUser(
+              receiverId: hostId,
+              title: 'New group join',
+              body: '$joinerName joined your group',
+              data: {
+                'type': 'group_join',
+                'groupId': groupId,
+              },
+            );
+          }
+        } catch (e) {
+          debugPrint('Group join notification failed: $e');
+        }
       }
     } catch (e) {
       debugPrint("Error joining group: $e");

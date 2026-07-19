@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
+import 'package:girl_clan/core/services/notification_services.dart';
+import 'package:girl_clan/locator.dart';
 
 class LoginViewModel extends BaseViewModel {
   bool loading = false;
@@ -54,6 +56,11 @@ class LoginViewModel extends BaseViewModel {
           'termsLastUpdated': termsLastUpdated,
         }, SetOptions(merge: true));
       }
+
+      // Persist FCM token after successful login
+      try {
+        await locator<NotificationServices>().saveFcmTokenToFirestore();
+      } catch (_) {}
 
       return null;
     } on FirebaseAuthException catch (error) {

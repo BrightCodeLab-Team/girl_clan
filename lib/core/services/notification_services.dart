@@ -2,44 +2,44 @@
 
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:girl_clan/firebase_options.dart';
+import 'package:girl_clan/server_key.dart';
 import 'package:http/http.dart' as http;
 
-/// ------------------------------------------------------------
-/// 🧱 CLASS: NotificationServices
-/// ------------------------------------------------------------
-/// Handles Firebase Cloud Messaging (FCM) + Local Notifications
-/// Includes:
-///   ✅ Permission request
-///   ✅ Local notifications setup
-///   ✅ FCM message handling (foreground, background, openedApp)
-///   ✅ Token fetching
-/// ------------------------------------------------------------
+const String _usersCollection = 'app-user';
+const String _fcmTokenField = 'fcmToken';
+
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  print('Background FCM: ${message.notification?.title}');
+}
+
 class NotificationServices {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  /// ------------------------------------------------------------
-  /// 🚀 INIT METHOD — call this once (e.g., in main.dart)
-  /// ------------------------------------------------------------
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+
   Future<void> initNotification() async {
-    print("🔧 Initializing Notification Services...");
     await _requestPermission();
     await _initLocalNotifications();
     await _configureFCMListeners();
+    await saveFcmTokenToFirestore();
 
-    final fcmToken = await _firebaseMessaging.getToken();
-    print("@NotificationServices: FCM Token => $fcmToken");
+    _firebaseMessaging.onTokenRefresh.listen((token) async {
+      await _persistToken(token);
+    });
   }
 
-  // ===========================================================================
-  // 🟦 PART 1: PERMISSION HANDLING
-  // ===========================================================================
   Future<void> _requestPermission() async {
-    print("🟨 Requesting notification permissions...");
-
-    NotificationSettings settings = await _firebaseMessaging.requestPermission(
+    final settings = await _firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
@@ -48,205 +48,212 @@ class NotificationServices {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.denied) {
-      print("🔴 User denied notification permission");
-    } else if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print("🟢 User granted notification permission");
-    } else {
-      print("🟡 Permission status: ${settings.authorizationStatus}");
+      print('Notification permission denied');
     }
 
-    // iOS foreground behavior (show alert/sound even when app open)
     if (Platform.isIOS) {
       await _firebaseMessaging.setForegroundNotificationPresentationOptions(
         alert: true,
         badge: true,
         sound: true,
       );
-      print("🍏 iOS foreground notification options set");
     }
   }
 
-  // ===========================================================================
-  // 🟩 PART 2: LOCAL NOTIFICATION INITIALIZATION
-  // ===========================================================================
   Future<void> _initLocalNotifications() async {
-    print("📦 Initializing local notifications...");
-
-    const AndroidInitializationSettings androidSettings =
-        AndroidInitializationSettings('@mipmap/launcher_icon');
-
-    const DarwinInitializationSettings iosSettings =
-        DarwinInitializationSettings();
-
-    const InitializationSettings initSettings = InitializationSettings(
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/launcher_icon',
+    );
+    const iosSettings = DarwinInitializationSettings();
+    const initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
     );
-
     await _localNotificationsPlugin.initialize(initSettings);
-    print("✅ Local notifications initialized successfully");
+
+    final androidPlugin =
+        _localNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >();
+    await androidPlugin?.createNotificationChannel(
+      const AndroidNotificationChannel(
+        'default_channel_id',
+        'General Notifications',
+        description: 'Used for general app notifications',
+        importance: Importance.max,
+      ),
+    );
   }
 
-  // ===========================================================================
-  // 🟪 PART 3: FCM CONFIGURATION (LISTENERS)
-  // ===========================================================================
   Future<void> _configureFCMListeners() async {
-    print("🔔 Configuring FCM message listeners...");
-
-    // 🔹 When app is in foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("📩 Foreground message received: ${message.notification?.title}");
       _showLocalNotification(message);
     });
 
-    // 🔹 When app is in background or terminated
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-    // 🔹 When user taps the notification and opens the app
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print("📬 Notification opened by user: ${message.notification?.title}");
+      print('Notification opened: ${message.notification?.title}');
     });
-
-    print("✅ FCM listeners configured");
   }
 
-  // ===========================================================================
-  // 🟥 PART 4: LOCAL NOTIFICATION DISPLAY
-  // ===========================================================================
   Future<void> _showLocalNotification(RemoteMessage message) async {
-    print("📲 Displaying local notification...");
+    const androidDetails = AndroidNotificationDetails(
+      'default_channel_id',
+      'General Notifications',
+      channelDescription: 'Used for general app notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      icon: '@mipmap/launcher_icon',
+    );
 
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'default_channel_id', // Channel ID (unique per app)
-          'General Notifications', // Channel Name (visible to user)
-          channelDescription: 'Used for general app notifications',
-          importance: Importance.max,
-          priority: Priority.high,
-          icon: '@mipmap/launcher_icon',
-        );
-
-    const NotificationDetails notificationDetails = NotificationDetails(
+    const notificationDetails = NotificationDetails(
       android: androidDetails,
+      iOS: DarwinNotificationDetails(),
     );
 
     await _localNotificationsPlugin.show(
       message.hashCode,
-      message.notification?.title ?? 'No Title',
-      message.notification?.body ?? 'No Body',
+      message.notification?.title ?? 'Girl Clan',
+      message.notification?.body ?? '',
       notificationDetails,
     );
-
-    print("✅ Local notification displayed");
   }
 
-  // ===========================================================================
-  // 🟨 PART 5: FETCH USER FCM TOKEN (PUBLIC USE)
-  // ===========================================================================
   Future<String?> getFcmToken() async {
+    return _firebaseMessaging.getToken();
+  }
+
+  /// Saves current device FCM token to `app-user/{uid}` so others can notify this user.
+  Future<void> saveFcmTokenToFirestore() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
     final token = await _firebaseMessaging.getToken();
-    print("🔑 Current user FCM Token: $token");
-    return token;
+    if (token == null || token.isEmpty) return;
+
+    await _persistToken(token);
   }
 
-  // ===========================================================================
-  // 🟧 PART 6: DELETE TOKEN (OPTIONAL)
-  // ===========================================================================
+  Future<void> _persistToken(String token) async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    try {
+      await _db.collection(_usersCollection).doc(uid).set({
+        _fcmTokenField: token,
+        'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      print('FCM token saved for $uid');
+    } catch (e) {
+      print('Failed to save FCM token: $e');
+    }
+  }
+
   Future<void> deleteFcmToken() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      try {
+        await _db.collection(_usersCollection).doc(uid).set({
+          _fcmTokenField: FieldValue.delete(),
+        }, SetOptions(merge: true));
+      } catch (_) {}
+    }
     await _firebaseMessaging.deleteToken();
-    print("🗑️ FCM Token deleted");
+  }
+
+  Future<String?> getUserFcmToken(String userId) async {
+    if (userId.isEmpty) return null;
+    final doc = await _db.collection(_usersCollection).doc(userId).get();
+    final token = doc.data()?[_fcmTokenField];
+    return token is String && token.isNotEmpty ? token : null;
+  }
+
+  /// Notify another user by their Firestore uid.
+  Future<void> sendNotificationToUser({
+    required String receiverId,
+    required String title,
+    required String body,
+    Map<String, String>? data,
+  }) async {
+    final token = await getUserFcmToken(receiverId);
+    if (token == null) {
+      print('No FCM token for user $receiverId');
+      return;
+    }
+    await SendNotificationService.sendToUser(
+      token: token,
+      title: title,
+      body: body,
+      data: data,
+    );
   }
 }
 
-/// ------------------------------------------------------------
-/// 🟫 TOP-LEVEL HANDLER — Runs when app is in background/terminated
-/// ------------------------------------------------------------
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("🌙 Handling background message...");
-  print("🔸 Title: ${message.notification?.title}");
-  print("🔹 Body: ${message.notification?.body}");
-}
-
-/// ------------------------------------------------------------
-/// 📦 CLASS: SendNotificationService
-/// ------------------------------------------------------------
-/// This class is used to send push notifications via Firebase Cloud Messaging (FCM)
-/// directly from your Flutter app using your Firebase server key.
-///
-/// Use Cases:
-/// ✅ Notify host when someone joins an event
-/// ✅ Notify user when host accepts/declines request
-/// ✅ Notify all users when event ends
-/// ------------------------------------------------------------
 class SendNotificationService {
-  // 🔑 Your Firebase Server Key (get it from Firebase Console)
-  static const String _serverKey =
-      'ya29.c.c0ASRK0GYO4nTb2cSKw01baQynqXJ98RWvDe4jgRrBpWjx1jlrXBfhZfGTZ1Q4vYnkfbStw-I-KN0IsedvlBrvvVHQ2WzMrREwf6faaZG13zEMC_Ks703wJK27qiShtLk36bu4JO4YvblYDsLPjXTFRrvPOV7CPx-XljJbcIVjs9PzdQr6fsRfknxTJtQrOAjiQzbmZcjYKgtcfS0Yg3UBdOKopYzs7n5ykLdvuDyRi6sCuVG7dnSdB2L0J6nlklfVMdPc4HHB701DFnxbwkeB7gjMyqidTx3wtFjObpEMJSBt4rEDS18p2ogDJ2zAEalA07nOXFXMIcfuuDXkVVy5_ugnt7RVUqY6Qqg7QU5n5UDrBcv3S_o_tYlDAdgM6wL391PRaIYeY3UYilhMxbqg-tjuIajj12MVfIgk70slS9ytgactueVc9OXR3d-byfRpW7dsQFWZ3iXVUJRemXIds8iF4odZ4w5vFjXuJcesjJfz3QjbbOx414njeJ4_xmeVambRcXyQlethxkO097JbgnZ16pamYitg3jSWeti7eppsgt9h7bYvcncdZ4-bi7VXow-zt2_YRnWi-I9mq8i8qa8g3J6lpsppMpn_uOu6Jxh3_2p6_ck6OXy4Ixwc0Vy9cqfFke8eZemuI-Uqxh5sW8tXFhFVBjefJ1RtWWJudU3u-J8M3RSif9Sjff83o2l5wcamoXdMkjggBX-v3d_3J2w2ftU2VqpRhJbug1Mt5zr-cBiSfd0FgyUU0FaJilQB5wkFSn-_i5-e1wa1Ysg7XS6My1qfXJwukVg7MIrigYzQ04j52_F_90UiRahV3WzUVmOaYI7iyveeu3sJw4eeYcxdI4b5bzqdbuprju8Q3mWf6I5sSz-9h49Y6VM_Ifs-p5dSz2WJtgwtFBZYQnw1lrWyW9zhYgXdla0qm7jMI9xee2xM-2w9Z3w_WwtZ_edSSyo-vwO4n5dxv1';
+  static const String _projectId = 'event-app-d66c5';
+  static final GetServerKey _serverKey = GetServerKey();
 
-  /// ------------------------------------------------------------
-  /// 📬 Send notification to a specific user by their FCM token
-  /// ------------------------------------------------------------
   static Future<void> sendToUser({
     required String token,
     required String title,
     required String body,
-    Map<String, dynamic>? data,
+    Map<String, String>? data,
   }) async {
     try {
+      final accessToken = await _serverKey.serverKeyToken();
       final response = await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        Uri.parse(
+          'https://fcm.googleapis.com/v1/projects/$_projectId/messages:send',
+        ),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'key=$_serverKey',
+          'Authorization': 'Bearer $accessToken',
         },
         body: jsonEncode({
-          'to': token,
-          'notification': {'title': title, 'body': body, 'sound': 'default'},
-          'data': data ?? {},
+          'message': {
+            'token': token,
+            'notification': {'title': title, 'body': body},
+            'data': data ?? {},
+            'android': {
+              'priority': 'high',
+              'notification': {
+                'channel_id': 'default_channel_id',
+                'sound': 'default',
+              },
+            },
+            'apns': {
+              'payload': {
+                'aps': {'sound': 'default'},
+              },
+            },
+          },
         }),
       );
 
       if (response.statusCode == 200) {
-        print("✅ Notification sent successfully to token: $token");
+        print('Notification sent');
       } else {
-        print("🔴 Failed to send notification: ${response.body}");
+        print('Failed to send notification: ${response.statusCode} ${response.body}');
       }
     } catch (e) {
-      print("⚠️ Error sending notification: $e");
+      print('Error sending notification: $e');
     }
   }
 
-  /// ------------------------------------------------------------
-  /// 📣 Send notification to multiple users (bulk)
-  /// ------------------------------------------------------------
   static Future<void> sendToMultiple({
     required List<String> tokens,
     required String title,
     required String body,
-    Map<String, dynamic>? data,
+    Map<String, String>? data,
   }) async {
-    try {
-      final response = await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'key=$_serverKey',
-        },
-        body: jsonEncode({
-          'registration_ids': tokens,
-          'notification': {'title': title, 'body': body, 'sound': 'default'},
-          'data': data ?? {},
-        }),
+    for (final token in tokens) {
+      if (token.isEmpty) continue;
+      await sendToUser(
+        token: token,
+        title: title,
+        body: body,
+        data: data,
       );
-
-      if (response.statusCode == 200) {
-        print("✅ Notification sent successfully to ${tokens.length} users");
-      } else {
-        print("🔴 Failed to send notifications: ${response.body}");
-      }
-    } catch (e) {
-      print("⚠️ Error sending notifications: $e");
     }
   }
 }

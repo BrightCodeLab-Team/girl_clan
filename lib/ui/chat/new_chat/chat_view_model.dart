@@ -9,6 +9,7 @@ import 'package:girl_clan/core/model/user_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
 import 'package:girl_clan/core/services/data_base_services.dart';
 import 'package:girl_clan/core/services/moderation_service.dart';
+import 'package:girl_clan/core/services/notification_services.dart';
 import 'package:girl_clan/core/utils/content_filter.dart';
 import 'package:girl_clan/locator.dart';
 import 'package:intl/intl.dart';
@@ -54,6 +55,19 @@ class ChatViewModel extends BaseViewModel {
     loadUsers();
     loadGroups();
     messageController.addListener(_onTyping);
+    unawaited(_markOpenedChatAsSeen());
+  }
+
+  Future<void> _markOpenedChatAsSeen() async {
+    try {
+      if (isGroupChat == true && groupId != null) {
+        await _db.markGroupChatAsSeen(groupId!);
+      } else if (receiverId != null) {
+        await _db.markDirectChatAsSeen(receiverId!);
+      }
+    } catch (e) {
+      debugPrint('Failed to mark chat as seen: $e');
+    }
   }
 
   void _onModerationChanged() {
@@ -300,6 +314,7 @@ class ChatViewModel extends BaseViewModel {
           senderName: currentUserName,
           senderImageUrl: currentUserImageUrl,
         );
+        unawaited(_notifyGroupMembers(text, currentUserName));
       } else if (receiverId != null) {
         await _db.sendMessage(
           receiverId: receiverId!,
@@ -307,11 +322,53 @@ class ChatViewModel extends BaseViewModel {
           senderName: currentUserName,
           senderImageUrl: currentUserImageUrl,
         );
+        unawaited(
+          locator<NotificationServices>().sendNotificationToUser(
+            receiverId: receiverId!,
+            title: currentUserName,
+            body: text,
+            data: {
+              'type': 'chat_message',
+              'senderId': _db.currentUserId,
+              'chatType': 'direct',
+            },
+          ),
+        );
       }
       return null;
     } catch (e) {
       debugPrint('Error sending message: $e');
       return e.toString().replaceFirst('Exception: ', '');
+    }
+  }
+
+  Future<void> _notifyGroupMembers(String text, String senderName) async {
+    if (groupId == null) return;
+    try {
+      final members = await _db.getGroupMembers(groupId!);
+      final notifications = locator<NotificationServices>();
+      final me = _db.currentUserId;
+
+      for (final member in members) {
+        final memberId = member['id']?.toString();
+        if (memberId == null || memberId.isEmpty || memberId == me) continue;
+
+        await notifications.sendNotificationToUser(
+          receiverId: memberId,
+          title: chatTitle?.isNotEmpty == true
+              ? '${chatTitle!}: $senderName'
+              : senderName,
+          body: text,
+          data: {
+            'type': 'chat_message',
+            'senderId': me,
+            'groupId': groupId!,
+            'chatType': 'group',
+          },
+        );
+      }
+    } catch (e) {
+      debugPrint('Group chat notification failed: $e');
     }
   }
 

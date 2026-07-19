@@ -6,27 +6,42 @@ class UserModel {
   final String? name;
   final String? message;
   final DateTime? time;
+  final int unreadCount;
 
-  UserModel({this.id, this.imageUrl, this.name, this.message, this.time});
+  UserModel({
+    this.id,
+    this.imageUrl,
+    this.name,
+    this.message,
+    this.time,
+    this.unreadCount = 0,
+  });
+
   Map<String, dynamic> toJson() {
     return {
-      //'id': currentUser?.uid ?? '',
       'id': id ?? '',
       'name': name ?? '',
       'time': time ?? '',
       'imgUrl': imageUrl ?? '',
       'message': message ?? '',
+      'unreadCount': unreadCount,
     };
   }
 
-  // Factory constructor to create an Event from a Map (useful for persistence)
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'] ?? '', // Optional: If Firestore stores 'id'
-      name: json['name'].toString(),
-      imageUrl: json['imgUrl'].toString(),
-      message: json['message'].toString(),
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      imageUrl: json['imgUrl']?.toString() ?? '',
+      message: json['message']?.toString() ?? '',
       time: json['time'] != null ? (json['time'] as Timestamp).toDate() : null,
+      unreadCount: _parseUnread(json['unreadCount']),
     );
+  }
+
+  static int _parseUnread(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value?.toString() ?? '') ?? 0;
   }
 }

@@ -89,8 +89,8 @@ class MainChatScreen extends StatelessWidget {
                                                   ),
                                             );
                                           },
-                                          onTap: () {
-                                            Get.to(
+                                          onTap: () async {
+                                            await Get.to(
                                               ChangeNotifierProvider(
                                                 create:
                                                     (ctx) => ChatViewModel(
@@ -108,8 +108,7 @@ class MainChatScreen extends StatelessWidget {
                                                 ),
                                               ),
                                             );
-                                            print("user name: ${user.name}");
-                                            print("user name. ${user.id}");
+                                            await model.loadUsers();
                                           },
                                         );
                                       },
@@ -162,9 +161,11 @@ class MainChatScreen extends StatelessWidget {
                                         imageUrl: group['imageUrl'],
                                         message: messagePreview,
                                         time: lastMessageTime,
+                                        unreadCount:
+                                            group['unreadCount'] as int? ?? 0,
                                       ),
-                                      onTap: () {
-                                        Get.to(
+                                      onTap: () async {
+                                        await Get.to(
                                           ChangeNotifierProvider(
                                             create:
                                                 (ctx) => ChatViewModel(
@@ -181,8 +182,7 @@ class MainChatScreen extends StatelessWidget {
                                             ),
                                           ),
                                         );
-                                        print("Group name: ${group['name']}");
-                                        print("Group id: ${group['id']}");
+                                        await model.loadGroups();
                                       },
                                       onLongPress: () {
                                         _showDeleteDialog(

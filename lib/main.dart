@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
@@ -25,6 +26,7 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   await setupLocator();
   runApp(const MyApp());
   unawaited(_initDeferredServices());
@@ -38,7 +40,7 @@ Future<void> _initDeferredServices() async {
   }
 
   try {
-    await NotificationServices().initNotification();
+    await locator<NotificationServices>().initNotification();
   } catch (e) {
     debugPrint('Notification init failed: $e');
   }

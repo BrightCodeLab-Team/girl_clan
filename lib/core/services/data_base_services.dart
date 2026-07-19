@@ -419,13 +419,15 @@ class DatabaseServices {
         'lastMessageTime': FieldValue.serverTimestamp(),
         'participants': [currentUserId, receiverId],
         'participantNames': {
-          currentUserId: senderName, // Use passed senderName
+          currentUserId: senderName,
           receiverId: await _getUserName(receiverId),
         },
         'participantAvatars': {
-          currentUserId: senderImageUrl, // Use passed senderImageUrl
+          currentUserId: senderImageUrl,
           receiverId: await _getUserAvatar(receiverId),
         },
+        'unreadCounts.$receiverId': FieldValue.increment(1),
+        'unreadCounts.$currentUserId': 0,
       }, SetOptions(merge: true));
 
       await batch.commit();
@@ -520,14 +522,23 @@ class DatabaseServices {
             userData['imgUrl'] = userData['imgUrl'] ?? '';
             userData['message'] = doc['lastMessage'];
             userData['time'] = doc['lastMessageTime'];
+            final unreadMap =
+                (doc.data()['unreadCounts'] as Map<String, dynamic>?) ?? {};
+            userData['unreadCount'] = unreadMap[currentUserId] ?? 0;
 
-            print("user profileImageUrl:  ${userData['profileImageUrl']}");
-            print("user message:  ${userData['lastMessage']}");
-            print("user lastMessageTime:  ${userData['lastMessage']}");
             userModels.add(UserModel.fromJson(userData));
           }
         }
       }
+
+      // Newest / unread chats first
+      userModels.sort((a, b) {
+        final unreadCmp = b.unreadCount.compareTo(a.unreadCount);
+        if (unreadCmp != 0) return unreadCmp;
+        final at = a.time ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bt = b.time ?? DateTime.fromMillisecondsSinceEpoch(0);
+        return bt.compareTo(at);
+      });
 
       return userModels;
     } catch (e) {
@@ -771,13 +782,22 @@ class DatabaseServices {
       final groupRef = FirebaseFirestore.instance
           .collection('groups')
           .doc(groupId);
-      batch.update(groupRef, {
+      final groupSnap = await groupRef.get();
+      final members = List<String>.from(groupSnap.data()?['members'] ?? []);
+
+      final groupUpdate = <String, dynamic>{
         'lastMessage': text,
         'lastMessageSenderName': senderName,
         'lastMessageTime': FieldValue.serverTimestamp(),
-      });
+        'unreadCounts.$currentUserId': 0,
+      };
+      for (final memberId in members) {
+        if (memberId != currentUserId) {
+          groupUpdate['unreadCounts.$memberId'] = FieldValue.increment(1);
+        }
+      }
+      batch.update(groupRef, groupUpdate);
 
-      // Commit the batch
       await batch.commit();
     } catch (e) {
       debugPrint('Error sending group message: $e');
@@ -804,6 +824,9 @@ class DatabaseServices {
 
       return snapshot.docs.map((doc) {
         final data = doc.data();
+        final unreadMap =
+            (data['unreadCounts'] as Map<String, dynamic>?) ?? {};
+        final unread = unreadMap[currentUserId];
         return {
           'id': doc.id,
           'name': data['name'] ?? 'No Name',
@@ -811,11 +834,67 @@ class DatabaseServices {
           'lastMessage': data['lastMessage'] ?? 'No messages yet',
           'lastMessageTime': data['lastMessageTime'],
           'lastMessageSenderName': data['lastMessageSenderName'] ?? '',
+          'unreadCount':
+              unread is int
+                  ? unread
+                  : (unread is num ? unread.toInt() : int.tryParse('$unread') ?? 0),
         };
-      }).toList();
+      }).toList()
+        ..sort((a, b) {
+          final unreadCmp =
+              (b['unreadCount'] as int).compareTo(a['unreadCount'] as int);
+          if (unreadCmp != 0) return unreadCmp;
+          final at = a['lastMessageTime'];
+          final bt = b['lastMessageTime'];
+          if (at is Timestamp && bt is Timestamp) {
+            return bt.compareTo(at);
+          }
+          return 0;
+        });
     } catch (e) {
       debugPrint('Error getting user groups: $e');
       return [];
+    }
+  }
+
+  /// Clears unread badge when user opens a 1:1 chat.
+  Future<void> markDirectChatAsSeen(String otherUserId) async {
+    try {
+      final chatId = _getChatId(currentUserId, otherUserId);
+      final chatRef = _firestore.collection('chats').doc(chatId);
+
+      await chatRef.set({
+        'unreadCounts.$currentUserId': 0,
+      }, SetOptions(merge: true));
+
+      // Mark incoming unread messages as read
+      final unreadMessages =
+          await chatRef
+              .collection('messages')
+              .where('receiverId', isEqualTo: currentUserId)
+              .where('read', isEqualTo: false)
+              .get();
+
+      if (unreadMessages.docs.isEmpty) return;
+
+      final batch = _firestore.batch();
+      for (final doc in unreadMessages.docs) {
+        batch.update(doc.reference, {'read': true});
+      }
+      await batch.commit();
+    } catch (e) {
+      debugPrint('Error marking direct chat as seen: $e');
+    }
+  }
+
+  /// Clears unread badge when user opens a group chat.
+  Future<void> markGroupChatAsSeen(String groupId) async {
+    try {
+      await _firestore.collection('groups').doc(groupId).set({
+        'unreadCounts.$currentUserId': 0,
+      }, SetOptions(merge: true));
+    } catch (e) {
+      debugPrint('Error marking group chat as seen: $e');
     }
   }
 

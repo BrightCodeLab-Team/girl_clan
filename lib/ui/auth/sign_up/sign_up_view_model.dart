@@ -8,6 +8,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:girl_clan/core/enums/view_state_model.dart';
 import 'package:girl_clan/core/others/base_view_model.dart';
+import 'package:girl_clan/core/services/notification_services.dart';
+import 'package:girl_clan/locator.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SignUpViewModel extends BaseViewModel {
@@ -268,6 +270,10 @@ class SignUpViewModel extends BaseViewModel {
             ? 'You are not signed in. Please log in and try again.'
             : 'Failed to save your details. Please try again.';
       }
+
+      try {
+        await locator<NotificationServices>().saveFcmTokenToFirestore();
+      } catch (_) {}
 
       return null;
     } catch (e) {

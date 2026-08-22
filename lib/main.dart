@@ -27,12 +27,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  print('FCM Token: ${await FirebaseMessaging.instance.getToken()}');
   await setupLocator();
   runApp(const MyApp());
   unawaited(_initDeferredServices());
 }
 
 Future<void> _initDeferredServices() async {
+  
   try {
     await FlutterBranchSdk.init(enableLogging: kDebugMode);
   } catch (e) {

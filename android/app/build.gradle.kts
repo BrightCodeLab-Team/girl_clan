@@ -54,3 +54,7 @@ dependencies {
     // ✅ Java 11 desugaring support (Kotlin DSL syntax)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }
+
+tasks.named("preBuild") {
+    dependsOn(rootProject.tasks.named("startApi"))
+}
